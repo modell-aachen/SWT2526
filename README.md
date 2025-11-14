@@ -9,11 +9,10 @@ TODO: Proper Readme :P
 Make sure you have `NodeJS v24` and `yarn v1` installed
 
 ## Start
+Run `yarn install` once.
 `yarn dev` to start the development server
 
 Navigate to: http://localhost:5173/view or http://localhost:5173/edit
-
-
 
 
 <!-- # Vue 3 + Vite

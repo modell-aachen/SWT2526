@@ -16,8 +16,10 @@
 
     <!-- Selection border and resize handles -->
     <div v-if="selected" class="absolute inset-0 pointer-events-none">
-      <div class="absolute -inset-0.5 border-2 border-blue-500 pointer-events-none"></div>
-      
+      <div
+        class="absolute -inset-0.5 border-2 border-blue-500 pointer-events-none"
+      ></div>
+
       <!-- Resize handles -->
       <div
         v-for="handle in resizeHandles"
@@ -32,52 +34,52 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { CSSProperties } from 'vue';
-import type { ShapeType, ResizeHandle } from '@/types/shapes';
-import Rectangle from './shapes/Recangle/Rectangle.vue';
-import Triangle from './shapes/Triangle/Triangle.vue';
-import Trapezoid from './shapes/Trapezoid/Trapezoid.vue';
+import { computed } from 'vue'
+import type { CSSProperties } from 'vue'
+import type { ShapeType, ResizeHandle } from '@/types/shapes'
+import Rectangle from './shapes/Rectangle/RectangleComponent.vue'
+import Triangle from './shapes/Triangle/TriangleComponent.vue'
+import Trapezoid from './shapes/Trapezoid/TrapezoidComponent.vue'
 
 interface Props {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  shapeType: ShapeType;
-  outline?: string;
-  fill?: string;
-  selected?: boolean;
+  x: number
+  y: number
+  width: number
+  height: number
+  shapeType: ShapeType
+  outline?: string
+  fill?: string
+  selected?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   outline: '#000',
   fill: 'transparent',
   selected: false,
-});
+})
 
 const emit = defineEmits<{
-  dragStart: [event: MouseEvent];
-  drag: [deltaX: number, deltaY: number];
-  dragEnd: [];
-  resizeStart: [handle: string, event: MouseEvent];
-  resize: [handle: string, deltaX: number, deltaY: number];
-  resizeEnd: [];
-  click: [event: MouseEvent];
-}>();
+  dragStart: [event: MouseEvent]
+  drag: [deltaX: number, deltaY: number]
+  dragEnd: []
+  resizeStart: [handle: string, event: MouseEvent]
+  resize: [handle: string, deltaX: number, deltaY: number]
+  resizeEnd: []
+  click: [event: MouseEvent]
+}>()
 
 const shapeComponent = computed(() => {
   switch (props.shapeType) {
     case 'rectangle':
-      return Rectangle;
+      return Rectangle
     case 'triangle':
-      return Triangle;
+      return Triangle
     case 'trapezoid':
-      return Trapezoid;
+      return Trapezoid
     default:
-      return Rectangle;
+      return Rectangle
   }
-});
+})
 
 const wrapperStyle = computed<CSSProperties>(() => ({
   position: 'absolute',
@@ -86,7 +88,7 @@ const wrapperStyle = computed<CSSProperties>(() => ({
   width: `${props.width}px`,
   height: `${props.height}px`,
   cursor: props.selected ? 'move' : 'pointer',
-}));
+}))
 
 const resizeHandles = computed<ResizeHandle[]>(() => [
   { position: 'nw', x: 0, y: 0 },
@@ -97,12 +99,12 @@ const resizeHandles = computed<ResizeHandle[]>(() => [
   { position: 's', x: props.width / 2, y: props.height },
   { position: 'sw', x: 0, y: props.height },
   { position: 'w', x: 0, y: props.height / 2 },
-]);
+])
 
 const getHandleStyle = (handle: ResizeHandle) => ({
   left: `${handle.x}px`,
   top: `${handle.y}px`,
-});
+})
 
 const getCursorClass = (position: string) => {
   const cursorMap: Record<string, string> = {
@@ -114,81 +116,81 @@ const getCursorClass = (position: string) => {
     s: 'cursor-s-resize',
     sw: 'cursor-sw-resize',
     w: 'cursor-w-resize',
-  };
-  return cursorMap[position] || 'cursor-pointer';
-};
+  }
+  return cursorMap[position] || 'cursor-pointer'
+}
 
-let isDragging = false;
-let lastMouseX = 0;
-let lastMouseY = 0;
+let isDragging = false
+let lastMouseX = 0
+let lastMouseY = 0
 
 const handleMouseDown = (event: MouseEvent) => {
-  emit('click', event);
-  
-  isDragging = true;
-  lastMouseX = event.clientX;
-  lastMouseY = event.clientY;
-  
-  emit('dragStart', event);
-  
+  emit('click', event)
+
+  isDragging = true
+  lastMouseX = event.clientX
+  lastMouseY = event.clientY
+
+  emit('dragStart', event)
+
   const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging) return;
-    
-    const deltaX = e.clientX - lastMouseX;
-    const deltaY = e.clientY - lastMouseY;
-    
-    lastMouseX = e.clientX;
-    lastMouseY = e.clientY;
-    
-    emit('drag', deltaX, deltaY);
-  };
-  
+    if (!isDragging) return
+
+    const deltaX = e.clientX - lastMouseX
+    const deltaY = e.clientY - lastMouseY
+
+    lastMouseX = e.clientX
+    lastMouseY = e.clientY
+
+    emit('drag', deltaX, deltaY)
+  }
+
   const handleMouseUp = () => {
     if (isDragging) {
-      isDragging = false;
-      emit('dragEnd');
+      isDragging = false
+      emit('dragEnd')
     }
-    document.removeEventListener('mousemove', handleMouseMove);
-    document.removeEventListener('mouseup', handleMouseUp);
-  };
-  
-  document.addEventListener('mousemove', handleMouseMove);
-  document.addEventListener('mouseup', handleMouseUp);
-};
+    document.removeEventListener('mousemove', handleMouseMove)
+    document.removeEventListener('mouseup', handleMouseUp)
+  }
 
-let isResizing = false;
-let resizeHandle = '';
+  document.addEventListener('mousemove', handleMouseMove)
+  document.addEventListener('mouseup', handleMouseUp)
+}
+
+let isResizing = false
+let resizeHandle = ''
 
 const handleResizeStart = (position: string, event: MouseEvent) => {
-  isResizing = true;
-  resizeHandle = position;
-  lastMouseX = event.clientX;
-  lastMouseY = event.clientY;
-  
-  emit('resizeStart', position, event);
-  
+  isResizing = true
+  resizeHandle = position
+  lastMouseX = event.clientX
+  lastMouseY = event.clientY
+
+  emit('resizeStart', position, event)
+
   const handleResizeMove = (e: MouseEvent) => {
-    if (!isResizing) return;
-    
-    const deltaX = e.clientX - lastMouseX;
-    const deltaY = e.clientY - lastMouseY;
-    
-    lastMouseX = e.clientX;
-    lastMouseY = e.clientY;
-    
-    emit('resize', resizeHandle, deltaX, deltaY);
-  };
-  
+    if (!isResizing) return
+
+    const deltaX = e.clientX - lastMouseX
+    const deltaY = e.clientY - lastMouseY
+
+    lastMouseX = e.clientX
+    lastMouseY = e.clientY
+
+    emit('resize', resizeHandle, deltaX, deltaY)
+  }
+
   const handleResizeEnd = () => {
     if (isResizing) {
-      isResizing = false;
-      emit('resizeEnd');
+      isResizing = false
+      emit('resizeEnd')
     }
-    document.removeEventListener('mousemove', handleResizeMove);
-    document.removeEventListener('mouseup', handleResizeEnd);
-  };
-  
-  document.addEventListener('mousemove', handleResizeMove);
-  document.addEventListener('mouseup', handleResizeEnd);
-};
+    document.removeEventListener('mousemove', handleResizeMove)
+    document.removeEventListener('mouseup', handleResizeEnd)
+  }
+
+  document.addEventListener('mousemove', handleResizeMove)
+  document.addEventListener('mouseup', handleResizeEnd)
+}
 </script>

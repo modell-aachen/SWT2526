@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import ViewPage from '../views/ViewPage.vue'
-import EditPage from '../views/EditPage.vue'
+import ViewPage from '@/views/ViewPage/ViewPage.vue'
+import EditPage from '@/views/EditPage/EditPage.vue'
 
 const routes = [
   { path: '/view', component: ViewPage },

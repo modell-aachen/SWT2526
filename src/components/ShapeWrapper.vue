@@ -34,10 +34,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { CSSProperties } from 'vue';
-import type { ShapeType, ResizeHandle } from '../types/shapes';
-import Rectangle from './shapes/Rectangle.vue';
-import Triangle from './shapes/Triangle.vue';
-import Trapezoid from './shapes/Trapezoid.vue';
+import type { ShapeType, ResizeHandle } from '@/types/shapes';
+import Rectangle from './shapes/Recangle/Rectangle.vue';
+import Triangle from './shapes/Triangle/Triangle.vue';
+import Trapezoid from './shapes/Trapezoid/Trapezoid.vue';
 
 interface Props {
   x: number;

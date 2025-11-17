@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { Shape, ShapeType } from '../types/shapes';
+import type { Shape, ShapeType } from '../../types/shapes';
 
 export const useShapesStore = defineStore('shapes', {
   state: () => ({

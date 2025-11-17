@@ -1,11 +1,17 @@
 <template>
   <div class="flex flex-col h-screen w-screen overflow-hidden">
     <!-- Toolbar -->
+<<<<<<< HEAD
     <div
       class="flex gap-2 p-3 bg-gray-100 border-b border-gray-300 flex-shrink-0"
     >
       <button
         @click="addShape('rectangle')"
+=======
+    <div class="flex gap-2 p-3 bg-gray-100 border-b border-gray-300 shrink-0">
+      <button 
+        @click="addShape('rectangle')" 
+>>>>>>> 19bbd08 (feat: AI-Slop Tests for the AI-Slop Code)
         class="px-4 py-2 border border-gray-300 bg-white rounded cursor-pointer text-sm transition-all hover:bg-gray-200 hover:border-gray-600"
       >
         Add Rectangle
@@ -131,6 +137,7 @@ const handleDrag = (id: string, deltaX: number, deltaY: number) => {
   shapesStore.updateShapePosition(id, deltaX, deltaY)
 }
 
+<<<<<<< HEAD
 const handleResize = (
   id: string,
   handle: string,
@@ -139,4 +146,9 @@ const handleResize = (
 ) => {
   shapesStore.updateShapeSize(id, handle, deltaX, deltaY)
 }
+=======
+const handleResize = (id: string, handle: string, deltaX: number, deltaY: number) => {
+  shapesStore.updateShapeSize(id, handle, deltaX, deltaY);
+};
+>>>>>>> 19bbd08 (feat: AI-Slop Tests for the AI-Slop Code)
 </script>

@@ -36,7 +36,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { CSSProperties } from 'vue'
-import type { ShapeType, ResizeHandle } from '@/types/shapes'
+import type { ShapeType } from '@/types/ShapeType'
+import type { ResizeHandle } from '@/types/ResizeHandle'
 import Rectangle from '../shapes/Rectangle/RectangleComponent.vue'
 import Triangle from '../shapes/Triangle/TriangleComponent.vue'
 import Trapezoid from '../shapes/Trapezoid/TrapezoidComponent.vue'

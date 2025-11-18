@@ -180,7 +180,7 @@ describe('useShapesStore', () => {
       store.addShape('rectangle')
       const shapeId = store.shapes[0]?.id
 
-      store.selectShape(shapeId)
+      store.selectShape(shapeId!)
 
       expect(store.selectedShapeId).toBe(shapeId)
     })
@@ -406,8 +406,12 @@ describe('useShapesStore', () => {
 
         const sorted = store.sortedShapes
 
-        expect(sorted[0]?.zIndex).toBeLessThanOrEqual(sorted[1]?.zIndex)
-        expect(sorted[1]?.zIndex).toBeLessThanOrEqual(sorted[2]?.zIndex)
+        expect(sorted[0]?.zIndex).toBeLessThanOrEqual(
+          sorted[1]?.zIndex as number
+        )
+        expect(sorted[1]?.zIndex).toBeLessThanOrEqual(
+          sorted[2]?.zIndex as number
+        )
       })
 
       it('does not mutate original shapes array', () => {

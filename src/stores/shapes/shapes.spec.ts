@@ -87,16 +87,16 @@ describe('useShapesStore', () => {
       store.addShape('triangle')
       store.addShape('trapezoid')
 
-      expect(store.shapes[0]?.id).toBe('shape-1')
-      expect(store.shapes[1]?.id).toBe('shape-2')
-      expect(store.shapes[2]?.id).toBe('shape-3')
+      expect(store.shapes[0]?.id).toBe('rectangle-1')
+      expect(store.shapes[1]?.id).toBe('triangle-2')
+      expect(store.shapes[2]?.id).toBe('trapezoid-3')
     })
 
     it('sets the newly added shape as selected', () => {
       const store = useShapesStore()
       store.addShape('rectangle')
 
-      expect(store.selectedShapeId).toBe('shape-1')
+      expect(store.selectedShapeId).toBe('rectangle-1')
     })
 
     it('sets correct zIndex based on array length', () => {

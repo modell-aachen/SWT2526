@@ -37,9 +37,9 @@
 import { computed } from 'vue'
 import type { CSSProperties } from 'vue'
 import type { ShapeType, ResizeHandle } from '@/types/shapes'
-import Rectangle from './shapes/Rectangle/RectangleComponent.vue'
-import Triangle from './shapes/Triangle/TriangleComponent.vue'
-import Trapezoid from './shapes/Trapezoid/TrapezoidComponent.vue'
+import Rectangle from '../shapes/Rectangle/RectangleComponent.vue'
+import Triangle from '../shapes/Triangle/TriangleComponent.vue'
+import Trapezoid from '../shapes/Trapezoid/TrapezoidComponent.vue'
 
 interface Props {
   x: number

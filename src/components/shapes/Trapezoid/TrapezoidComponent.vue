@@ -13,7 +13,7 @@
 defineProps({
   width: { type: Number, required: true },
   height: { type: Number, required: true },
-  outline: { type: String, default: "#000" },
-  fill: { type: String, default: "transparent" },
-});
+  outline: { type: String, default: '#000' },
+  fill: { type: String, default: 'transparent' },
+})
 </script>

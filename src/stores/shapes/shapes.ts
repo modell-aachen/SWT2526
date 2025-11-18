@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import type { Shape, ShapeType } from '../../types/shapes'
+import type { Shape } from '@/types/Shape'
+import type { ShapeType } from '@/types/ShapeType'
 
 export const useShapesStore = defineStore('shapes', {
   state: () => ({
@@ -22,7 +23,7 @@ export const useShapesStore = defineStore('shapes', {
   actions: {
     addShape(type: ShapeType, x: number = 100, y: number = 100) {
       const newShape: Shape = {
-        id: `shape-${this.nextId++}`,
+        id: `${type}-${this.nextId++}`,
         type,
         x,
         y,

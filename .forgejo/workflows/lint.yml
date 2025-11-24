@@ -1,0 +1,21 @@
+on: [push]
+
+jobs:
+  lint-and-format:
+    runs-on: dockerdocker
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run ESLint
+        run: yarn lint:check
+
+      - name: Run Prettier
+        run: yarn format:check
+
+      - name: Run Tests
+        run: yarn test:run

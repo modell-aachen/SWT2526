@@ -1,0 +1,7 @@
+on: [push]
+jobs:
+  changelog:
+    runs-on: dockerdocker
+    steps:
+      - name: Create Changelog
+        uses: https://${{ secrets.REPOSITORY_READ_TOKEN }}@git.jawind.de/actions/create-changelog@v1

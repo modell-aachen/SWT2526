@@ -19,7 +19,7 @@
     <div v-if="selected" class="absolute inset-0 pointer-events-none">
       <div
         data-testid="selection-border"
-        class="absolute -inset-0.5 border-2 border-blue-500 pointer-events-none"
+        class="absolute -inset-0.5 border-2 border-ma-primary-500 pointer-events-none"
       ></div>
 
       <!-- Resize handles -->
@@ -27,7 +27,7 @@
         v-for="handle in resizeHandles"
         :key="handle.position"
         :data-testid="`resize-handle-${handle.position}`"
-        class="absolute w-2 h-2 bg-blue-500 border border-white rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
+        class="absolute w-2 h-2 bg-ma-primary-500 border border-white rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
         :class="getCursorClass(handle.position)"
         :style="getHandleStyle(handle)"
         @mousedown.stop="handleResizeStart(handle.position, $event)"
@@ -59,7 +59,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  outline: '#000',
+  outline: 'var(--ma-text-01)',
   fill: 'transparent',
   selected: false,
 })

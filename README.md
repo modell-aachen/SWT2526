@@ -15,8 +15,45 @@ Run `yarn install` once.
 
 Navigate to: http://localhost:5173/view or http://localhost:5173/edit
 
-<!-- # Vue 3 + Vite
+## Features
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+### Refactor
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support). -->
+- Wrapper in Composables auslagern Sam & Jakob
+
+### Required
+
+- Detail Popup (Per Shape - Settings) Elisabeth & Laura
+- Duplicate Button (Strg + C, V, Z, X etc) Jakob & Sam
+- Rotation by 90 degrees only Elisabeth & Laura
+- Sidebar with visible Shapes (drag and drop) Jan & Wiem
+- Responsive
+- Shape Link
+- Zoom-Button
+- Text Advanced (Text Color, Fontsize, Font Family, Extra: Render Markdown?, FA-Icons)
+- Text Upside, disregarding rotation -> Text speparated from Shapes
+- Shape Groups (Shapewrapper for multiple Ids?)
+- Arrow Shape / More shapes
+- View Page
+- JSON Export
+- JSON Import (Validate JSON)
+
+### Optional
+
+- Templates
+- Connect Shapes in Datastructure
+- Guiding Lines on Resize
+- Predefined Colors, ColorPallets?
+- Legend
+- Versioning of a Diagram
+- Polygons as Shape (Hexagon -> Movable Points, new Page?)
+
+### Highly Optional
+
+- Edit Page and View Page as Webcomponent?
+- "Reshaping" of svgs
+- Custom Shape Drawer? (~ 100 Story Points)
+
+## Considerations
+
+- Refactor to save Grid Span Values instead of Absolutely Positioned Pixels

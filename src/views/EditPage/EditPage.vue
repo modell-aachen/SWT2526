@@ -3,6 +3,7 @@
     <Toolbar
       :has-selected-shape="!!shapesStore.selectedShapeId"
       @add-shape="addShape"
+      @rotate-selected="rotateSelected"
       @delete-selected="deleteSelected"
       @clear-all="clearAll"
     />
@@ -18,6 +19,7 @@
         :y="shape.y"
         :width="shape.width"
         :height="shape.height"
+        :rotation="shape.rotation"
         :shape-type="shape.type"
         :outline="shape.outline"
         :fill="shape.fill"
@@ -44,6 +46,10 @@ const shapesStore = useShapesStore()
 
 const addShape = (type: ShapeType) => {
   shapesStore.addShape(type)
+}
+
+const rotateSelected = () => {
+  shapesStore.rotateSelectedShape()
 }
 
 const deleteSelected = () => {

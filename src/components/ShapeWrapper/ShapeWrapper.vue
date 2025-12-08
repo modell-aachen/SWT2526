@@ -11,6 +11,7 @@
       :is="shapeComponent"
       :width="width"
       :height="height"
+      :rotation="rotation"
       :outline="outline"
       :fill="fill"
     />
@@ -53,12 +54,14 @@ interface Props {
   width: number
   height: number
   shapeType: ShapeType
+  rotation?: number
   outline?: string
   fill?: string
   selected?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  rotation: 0,
   outline: '#000',
   fill: 'transparent',
   selected: false,

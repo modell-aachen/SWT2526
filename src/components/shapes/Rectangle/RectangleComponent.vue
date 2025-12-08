@@ -1,7 +1,7 @@
 <template>
   <svg :width="width" :height="height" viewBox="0 0 100 100">
     <polygon
-      points="5,5 95,5 95,95 5,95"
+      :points="points"
       :stroke="outline"
       :fill="fill"
       stroke-width="3"
@@ -10,10 +10,23 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
+import { toRef } from 'vue'
+import { useRotatedPoints } from '@/composables/useRotatedPoints'
+
+const props = defineProps({
   width: { type: Number, required: true },
   height: { type: Number, required: true },
+  rotation: { type: Number, default: 0 },
   outline: { type: String, default: '#000' },
   fill: { type: String, default: 'transparent' },
 })
+
+const basePoints = [
+  { x: 5, y: 5 },   // top-left
+  { x: 95, y: 5 },  // top-right
+  { x: 95, y: 95 }, // bottom-right
+  { x: 5, y: 95 },  // bottom-left
+]
+
+const points = useRotatedPoints(basePoints, toRef(props, 'rotation'))
 </script>

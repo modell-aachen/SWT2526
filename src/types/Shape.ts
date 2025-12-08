@@ -7,6 +7,7 @@ export interface Shape {
   y: number
   width: number
   height: number
+  rotation: number
   outline: string
   fill: string
   zIndex: number

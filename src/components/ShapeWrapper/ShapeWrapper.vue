@@ -47,6 +47,7 @@ interface Props {
   y: number
   width: number
   height: number
+  rotation?: number
   shapeType: ShapeType
   outline?: string
   fill?: string
@@ -54,6 +55,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  rotation: 0,
   outline: '#000',
   fill: 'transparent',
   selected: false,
@@ -89,6 +91,8 @@ const wrapperStyle = computed<CSSProperties>(() => ({
   width: `${props.width}px`,
   height: `${props.height}px`,
   cursor: props.selected ? 'move' : 'pointer',
+  transform: `rotate(${props.rotation}deg)`,
+  transformOrigin: 'center center',
 }))
 
 const resizeHandles = computed<ResizeHandle[]>(() => [

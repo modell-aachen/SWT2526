@@ -10,4 +10,5 @@ export interface Shape {
   outline: string
   fill: string
   zIndex: number
+  rotation: number
 }

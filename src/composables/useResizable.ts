@@ -2,7 +2,6 @@ import { ref, onUnmounted } from 'vue'
 import type { ResizeEvents } from '@/types/ResizeEvents'
 
 export function useResizable(emit: ResizeEvents) {
-
     const isResizing = ref(false)
     let resizeHandle = ''
     let lastMouseX = 0

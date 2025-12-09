@@ -32,11 +32,17 @@
     >
       Clear All
     </button>
+
+    <Slider :default-value="[50]"
+    :max="100"
+    :step="1"
+    class="w-[60%]"/>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { ShapeType } from '@/types/shapes'
+import type { ShapeType } from '@/types/ShapeType'
+import Slider from '@/components/ui/slider/Slider.vue'
 
 defineProps<{
   hasSelectedShape: boolean

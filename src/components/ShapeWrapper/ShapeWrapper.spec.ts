@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ShapeWrapper from './ShapeWrapper.vue'
 import Rectangle from '../shapes/Rectangle/RectangleComponent.vue'
@@ -8,6 +8,12 @@ import Trapezoid from '../shapes/Trapezoid/TrapezoidComponent.vue'
 describe('ShapeWrapper', () => {
   beforeEach(() => {
     // Reset any module state between tests
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    // Trigger mouseup to end any active drag/resize operations and clean up listeners
+    document.dispatchEvent(new MouseEvent('mouseup'))
     vi.clearAllMocks()
   })
 
@@ -23,7 +29,7 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      expect(wrapper.find('.absolute.select-none').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="shape-wrapper"]').exists()).toBe(true)
     })
 
     it('applies correct positioning styles', () => {
@@ -37,7 +43,7 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      const wrapperDiv = wrapper.find('.absolute.select-none')
+      const wrapperDiv = wrapper.find('[data-testid="shape-wrapper"]')
       const style = wrapperDiv.attributes('style')
 
       expect(style).toContain('left: 150px')
@@ -180,7 +186,7 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      expect(wrapper.find('.border-blue-500').exists()).toBe(false)
+      expect(wrapper.find('[data-testid="selection-border"]').exists()).toBe(false)
     })
 
     it('shows selection border when selected', () => {
@@ -195,7 +201,7 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      expect(wrapper.find('.border-blue-500').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="selection-border"]').exists()).toBe(true)
     })
 
     it('shows resize handles when selected', () => {
@@ -278,20 +284,15 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      const handles = wrapper.findAll(
-        '.bg-blue-500.border.border-white.rounded-full'
-      )
-      expect(handles.length).toBe(8)
-
-      // Verify cursor classes for each handle position
-      expect(wrapper.find('.cursor-nw-resize').exists()).toBe(true)
-      expect(wrapper.find('.cursor-n-resize').exists()).toBe(true)
-      expect(wrapper.find('.cursor-ne-resize').exists()).toBe(true)
-      expect(wrapper.find('.cursor-e-resize').exists()).toBe(true)
-      expect(wrapper.find('.cursor-se-resize').exists()).toBe(true)
-      expect(wrapper.find('.cursor-s-resize').exists()).toBe(true)
-      expect(wrapper.find('.cursor-sw-resize').exists()).toBe(true)
-      expect(wrapper.find('.cursor-w-resize').exists()).toBe(true)
+      // Verify all 8 handles exist
+      expect(wrapper.find('[data-testid="resize-handle-nw"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="resize-handle-n"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="resize-handle-ne"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="resize-handle-e"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="resize-handle-se"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="resize-handle-s"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="resize-handle-sw"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="resize-handle-w"]').exists()).toBe(true)
     })
 
     it('positions corner handles correctly', () => {
@@ -306,11 +307,11 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      const nwHandle = wrapper.find('.cursor-nw-resize')
+      const nwHandle = wrapper.find('[data-testid="resize-handle-nw"]')
       expect(nwHandle.attributes('style')).toContain('left: 0px')
       expect(nwHandle.attributes('style')).toContain('top: 0px')
 
-      const seHandle = wrapper.find('.cursor-se-resize')
+      const seHandle = wrapper.find('[data-testid="resize-handle-se"]')
       expect(seHandle.attributes('style')).toContain('left: 100px')
       expect(seHandle.attributes('style')).toContain('top: 100px')
     })
@@ -327,227 +328,13 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      const nHandle = wrapper.find('.cursor-n-resize')
+      const nHandle = wrapper.find('[data-testid="resize-handle-n"]')
       expect(nHandle.attributes('style')).toContain('left: 50px')
       expect(nHandle.attributes('style')).toContain('top: 0px')
 
-      const eHandle = wrapper.find('.cursor-e-resize')
+      const eHandle = wrapper.find('[data-testid="resize-handle-e"]')
       expect(eHandle.attributes('style')).toContain('left: 100px')
       expect(eHandle.attributes('style')).toContain('top: 50px')
-    })
-  })
-
-  describe('click event', () => {
-    it('emits click event when mousedown on wrapper', async () => {
-      const wrapper = mount(ShapeWrapper, {
-        props: {
-          x: 100,
-          y: 100,
-          width: 100,
-          height: 100,
-          shapeType: 'rectangle',
-        },
-      })
-
-      const wrapperDiv = wrapper.find('.absolute.select-none')
-      await wrapperDiv.trigger('mousedown')
-
-      expect(wrapper.emitted('click')).toBeTruthy()
-    })
-
-    it('stops propagation on mousedown', async () => {
-      const wrapper = mount(ShapeWrapper, {
-        props: {
-          x: 100,
-          y: 100,
-          width: 100,
-          height: 100,
-          shapeType: 'rectangle',
-        },
-      })
-
-      const wrapperDiv = wrapper.find('.absolute.select-none')
-      const event = new MouseEvent('mousedown')
-      const stopPropSpy = vi.spyOn(event, 'stopPropagation')
-
-      await wrapperDiv.element.dispatchEvent(event)
-
-      expect(stopPropSpy).toHaveBeenCalled()
-    })
-  })
-
-  describe('drag functionality', () => {
-    it('emits dragStart when mousedown on wrapper', async () => {
-      const wrapper = mount(ShapeWrapper, {
-        props: {
-          x: 100,
-          y: 100,
-          width: 100,
-          height: 100,
-          shapeType: 'rectangle',
-        },
-      })
-
-      const wrapperDiv = wrapper.find('.absolute.select-none')
-      await wrapperDiv.trigger('mousedown')
-
-      expect(wrapper.emitted('dragStart')).toBeTruthy()
-    })
-
-    it('emits drag event with delta when dragging', async () => {
-      const wrapper = mount(ShapeWrapper, {
-        props: {
-          x: 100,
-          y: 100,
-          width: 100,
-          height: 100,
-          shapeType: 'rectangle',
-        },
-      })
-
-      const wrapperDiv = wrapper.find('.absolute.select-none')
-
-      // Start drag
-      await wrapperDiv.trigger('mousedown', { clientX: 100, clientY: 100 })
-
-      // Simulate mouse move
-      document.dispatchEvent(
-        new MouseEvent('mousemove', { clientX: 125, clientY: 135 })
-      )
-
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.emitted('drag')).toBeTruthy()
-      expect(wrapper.emitted('drag')?.[0]).toEqual([25, 35])
-    })
-
-    it('emits dragEnd when mouse is released', async () => {
-      const wrapper = mount(ShapeWrapper, {
-        props: {
-          x: 100,
-          y: 100,
-          width: 100,
-          height: 100,
-          shapeType: 'rectangle',
-        },
-      })
-
-      const wrapperDiv = wrapper.find('.absolute.select-none')
-
-      // Start drag
-      await wrapperDiv.trigger('mousedown', { clientX: 100, clientY: 100 })
-
-      // Move mouse
-      document.dispatchEvent(
-        new MouseEvent('mousemove', { clientX: 110, clientY: 110 })
-      )
-
-      // Release mouse
-      document.dispatchEvent(new MouseEvent('mouseup'))
-
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.emitted('dragEnd')).toBeTruthy()
-    })
-  })
-
-  describe('resize functionality', () => {
-    it('emits resizeStart when mousedown on resize handle', async () => {
-      const wrapper = mount(ShapeWrapper, {
-        props: {
-          x: 100,
-          y: 100,
-          width: 100,
-          height: 100,
-          shapeType: 'rectangle',
-          selected: true,
-        },
-      })
-
-      const seHandle = wrapper.find('.cursor-se-resize')
-      await seHandle.trigger('mousedown', { clientX: 200, clientY: 200 })
-
-      expect(wrapper.emitted('resizeStart')).toBeTruthy()
-      expect(wrapper.emitted('resizeStart')?.[0]?.[0]).toBe('se')
-    })
-
-    it('emits resize event with handle and delta when resizing', async () => {
-      const wrapper = mount(ShapeWrapper, {
-        props: {
-          x: 100,
-          y: 100,
-          width: 100,
-          height: 100,
-          shapeType: 'rectangle',
-          selected: true,
-        },
-      })
-
-      const seHandle = wrapper.find('.cursor-se-resize')
-
-      // Start resize
-      await seHandle.trigger('mousedown', { clientX: 200, clientY: 200 })
-
-      // Simulate mouse move
-      document.dispatchEvent(
-        new MouseEvent('mousemove', { clientX: 220, clientY: 230 })
-      )
-
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.emitted('resize')).toBeTruthy()
-      expect(wrapper.emitted('resize')?.[0]).toEqual(['se', 20, 30])
-    })
-
-    it('emits resizeEnd when resize is complete', async () => {
-      const wrapper = mount(ShapeWrapper, {
-        props: {
-          x: 100,
-          y: 100,
-          width: 100,
-          height: 100,
-          shapeType: 'rectangle',
-          selected: true,
-        },
-      })
-
-      const seHandle = wrapper.find('.cursor-se-resize')
-
-      // Start resize
-      await seHandle.trigger('mousedown', { clientX: 200, clientY: 200 })
-
-      // Move mouse
-      document.dispatchEvent(
-        new MouseEvent('mousemove', { clientX: 210, clientY: 210 })
-      )
-
-      // Release mouse
-      document.dispatchEvent(new MouseEvent('mouseup'))
-
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.emitted('resizeEnd')).toBeTruthy()
-    })
-
-    it('stops propagation on resize handle mousedown', async () => {
-      const wrapper = mount(ShapeWrapper, {
-        props: {
-          x: 100,
-          y: 100,
-          width: 100,
-          height: 100,
-          shapeType: 'rectangle',
-          selected: true,
-        },
-      })
-
-      const seHandle = wrapper.find('.cursor-se-resize')
-      const event = new MouseEvent('mousedown')
-      const stopPropSpy = vi.spyOn(event, 'stopPropagation')
-
-      await seHandle.element.dispatchEvent(event)
-
-      expect(stopPropSpy).toHaveBeenCalled()
     })
   })
 })

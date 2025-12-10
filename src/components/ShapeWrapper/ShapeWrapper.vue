@@ -1,5 +1,6 @@
 <template>
   <div
+    data-testid="shape-wrapper"
     class="absolute select-none"
     :class="selected ? 'cursor-move' : 'cursor-pointer'"
     :style="wrapperStyle"
@@ -17,14 +18,16 @@
     <!-- Selection border and resize handles -->
     <div v-if="selected" class="absolute inset-0 pointer-events-none">
       <div
-        class="absolute -inset-0.5 border-2 border-blue-500 pointer-events-none"
+        data-testid="selection-border"
+        class="absolute -inset-0.5 border-2 border-ma-primary-500 pointer-events-none"
       ></div>
 
       <!-- Resize handles -->
       <div
         v-for="handle in resizeHandles"
         :key="handle.position"
-        class="absolute w-2 h-2 bg-blue-500 border border-white rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
+        :data-testid="`resize-handle-${handle.position}`"
+        class="absolute w-2 h-2 bg-ma-primary-500 border border-white rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
         :class="getCursorClass(handle.position)"
         :style="getHandleStyle(handle)"
         @mousedown.stop="handleResizeStart(handle.position, $event)"
@@ -41,6 +44,8 @@ import type { ResizeHandle } from '@/types/ResizeHandle'
 import Rectangle from '../shapes/Rectangle/RectangleComponent.vue'
 import Triangle from '../shapes/Triangle/TriangleComponent.vue'
 import Trapezoid from '../shapes/Trapezoid/TrapezoidComponent.vue'
+import { useDraggable } from '@/composables/useDraggable'
+import { useResizable } from '@/composables/useResizable'
 
 interface Props {
   x: number
@@ -54,7 +59,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  outline: '#000',
+  outline: 'var(--ma-text-01)',
   fill: 'transparent',
   selected: false,
 })
@@ -68,6 +73,9 @@ const emit = defineEmits<{
   resizeEnd: []
   click: [event: MouseEvent]
 }>()
+
+const { startDrag } = useDraggable(emit)
+const { startResize } = useResizable(emit)
 
 const shapeComponent = computed(() => {
   switch (props.shapeType) {
@@ -121,77 +129,11 @@ const getCursorClass = (position: string) => {
   return cursorMap[position] || 'cursor-pointer'
 }
 
-let isDragging = false
-let lastMouseX = 0
-let lastMouseY = 0
-
 const handleMouseDown = (event: MouseEvent) => {
-  emit('click', event)
-
-  isDragging = true
-  lastMouseX = event.clientX
-  lastMouseY = event.clientY
-
-  emit('dragStart', event)
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging) return
-
-    const deltaX = e.clientX - lastMouseX
-    const deltaY = e.clientY - lastMouseY
-
-    lastMouseX = e.clientX
-    lastMouseY = e.clientY
-
-    emit('drag', deltaX, deltaY)
-  }
-
-  const handleMouseUp = () => {
-    if (isDragging) {
-      isDragging = false
-      emit('dragEnd')
-    }
-    document.removeEventListener('mousemove', handleMouseMove)
-    document.removeEventListener('mouseup', handleMouseUp)
-  }
-
-  document.addEventListener('mousemove', handleMouseMove)
-  document.addEventListener('mouseup', handleMouseUp)
+  startDrag(event)
 }
 
-let isResizing = false
-let resizeHandle = ''
-
 const handleResizeStart = (position: string, event: MouseEvent) => {
-  isResizing = true
-  resizeHandle = position
-  lastMouseX = event.clientX
-  lastMouseY = event.clientY
-
-  emit('resizeStart', position, event)
-
-  const handleResizeMove = (e: MouseEvent) => {
-    if (!isResizing) return
-
-    const deltaX = e.clientX - lastMouseX
-    const deltaY = e.clientY - lastMouseY
-
-    lastMouseX = e.clientX
-    lastMouseY = e.clientY
-
-    emit('resize', resizeHandle, deltaX, deltaY)
-  }
-
-  const handleResizeEnd = () => {
-    if (isResizing) {
-      isResizing = false
-      emit('resizeEnd')
-    }
-    document.removeEventListener('mousemove', handleResizeMove)
-    document.removeEventListener('mouseup', handleResizeEnd)
-  }
-
-  document.addEventListener('mousemove', handleResizeMove)
-  document.addEventListener('mouseup', handleResizeEnd)
+  startResize(position, event)
 }
 </script>

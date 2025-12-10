@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex-1 relative bg-white overflow-auto outline-none"
+    class="flex-1 relative bg-bg-maincontent overflow-auto outline-none"
     tabindex="0"
     @mousedown="handleCanvasClick"
     @keydown.delete="$emit('delete-selected')"
@@ -8,7 +8,7 @@
   >
     <!-- Grid pattern -->
     <svg
-      class="absolute top-0 left-0 w-full h-full pointer-events-none z-0"
+      class="absolute top-0 left-0 w-full h-full pointer-events-none z-0 text-ma-grey-200"
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
@@ -16,7 +16,7 @@
           <path
             d="M 20 0 L 0 0 0 20"
             fill="none"
-            stroke="#e0e0e0"
+            stroke="currentColor"
             stroke-width="0.5"
           />
         </pattern>

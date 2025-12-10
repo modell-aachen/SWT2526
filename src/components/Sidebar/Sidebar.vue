@@ -1,6 +1,6 @@
 <!-- src/components/Sidebar/Sidebar.vue -->
 <template>
-  <aside class="w-72 bg-white dark:bg-gray-900 border-l h-full p-4 flex flex-col">
+  <aside class="w-72 flex flex-col gap-2 p-3 bg-ma-grey-100 border-r border-ma-grey-300 shrink-0 h-full">
     <h3 class="text-lg font-semibold mb-4">Sidebar</h3>
 
     <!-- Add-Shape Buttons -->
@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ShapeType } from '@/types/shapes'
+import type { ShapeType } from '@/types/ShapeType'
 
 defineEmits<{
   'add-shape': [type: ShapeType]

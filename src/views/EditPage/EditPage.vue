@@ -1,43 +1,51 @@
 <template>
-  <div class="flex flex-col h-screen w-screen overflow-hidden">
-    <Toolbar
-      :has-selected-shape="!!shapesStore.selectedShapeId"
+  <div class="flex h-screen w-screen overflow-hidden">
+
+    <Sidebar
       @add-shape="addShape"
-      @delete-selected="deleteSelected"
-      @clear-all="clearAll"
     />
 
-    <GridCanvas
-      @canvas-click="handleCanvasClick"
-      @delete-selected="deleteSelected"
-    >
-      <ShapeWrapper
-        v-for="shape in shapesStore.sortedShapes"
-        :key="shape.id"
-        :x="shape.x"
-        :y="shape.y"
-        :width="shape.width"
-        :height="shape.height"
-        :shape-type="shape.type"
-        :outline="shape.outline"
-        :fill="shape.fill"
-        :selected="shape.id === shapesStore.selectedShapeId"
-        @click="selectShape(shape.id)"
-        @drag="(deltaX, deltaY) => handleDrag(shape.id, deltaX, deltaY)"
-        @resize="
-          (handle, deltaX, deltaY) =>
-            handleResize(shape.id, handle, deltaX, deltaY)
-        "
+    <div class="flex-1 flex flex-col">
+      <Toolbar
+        :has-selected-shape="!!shapesStore.selectedShapeId"
+        @add-shape="addShape"
+        @delete-selected="deleteSelected"
+        @clear-all="clearAll"
       />
-    </GridCanvas>
+
+      <GridCanvas
+        @canvas-click="handleCanvasClick"
+        @delete-selected="deleteSelected"
+      >
+        <ShapeWrapper
+          v-for="shape in shapesStore.sortedShapes"
+          :key="shape.id"
+          :x="shape.x"
+          :y="shape.y"
+          :width="shape.width"
+          :height="shape.height"
+          :shape-type="shape.type"
+          :outline="shape.outline"
+          :fill="shape.fill"
+          :selected="shape.id === shapesStore.selectedShapeId"
+          @click="selectShape(shape.id)"
+          @drag="(deltaX, deltaY) => handleDrag(shape.id, deltaX, deltaY)"
+          @resize="(handle, deltaX, deltaY) => handleResize(shape.id, handle, deltaX, deltaY)"
+        />
+      </GridCanvas>
+    </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { useShapesStore } from '@/stores/shapes/shapes'
 import ShapeWrapper from '@/components/ShapeWrapper/ShapeWrapper.vue'
 import Toolbar from '@/components/Toolbar/Toolbar.vue'
 import GridCanvas from '@/components/GridCanvas/GridCanvas.vue'
+import Sidebar from '@/components/Sidebar/Sidebar.vue'
+
+
 import type { ShapeType } from '@/types/ShapeType'
 
 const shapesStore = useShapesStore()

@@ -7,14 +7,14 @@ describe('GridCanvas', () => {
     it('renders the canvas container', () => {
       const wrapper = mount(GridCanvas)
 
-      const canvas = wrapper.find('.flex-1.relative.bg-bg-maincontent')
+      const canvas = wrapper.find('[data-testid="canvas-container"]')
       expect(canvas.exists()).toBe(true)
     })
 
     it('applies correct styling classes', () => {
       const wrapper = mount(GridCanvas)
 
-      const canvas = wrapper.find('.flex-1.relative.bg-bg-maincontent')
+      const canvas = wrapper.find('[data-testid="canvas-container"]')
       expect(canvas.classes()).toContain('flex-1')
       expect(canvas.classes()).toContain('relative')
       expect(canvas.classes()).toContain('bg-bg-maincontent')
@@ -25,21 +25,21 @@ describe('GridCanvas', () => {
     it('has tabindex for keyboard focus', () => {
       const wrapper = mount(GridCanvas)
 
-      const canvas = wrapper.find('.flex-1.relative.bg-bg-maincontent')
+      const canvas = wrapper.find('[data-testid="canvas-container"]')
       expect(canvas.attributes('tabindex')).toBe('0')
     })
 
     it('renders grid pattern SVG', () => {
       const wrapper = mount(GridCanvas)
 
-      const svg = wrapper.find('svg')
+      const svg = wrapper.find('[data-testid="grid-svg"]')
       expect(svg.exists()).toBe(true)
     })
 
     it('SVG has correct structure', () => {
       const wrapper = mount(GridCanvas)
 
-      const svg = wrapper.find('svg')
+      const svg = wrapper.find('[data-testid="grid-svg"]')
       expect(svg.classes()).toContain('absolute')
       expect(svg.classes()).toContain('pointer-events-none')
       expect(svg.classes()).toContain('z-0')
@@ -64,7 +64,7 @@ describe('GridCanvas', () => {
     it('grid pattern path has correct attributes', () => {
       const wrapper = mount(GridCanvas)
 
-      const path = wrapper.find('pattern path')
+      const path = wrapper.find('[data-testid="grid-pattern-path"]')
       expect(path.attributes('d')).toBe('M 20 0 L 0 0 0 20')
       expect(path.attributes('fill')).toBe('none')
       expect(path.attributes('stroke')).toBe('currentColor')
@@ -113,7 +113,7 @@ describe('GridCanvas', () => {
   describe('canvas click event', () => {
     it('emits canvas-click when clicking on canvas directly', async () => {
       const wrapper = mount(GridCanvas)
-      const canvas = wrapper.find('.flex-1.relative.bg-bg-maincontent')
+      const canvas = wrapper.find('[data-testid="canvas-container"]')
 
       await canvas.trigger('mousedown')
 

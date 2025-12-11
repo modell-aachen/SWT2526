@@ -1,6 +1,12 @@
 <template>
-  <svg :width="width" :height="height" viewBox="0 0 100 100">
+  <svg
+    data-testid="rectangle-shape"
+    :width="width"
+    :height="height"
+    viewBox="0 0 100 100"
+  >
     <polygon
+      data-testid="rectangle-polygon"
       points="5,5 95,5 95,95 5,95"
       :stroke="outline"
       :fill="fill"

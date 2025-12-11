@@ -22,7 +22,7 @@ describe('Rectangle', () => {
       },
     })
 
-    const svg = wrapper.find('svg')
+    const svg = wrapper.find('[data-testid="rectangle-shape"]')
     expect(svg.attributes('width')).toBe('150')
     expect(svg.attributes('height')).toBe('200')
   })
@@ -35,7 +35,7 @@ describe('Rectangle', () => {
       },
     })
 
-    const svg = wrapper.find('svg')
+    const svg = wrapper.find('[data-testid="rectangle-shape"]')
     expect(svg.attributes('viewBox')).toBe('0 0 100 100')
   })
 
@@ -48,7 +48,7 @@ describe('Rectangle', () => {
       },
     })
 
-    const polygon = wrapper.find('polygon')
+    const polygon = wrapper.find('[data-testid="rectangle-polygon"]')
     expect(polygon.attributes('stroke')).toBe('#ff0000')
   })
 
@@ -61,7 +61,7 @@ describe('Rectangle', () => {
       },
     })
 
-    const polygon = wrapper.find('polygon')
+    const polygon = wrapper.find('[data-testid="rectangle-polygon"]')
     expect(polygon.attributes('fill')).toBe('#00ff00')
   })
 
@@ -73,7 +73,7 @@ describe('Rectangle', () => {
       },
     })
 
-    const polygon = wrapper.find('polygon')
+    const polygon = wrapper.find('[data-testid="rectangle-polygon"]')
     expect(polygon.attributes('stroke')).toBe('#000')
   })
 
@@ -85,7 +85,7 @@ describe('Rectangle', () => {
       },
     })
 
-    const polygon = wrapper.find('polygon')
+    const polygon = wrapper.find('[data-testid="rectangle-polygon"]')
     expect(polygon.attributes('fill')).toBe('transparent')
   })
 
@@ -97,7 +97,7 @@ describe('Rectangle', () => {
       },
     })
 
-    const polygon = wrapper.find('polygon')
+    const polygon = wrapper.find('[data-testid="rectangle-polygon"]')
     expect(polygon.attributes('points')).toBe('5,5 95,5 95,95 5,95')
   })
 })

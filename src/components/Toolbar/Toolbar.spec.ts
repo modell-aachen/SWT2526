@@ -34,7 +34,7 @@ describe('Toolbar', () => {
         },
       })
 
-      const toolbar = wrapper.find('.flex.gap-2.p-3.bg-ma-grey-100')
+      const toolbar = wrapper.find('[data-testid="toolbar-container"]')
       expect(toolbar.exists()).toBe(true)
     })
 
@@ -45,7 +45,7 @@ describe('Toolbar', () => {
         },
       })
 
-      const separator = wrapper.find('.w-px.bg-ma-grey-300')
+      const separator = wrapper.find('[data-testid="toolbar-separator"]')
       expect(separator.exists()).toBe(true)
     })
   })
@@ -58,7 +58,10 @@ describe('Toolbar', () => {
         },
       })
 
-      await wrapper.findAll('button')[0]?.trigger('click')
+      const rectangleButton = wrapper.find(
+        '[data-testid="add-rectangle-button"]'
+      )
+      await rectangleButton.trigger('click')
 
       expect(wrapper.emitted('add-shape')).toBeTruthy()
       expect(wrapper.emitted('add-shape')?.[0]).toEqual(['rectangle'])
@@ -71,7 +74,8 @@ describe('Toolbar', () => {
         },
       })
 
-      await wrapper.findAll('button')[1]?.trigger('click')
+      const triangleButton = wrapper.find('[data-testid="add-triangle-button"]')
+      await triangleButton.trigger('click')
 
       expect(wrapper.emitted('add-shape')).toBeTruthy()
       expect(wrapper.emitted('add-shape')?.[0]).toEqual(['triangle'])
@@ -84,7 +88,10 @@ describe('Toolbar', () => {
         },
       })
 
-      await wrapper.findAll('button')[2]?.trigger('click')
+      const trapezoidButton = wrapper.find(
+        '[data-testid="add-trapezoid-button"]'
+      )
+      await trapezoidButton.trigger('click')
 
       expect(wrapper.emitted('add-shape')).toBeTruthy()
       expect(wrapper.emitted('add-shape')?.[0]).toEqual(['trapezoid'])
@@ -99,11 +106,9 @@ describe('Toolbar', () => {
         },
       })
 
-      const deleteButton = wrapper
-        .findAll('button')
-        .find((btn) => btn.text() === 'Delete Selected')
+      const deleteButton = wrapper.find('[data-testid="delete-button"]')
 
-      expect(deleteButton?.attributes('disabled')).toBeDefined()
+      expect(deleteButton.attributes('disabled')).toBeDefined()
     })
 
     it('is enabled when hasSelectedShape is true', () => {
@@ -113,11 +118,9 @@ describe('Toolbar', () => {
         },
       })
 
-      const deleteButton = wrapper
-        .findAll('button')
-        .find((btn) => btn.text() === 'Delete Selected')
+      const deleteButton = wrapper.find('[data-testid="delete-button"]')
 
-      expect(deleteButton?.attributes('disabled')).toBeUndefined()
+      expect(deleteButton.attributes('disabled')).toBeUndefined()
     })
 
     it('emits delete-selected when clicked', async () => {
@@ -127,10 +130,8 @@ describe('Toolbar', () => {
         },
       })
 
-      const deleteButton = wrapper
-        .findAll('button')
-        .find((btn) => btn.text() === 'Delete Selected')
-      await deleteButton?.trigger('click')
+      const deleteButton = wrapper.find('[data-testid="delete-button"]')
+      await deleteButton.trigger('click')
 
       expect(wrapper.emitted('delete-selected')).toBeTruthy()
     })
@@ -142,13 +143,11 @@ describe('Toolbar', () => {
         },
       })
 
-      const deleteButton = wrapper
-        .findAll('button')
-        .find((btn) => btn.text() === 'Delete Selected')
+      const deleteButton = wrapper.find('[data-testid="delete-button"]')
 
-      expect(deleteButton?.classes()).toContain('border-ma-danger')
-      expect(deleteButton?.classes()).toContain('bg-ma-danger')
-      expect(deleteButton?.classes()).toContain('text-white')
+      expect(deleteButton.classes()).toContain('border-ma-danger')
+      expect(deleteButton.classes()).toContain('bg-ma-danger')
+      expect(deleteButton.classes()).toContain('text-white')
     })
   })
 
@@ -160,10 +159,8 @@ describe('Toolbar', () => {
         },
       })
 
-      const clearButton = wrapper
-        .findAll('button')
-        .find((btn) => btn.text() === 'Clear All')
-      await clearButton?.trigger('click')
+      const clearButton = wrapper.find('[data-testid="clear-all-button"]')
+      await clearButton.trigger('click')
 
       expect(wrapper.emitted('clear-all')).toBeTruthy()
     })
@@ -175,12 +172,10 @@ describe('Toolbar', () => {
         },
       })
 
-      const clearButton = wrapper
-        .findAll('button')
-        .find((btn) => btn.text() === 'Clear All')
+      const clearButton = wrapper.find('[data-testid="clear-all-button"]')
 
-      expect(clearButton?.classes()).toContain('border-ma-grey-500')
-      expect(clearButton?.classes()).toContain('bg-ma-grey-500')
+      expect(clearButton.classes()).toContain('border-ma-grey-500')
+      expect(clearButton.classes()).toContain('bg-ma-grey-500')
     })
   })
 

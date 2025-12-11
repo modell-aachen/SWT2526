@@ -22,7 +22,7 @@ describe('Trapezoid', () => {
       },
     })
 
-    const svg = wrapper.find('svg')
+    const svg = wrapper.find('[data-testid="trapezoid-shape"]')
     expect(svg.attributes('width')).toBe('130')
     expect(svg.attributes('height')).toBe('160')
   })
@@ -35,7 +35,7 @@ describe('Trapezoid', () => {
       },
     })
 
-    const svg = wrapper.find('svg')
+    const svg = wrapper.find('[data-testid="trapezoid-shape"]')
     expect(svg.attributes('viewBox')).toBe('0 0 100 100')
   })
 
@@ -48,7 +48,7 @@ describe('Trapezoid', () => {
       },
     })
 
-    const polygon = wrapper.find('polygon')
+    const polygon = wrapper.find('[data-testid="trapezoid-polygon"]')
     expect(polygon.attributes('stroke')).toBe('#ff00ff')
   })
 
@@ -61,7 +61,7 @@ describe('Trapezoid', () => {
       },
     })
 
-    const polygon = wrapper.find('polygon')
+    const polygon = wrapper.find('[data-testid="trapezoid-polygon"]')
     expect(polygon.attributes('fill')).toBe('#00ffff')
   })
 
@@ -73,7 +73,7 @@ describe('Trapezoid', () => {
       },
     })
 
-    const polygon = wrapper.find('polygon')
+    const polygon = wrapper.find('[data-testid="trapezoid-polygon"]')
     expect(polygon.attributes('stroke')).toBe('#000')
   })
 
@@ -85,7 +85,7 @@ describe('Trapezoid', () => {
       },
     })
 
-    const polygon = wrapper.find('polygon')
+    const polygon = wrapper.find('[data-testid="trapezoid-polygon"]')
     expect(polygon.attributes('fill')).toBe('transparent')
   })
 
@@ -97,7 +97,7 @@ describe('Trapezoid', () => {
       },
     })
 
-    const polygon = wrapper.find('polygon')
+    const polygon = wrapper.find('[data-testid="trapezoid-polygon"]')
     expect(polygon.attributes('points')).toBe('25,5 75,5 95,95 5,95')
   })
 })

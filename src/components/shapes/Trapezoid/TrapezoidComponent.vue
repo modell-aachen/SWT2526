@@ -1,6 +1,12 @@
 <template>
-  <svg :width="width" :height="height" viewBox="0 0 100 100">
+  <svg
+    data-testid="trapezoid-shape"
+    :width="width"
+    :height="height"
+    viewBox="0 0 100 100"
+  >
     <polygon
+      data-testid="trapezoid-polygon"
       points="25,5 75,5 95,95 5,95"
       :stroke="outline"
       :fill="fill"

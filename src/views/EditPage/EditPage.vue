@@ -1,5 +1,6 @@
 <template>
   <div
+    data-testid="edit-page-container"
     class="flex flex-col h-screen w-screen overflow-hidden bg-bg-maincontent"
   >
     <Toolbar

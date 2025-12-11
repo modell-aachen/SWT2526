@@ -39,7 +39,7 @@
       class="px-4 py-2 border border-ma-danger bg-ma-danger text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
       @click="$emit('delete-selected')"
     >
-    Delete Selected
+      Delete Selected
     </button>
     <button
       data-testid="clear-all-button"

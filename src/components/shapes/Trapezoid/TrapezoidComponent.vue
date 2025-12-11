@@ -7,7 +7,7 @@
   >
     <polygon
       data-testid="trapezoid-polygon"
-      points="25,5 75,5 95,95 5,95"
+      :points="rotatedPoints"
       :stroke="outline"
       :fill="fill"
       stroke-width="3"

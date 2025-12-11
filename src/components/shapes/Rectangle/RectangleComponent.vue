@@ -7,7 +7,7 @@
   >
     <polygon
       data-testid="rectangle-polygon"
-      points="5,5 95,5 95,95 5,95"
+      :points="rotatedPoints"
       :stroke="outline"
       :fill="fill"
       stroke-width="3"

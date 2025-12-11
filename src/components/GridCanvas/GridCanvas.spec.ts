@@ -7,17 +7,17 @@ describe('GridCanvas', () => {
     it('renders the canvas container', () => {
       const wrapper = mount(GridCanvas)
 
-      const canvas = wrapper.find('.flex-1.relative.bg-white')
+      const canvas = wrapper.find('.flex-1.relative.bg-bg-maincontent')
       expect(canvas.exists()).toBe(true)
     })
 
     it('applies correct styling classes', () => {
       const wrapper = mount(GridCanvas)
 
-      const canvas = wrapper.find('.flex-1.relative.bg-white')
+      const canvas = wrapper.find('.flex-1.relative.bg-bg-maincontent')
       expect(canvas.classes()).toContain('flex-1')
       expect(canvas.classes()).toContain('relative')
-      expect(canvas.classes()).toContain('bg-white')
+      expect(canvas.classes()).toContain('bg-bg-maincontent')
       expect(canvas.classes()).toContain('overflow-auto')
       expect(canvas.classes()).toContain('outline-none')
     })
@@ -25,7 +25,7 @@ describe('GridCanvas', () => {
     it('has tabindex for keyboard focus', () => {
       const wrapper = mount(GridCanvas)
 
-      const canvas = wrapper.find('.flex-1.relative.bg-white')
+      const canvas = wrapper.find('.flex-1.relative.bg-bg-maincontent')
       expect(canvas.attributes('tabindex')).toBe('0')
     })
 
@@ -67,7 +67,7 @@ describe('GridCanvas', () => {
       const path = wrapper.find('pattern path')
       expect(path.attributes('d')).toBe('M 20 0 L 0 0 0 20')
       expect(path.attributes('fill')).toBe('none')
-      expect(path.attributes('stroke')).toBe('#e0e0e0')
+      expect(path.attributes('stroke')).toBe('currentColor')
       expect(path.attributes('stroke-width')).toBe('0.5')
     })
 
@@ -113,7 +113,7 @@ describe('GridCanvas', () => {
   describe('canvas click event', () => {
     it('emits canvas-click when clicking on canvas directly', async () => {
       const wrapper = mount(GridCanvas)
-      const canvas = wrapper.find('.flex-1.relative.bg-white')
+      const canvas = wrapper.find('.flex-1.relative.bg-bg-maincontent')
 
       await canvas.trigger('mousedown')
 
@@ -164,7 +164,7 @@ describe('GridCanvas', () => {
   describe('keyboard events', () => {
     it('emits delete-selected on Delete key', async () => {
       const wrapper = mount(GridCanvas)
-      const canvas = wrapper.find('.flex-1.relative.bg-white')
+      const canvas = wrapper.find('.flex-1.relative.bg-bg-maincontent')
 
       await canvas.trigger('keydown.delete')
 
@@ -173,7 +173,7 @@ describe('GridCanvas', () => {
 
     it('emits delete-selected on Backspace key', async () => {
       const wrapper = mount(GridCanvas)
-      const canvas = wrapper.find('.flex-1.relative.bg-white')
+      const canvas = wrapper.find('.flex-1.relative.bg-bg-maincontent')
 
       await canvas.trigger('keydown.backspace')
 
@@ -182,7 +182,7 @@ describe('GridCanvas', () => {
 
     it('emits delete-selected only once per key press', async () => {
       const wrapper = mount(GridCanvas)
-      const canvas = wrapper.find('.flex-1.relative.bg-white')
+      const canvas = wrapper.find('.flex-1.relative.bg-bg-maincontent')
 
       await canvas.trigger('keydown.delete')
 
@@ -193,14 +193,14 @@ describe('GridCanvas', () => {
   describe('accessibility', () => {
     it('canvas is focusable for keyboard navigation', () => {
       const wrapper = mount(GridCanvas)
-      const canvas = wrapper.find('.flex-1.relative.bg-white')
+      const canvas = wrapper.find('.flex-1.relative.bg-bg-maincontent')
 
       expect(canvas.attributes('tabindex')).toBe('0')
     })
 
     it('has outline-none for custom focus styling', () => {
       const wrapper = mount(GridCanvas)
-      const canvas = wrapper.find('.flex-1.relative.bg-white')
+      const canvas = wrapper.find('.flex-1.relative.bg-bg-maincontent')
 
       expect(canvas.classes()).toContain('outline-none')
     })

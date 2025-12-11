@@ -1,5 +1,7 @@
 <template>
-  <div class="flex flex-col h-screen w-screen overflow-hidden bg-bg-maincontent">
+  <div
+    class="flex flex-col h-screen w-screen overflow-hidden bg-bg-maincontent"
+  >
     <Toolbar
       :has-selected-shape="!!shapesStore.selectedShapeId"
       @add-shape="addShape"

@@ -1,5 +1,7 @@
 <template>
-  <div class="flex gap-2 p-3 bg-ma-grey-100 border-b border-ma-grey-300 shrink-0">
+  <div
+    class="flex gap-2 p-3 bg-ma-grey-100 border-b border-ma-grey-300 shrink-0"
+  >
     <button
       class="px-4 py-2 border border-ma-primary-500 bg-ma-primary-500 text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-primary-600 hover:border-ma-primary-600"
       @click="$emit('add-shape', 'rectangle')"
@@ -39,10 +41,7 @@
     >
       Toggle Dark Mode
     </button>
-    <Slider :default-value="[50]"
-    :max="100"
-    :step="1"
-    class="w-[60%]"/>
+    <Slider :default-value="[50]" :max="100" :step="1" class="w-[60%]" />
   </div>
 </template>
 

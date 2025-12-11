@@ -186,7 +186,9 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      expect(wrapper.find('[data-testid="selection-border"]').exists()).toBe(false)
+      expect(wrapper.find('[data-testid="selection-border"]').exists()).toBe(
+        false
+      )
     })
 
     it('shows selection border when selected', () => {
@@ -201,7 +203,9 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      expect(wrapper.find('[data-testid="selection-border"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="selection-border"]').exists()).toBe(
+        true
+      )
     })
 
     it('shows resize handles when selected', () => {
@@ -285,14 +289,30 @@ describe('ShapeWrapper', () => {
       })
 
       // Verify all 8 handles exist
-      expect(wrapper.find('[data-testid="resize-handle-nw"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="resize-handle-n"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="resize-handle-ne"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="resize-handle-e"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="resize-handle-se"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="resize-handle-s"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="resize-handle-sw"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="resize-handle-w"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="resize-handle-nw"]').exists()).toBe(
+        true
+      )
+      expect(wrapper.find('[data-testid="resize-handle-n"]').exists()).toBe(
+        true
+      )
+      expect(wrapper.find('[data-testid="resize-handle-ne"]').exists()).toBe(
+        true
+      )
+      expect(wrapper.find('[data-testid="resize-handle-e"]').exists()).toBe(
+        true
+      )
+      expect(wrapper.find('[data-testid="resize-handle-se"]').exists()).toBe(
+        true
+      )
+      expect(wrapper.find('[data-testid="resize-handle-s"]').exists()).toBe(
+        true
+      )
+      expect(wrapper.find('[data-testid="resize-handle-sw"]').exists()).toBe(
+        true
+      )
+      expect(wrapper.find('[data-testid="resize-handle-w"]').exists()).toBe(
+        true
+      )
     })
 
     it('positions corner handles correctly', () => {

@@ -32,6 +32,7 @@ export const useShapesStore = defineStore('shapes', {
         outline: '#000',
         fill: 'transparent',
         zIndex: this.shapes.length,
+        rotation: 0,
       }
       this.shapes.push(newShape)
       this.selectedShapeId = newShape.id
@@ -110,6 +111,14 @@ export const useShapesStore = defineStore('shapes', {
           shape.width = Math.max(20, shape.width - deltaX)
           shape.x += deltaX
           break
+      }
+    },
+
+    rotateSelectedShape() {
+      if (!this.selectedShapeId) return
+      const shape = this.shapes.find((s) => s.id === this.selectedShapeId)
+      if (shape) {
+        shape.rotation = (shape.rotation + 90) % 360
       }
     },
 

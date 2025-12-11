@@ -154,7 +154,7 @@ describe('ShapeWrapper', () => {
       })
 
       const rectangle = wrapper.findComponent(Rectangle)
-      expect(rectangle.props('outline')).toBe('#000')
+      expect(rectangle.props('outline')).toBe('var(--ma-text-01)')
     })
 
     it('uses default fill when not provided', () => {
@@ -217,7 +217,7 @@ describe('ShapeWrapper', () => {
       })
 
       const handles = wrapper.findAll(
-        '.bg-blue-500.border.border-white.rounded-full'
+        '.bg-ma-primary-500.border.border-white.rounded-full'
       )
       expect(handles.length).toBe(8)
     })
@@ -235,7 +235,7 @@ describe('ShapeWrapper', () => {
       })
 
       const handles = wrapper.findAll(
-        '.bg-blue-500.border.border-white.rounded-full'
+        '.bg-ma-primary-500.border.border-white.rounded-full'
       )
       expect(handles.length).toBe(0)
     })

@@ -34,7 +34,7 @@ describe('Toolbar', () => {
         },
       })
 
-      const toolbar = wrapper.find('.flex.gap-2.p-3.bg-gray-100')
+      const toolbar = wrapper.find('.flex.gap-2.p-3.bg-ma-grey-100')
       expect(toolbar.exists()).toBe(true)
     })
 
@@ -45,7 +45,7 @@ describe('Toolbar', () => {
         },
       })
 
-      const separator = wrapper.find('.w-px.bg-gray-300')
+      const separator = wrapper.find('.w-px.bg-ma-grey-300')
       expect(separator.exists()).toBe(true)
     })
   })
@@ -146,9 +146,9 @@ describe('Toolbar', () => {
         .findAll('button')
         .find((btn) => btn.text() === 'Delete Selected')
 
-      expect(deleteButton?.classes()).toContain('border-red-400')
-      expect(deleteButton?.classes()).toContain('bg-red-50')
-      expect(deleteButton?.classes()).toContain('text-red-800')
+      expect(deleteButton?.classes()).toContain('border-ma-danger')
+      expect(deleteButton?.classes()).toContain('bg-ma-danger')
+      expect(deleteButton?.classes()).toContain('text-white')
     })
   })
 
@@ -179,8 +179,8 @@ describe('Toolbar', () => {
         .findAll('button')
         .find((btn) => btn.text() === 'Clear All')
 
-      expect(clearButton?.classes()).toContain('border-gray-300')
-      expect(clearButton?.classes()).toContain('bg-white')
+      expect(clearButton?.classes()).toContain('border-ma-grey-500')
+      expect(clearButton?.classes()).toContain('bg-ma-grey-500')
     })
   })
 

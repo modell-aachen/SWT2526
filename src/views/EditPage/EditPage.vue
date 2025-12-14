@@ -1,15 +1,16 @@
 <template>
+  <div
+    data-testid="edit-page-container"
+    class="flex h-screen w-screen overflow-hidden bg-bg-maincontent"
+  >
 
-  <div class="flex h-screen w-screen overflow-hidden bg-bg-maincontent"> 
-    
-    <Sidebar 
-      @add-shape="addShape" 
-    />
+    <Sidebar @add-shape="addShape" />
 
-    <div class="flex-1 flex flex-col">
+    <div class="flex flex-col flex-1">
       <Toolbar
         :has-selected-shape="!!shapesStore.selectedShapeId"
         @add-shape="addShape"
+        @rotate-selected="rotateSelected"
         @delete-selected="deleteSelected"
         @clear-all="clearAll"
       />
@@ -25,16 +26,14 @@
           :y="shape.y"
           :width="shape.width"
           :height="shape.height"
+          :rotation="shape.rotation"
           :shape-type="shape.type"
           :outline="shape.outline"
           :fill="shape.fill"
           :selected="shape.id === shapesStore.selectedShapeId"
           @click="selectShape(shape.id)"
-          @drag="(deltaX, deltaY) => handleDrag(shape.id, deltaX, deltaY)"
-          @resize="
-            (handle, deltaX, deltaY) =>
-              handleResize(shape.id, handle, deltaX, deltaY)
-          "
+          @drag="(dx, dy) => handleDrag(shape.id, dx, dy)"
+          @resize="(handle, dx, dy) => handleResize(shape.id, handle, dx, dy)"
         />
       </GridCanvas>
     </div>
@@ -55,6 +54,10 @@ const addShape = (type: ShapeType) => {
   shapesStore.addShape(type)
 }
 
+const rotateSelected = () => {
+  shapesStore.rotateSelectedShape()
+}
+
 const deleteSelected = () => {
   shapesStore.deleteSelectedShape()
 }
@@ -65,7 +68,7 @@ const clearAll = () => {
   }
 }
 
-const selectShape = (id: string) => {
+const selectShape = (id: string | null) => {
   shapesStore.selectShape(id)
 }
 
@@ -86,3 +89,4 @@ const handleResize = (
   shapesStore.updateShapeSize(id, handle, deltaX, deltaY)
 }
 </script>
+

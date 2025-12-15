@@ -425,5 +425,639 @@ describe('useShapesStore', () => {
         expect(store.shapes).toEqual(originalOrder)
       })
     })
+
+    describe('canUndo', () => {
+      it('returns false when history is empty', () => {
+        const store = useShapesStore()
+        expect(store.canUndo).toBe(false)
+      })
+
+      it('returns true after an action that saves snapshot', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        expect(store.canUndo).toBe(true)
+      })
+
+      it('returns false after undoing all actions', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.undo()
+        expect(store.canUndo).toBe(false)
+      })
+    })
+
+    describe('canRedo', () => {
+      it('returns false when at latest state', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        expect(store.canRedo).toBe(false)
+      })
+
+      it('returns true after undo', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.undo()
+        expect(store.canRedo).toBe(true)
+      })
+
+      it('returns false after redoing to latest', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.undo()
+        store.redo()
+        expect(store.canRedo).toBe(false)
+      })
+    })
+  })
+
+  describe('undo/redo', () => {
+    describe('undo', () => {
+      it('restores previous state after addShape', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+
+        store.undo()
+
+        expect(store.shapes).toHaveLength(0)
+      })
+
+      it('restores previous state after deleteShape', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        const shapeId = store.shapes[0]?.id
+        store.deleteShape(shapeId!)
+
+        store.undo()
+
+        expect(store.shapes).toHaveLength(1)
+        expect(store.shapes[0]?.id).toBe(shapeId)
+      })
+
+      it('restores previous state after clearAll', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.addShape('triangle')
+        store.clearAll()
+
+        store.undo()
+
+        expect(store.shapes).toHaveLength(2)
+      })
+
+      it('restores previous state after rotateSelectedShape', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.rotateSelectedShape()
+
+        expect(store.shapes[0]?.rotation).toBe(90)
+
+        store.undo()
+
+        expect(store.shapes[0]?.rotation).toBe(0)
+      })
+
+      it('can undo multiple times', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.addShape('triangle')
+        store.addShape('trapezoid')
+
+        store.undo()
+        expect(store.shapes).toHaveLength(2)
+
+        store.undo()
+        expect(store.shapes).toHaveLength(1)
+
+        store.undo()
+        expect(store.shapes).toHaveLength(0)
+      })
+
+      it('does nothing when history is empty', () => {
+        const store = useShapesStore()
+        store.undo()
+        expect(store.shapes).toHaveLength(0)
+      })
+
+      it('clears selection if selected shape no longer exists after undo', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        const shapeId = store.shapes[0]?.id
+
+        expect(store.selectedShapeId).toBe(shapeId)
+
+        store.undo()
+
+        expect(store.selectedShapeId).toBeNull()
+      })
+
+      it('preserves selection if selected shape still exists after undo', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        const firstShapeId = store.shapes[0]?.id
+        store.addShape('triangle')
+
+        store.selectShape(firstShapeId!)
+        store.undo()
+
+        expect(store.selectedShapeId).toBe(firstShapeId)
+      })
+    })
+
+    describe('redo', () => {
+      it('restores state after undo', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        const shapeId = store.shapes[0]?.id
+
+        store.undo()
+        expect(store.shapes).toHaveLength(0)
+
+        store.redo()
+        expect(store.shapes).toHaveLength(1)
+        expect(store.shapes[0]?.id).toBe(shapeId)
+      })
+
+      it('can redo multiple times', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.addShape('triangle')
+        store.addShape('trapezoid')
+
+        store.undo()
+        store.undo()
+        store.undo()
+
+        store.redo()
+        expect(store.shapes).toHaveLength(1)
+
+        store.redo()
+        expect(store.shapes).toHaveLength(2)
+
+        store.redo()
+        expect(store.shapes).toHaveLength(3)
+      })
+
+      it('does nothing when at latest state', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+
+        store.redo()
+
+        expect(store.shapes).toHaveLength(1)
+      })
+
+      it('clears selection if selected shape no longer exists after redo', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        const shapeId = store.shapes[0]?.id
+        store.deleteShape(shapeId!)
+
+        store.undo()
+        store.selectShape(shapeId!)
+
+        store.redo()
+
+        expect(store.selectedShapeId).toBeNull()
+      })
+    })
+
+    describe('branching history', () => {
+      it('clears redo history when new action is performed after undo', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.addShape('triangle')
+
+        store.undo()
+        expect(store.canRedo).toBe(true)
+
+        store.addShape('trapezoid')
+        expect(store.canRedo).toBe(false)
+      })
+
+      it('creates new branch from undone state', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.addShape('triangle')
+
+        store.undo()
+        store.addShape('trapezoid')
+
+        expect(store.shapes).toHaveLength(2)
+        expect(store.shapes[0]?.type).toBe('rectangle')
+        expect(store.shapes[1]?.type).toBe('trapezoid')
+      })
+    })
+
+    describe('history cap', () => {
+      it('limits history to 50 entries', () => {
+        const store = useShapesStore()
+
+        // Add 55 shapes to exceed the cap
+        for (let i = 0; i < 55; i++) {
+          store.addShape('rectangle')
+        }
+
+        // Should be capped at 50
+        expect(store.history.length).toBeLessThanOrEqual(50)
+      })
+
+      it('still allows undo after hitting cap', () => {
+        const store = useShapesStore()
+
+        for (let i = 0; i < 55; i++) {
+          store.addShape('rectangle')
+        }
+
+        // Should be able to undo multiple times
+        store.undo()
+        store.undo()
+        store.undo()
+
+        expect(store.shapes.length).toBe(52)
+      })
+    })
+
+    describe('startDrag and startResize', () => {
+      it('endDrag saves snapshot after drag operation', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        const initialHistoryLength = store.history.length
+
+        expect(store.history.length).toBe(initialHistoryLength) // no change yet
+
+        store.endDrag()
+        expect(store.history.length).toBe(initialHistoryLength + 1)
+      })
+
+      it('endResize saves snapshot after resize operation', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        const initialHistoryLength = store.history.length
+
+        expect(store.history.length).toBe(initialHistoryLength) // no change yet
+
+        store.endResize()
+        expect(store.history.length).toBe(initialHistoryLength + 1)
+      })
+
+      it('allows undo of drag operation', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle', 100, 100)
+        const shapeId = store.shapes[0]?.id
+
+        store.updateShapePosition(shapeId!, 50, 50)
+        store.endDrag()
+
+        expect(store.shapes[0]?.x).toBe(150)
+        expect(store.shapes[0]?.y).toBe(150)
+
+        store.undo()
+
+        expect(store.shapes[0]?.x).toBe(100)
+        expect(store.shapes[0]?.y).toBe(100)
+      })
+
+      it('allows undo of resize operation', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle', 100, 100)
+        const shapeId = store.shapes[0]?.id
+
+        store.updateShapeSize(shapeId!, 'se', 50, 50)
+        store.endResize()
+
+        expect(store.shapes[0]?.width).toBe(150)
+        expect(store.shapes[0]?.height).toBe(150)
+
+        store.undo()
+
+        expect(store.shapes[0]?.width).toBe(100)
+        expect(store.shapes[0]?.height).toBe(100)
+      })
+
+      it('undo after add + move should restore position, not delete shape', () => {
+        const store = useShapesStore()
+
+        // Step 1: Add a shape
+        store.addShape('rectangle', 100, 100)
+        expect(store.shapes).toHaveLength(1)
+        const shapeId = store.shapes[0]?.id
+
+        // Step 2: Move it
+        store.updateShapePosition(shapeId!, 50, 50)
+        store.endDrag()
+        expect(store.shapes[0]?.x).toBe(150)
+        expect(store.shapes[0]?.y).toBe(150)
+
+        // Step 3: Undo once - should restore original position, NOT delete shape
+        store.undo()
+
+        expect(store.shapes).toHaveLength(1)
+        expect(store.shapes[0]?.x).toBe(100)
+        expect(store.shapes[0]?.y).toBe(100)
+      })
+
+      it('redo after undo should restore moved position', () => {
+        const store = useShapesStore()
+
+        // Step 1: Add a shape
+        store.addShape('rectangle', 100, 100)
+        const shapeId = store.shapes[0]?.id
+
+        // Step 2: Move it
+        store.updateShapePosition(shapeId!, 50, 50)
+        store.endDrag()
+        expect(store.shapes[0]?.x).toBe(150)
+        expect(store.shapes[0]?.y).toBe(150)
+
+        // Step 3: Undo - should go back to original position
+        store.undo()
+        expect(store.shapes[0]?.x).toBe(100)
+        expect(store.shapes[0]?.y).toBe(100)
+
+        // Step 4: Redo - should restore the moved position
+        store.redo()
+        expect(store.shapes[0]?.x).toBe(150)
+        expect(store.shapes[0]?.y).toBe(150)
+      })
+
+      it('redo after undo should restore resized dimensions', () => {
+        const store = useShapesStore()
+
+        // Step 1: Add a shape
+        store.addShape('rectangle', 100, 100)
+        const shapeId = store.shapes[0]?.id
+
+        // Step 2: Resize it
+        store.updateShapeSize(shapeId!, 'se', 50, 50)
+        store.endResize()
+        expect(store.shapes[0]?.width).toBe(150)
+        expect(store.shapes[0]?.height).toBe(150)
+
+        // Step 3: Undo - should go back to original size
+        store.undo()
+        expect(store.shapes[0]?.width).toBe(100)
+        expect(store.shapes[0]?.height).toBe(100)
+
+        // Step 4: Redo - should restore the resized dimensions
+        store.redo()
+        expect(store.shapes[0]?.width).toBe(150)
+        expect(store.shapes[0]?.height).toBe(150)
+      })
+    })
+  })
+
+  describe('copy/paste', () => {
+    describe('copySelectedShape', () => {
+      it('does nothing when no shape is selected', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.selectShape(null)
+
+        store.copySelectedShape()
+
+        expect(store.clipboard).toBeNull()
+      })
+
+      it('stores a deep clone of selected shape in clipboard', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle', 150, 200)
+        const shapeId = store.shapes[0]?.id
+
+        store.selectShape(shapeId!)
+        store.copySelectedShape()
+
+        expect(store.clipboard).not.toBeNull()
+        expect(store.clipboard?.type).toBe('rectangle')
+        expect(store.clipboard?.x).toBe(150)
+        expect(store.clipboard?.y).toBe(200)
+      })
+
+      it('clipboard is independent of original shape', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle', 100, 100)
+        const shapeId = store.shapes[0]?.id
+
+        store.selectShape(shapeId!)
+        store.copySelectedShape()
+
+        // Modify original shape
+        store.updateShapePosition(shapeId!, 50, 50)
+
+        // Clipboard should be unchanged
+        expect(store.clipboard?.x).toBe(100)
+        expect(store.clipboard?.y).toBe(100)
+      })
+    })
+
+    describe('pasteShape', () => {
+      it('does nothing when clipboard is empty', () => {
+        const store = useShapesStore()
+
+        store.pasteShape()
+
+        expect(store.shapes).toHaveLength(0)
+      })
+
+      it('creates new shape with unique ID', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.copySelectedShape()
+
+        store.pasteShape()
+
+        expect(store.shapes).toHaveLength(2)
+        expect(store.shapes[0]?.id).toBe('rectangle-1')
+        expect(store.shapes[1]?.id).toBe('rectangle-2')
+      })
+
+      it('offsets position by 20px x and y', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle', 100, 100)
+        store.copySelectedShape()
+
+        store.pasteShape()
+
+        expect(store.shapes[1]?.x).toBe(120)
+        expect(store.shapes[1]?.y).toBe(120)
+      })
+
+      it('preserves shape properties (type, width, height, rotation, outline, fill)', () => {
+        const store = useShapesStore()
+        store.addShape('triangle', 100, 100)
+        const shape = store.shapes[0]!
+        shape.width = 200
+        shape.height = 150
+        shape.rotation = 90
+        shape.outline = '#ff0000'
+        shape.fill = '#00ff00'
+        store.copySelectedShape()
+
+        store.pasteShape()
+
+        const pastedShape = store.shapes[1]!
+        expect(pastedShape.type).toBe('triangle')
+        expect(pastedShape.width).toBe(200)
+        expect(pastedShape.height).toBe(150)
+        expect(pastedShape.rotation).toBe(90)
+        expect(pastedShape.outline).toBe('#ff0000')
+        expect(pastedShape.fill).toBe('#00ff00')
+      })
+
+      it('auto-selects the pasted shape', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.copySelectedShape()
+
+        store.pasteShape()
+
+        expect(store.selectedShapeId).toBe('rectangle-2')
+      })
+
+      it('saves snapshot for undo support', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.copySelectedShape()
+        const historyLengthBefore = store.history.length
+
+        store.pasteShape()
+
+        expect(store.history.length).toBe(historyLengthBefore + 1)
+      })
+
+      it('multiple pastes increment offset', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle', 100, 100)
+        store.copySelectedShape()
+
+        store.pasteShape()
+        store.pasteShape()
+        store.pasteShape()
+
+        expect(store.shapes[1]?.x).toBe(120)
+        expect(store.shapes[1]?.y).toBe(120)
+        expect(store.shapes[2]?.x).toBe(140)
+        expect(store.shapes[2]?.y).toBe(140)
+        expect(store.shapes[3]?.x).toBe(160)
+        expect(store.shapes[3]?.y).toBe(160)
+      })
+
+      it('assigns correct zIndex to pasted shape', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.addShape('triangle')
+        store.selectShape(store.shapes[0]!.id)
+        store.copySelectedShape()
+
+        store.pasteShape()
+
+        expect(store.shapes[2]?.zIndex).toBe(2)
+      })
+    })
+
+    describe('hasCopiedShape getter', () => {
+      it('returns false when clipboard is empty', () => {
+        const store = useShapesStore()
+        expect(store.hasCopiedShape).toBe(false)
+      })
+
+      it('returns true when clipboard has a shape', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.copySelectedShape()
+
+        expect(store.hasCopiedShape).toBe(true)
+      })
+    })
+
+    describe('undo/redo with paste', () => {
+      it('allows undo of paste operation', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.copySelectedShape()
+        store.pasteShape()
+
+        expect(store.shapes).toHaveLength(2)
+
+        store.undo()
+
+        expect(store.shapes).toHaveLength(1)
+      })
+
+      it('allows redo of paste operation', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.copySelectedShape()
+        store.pasteShape()
+        store.undo()
+
+        store.redo()
+
+        expect(store.shapes).toHaveLength(2)
+      })
+    })
+    describe('duplicateSelectedShape', () => {
+      it('does nothing when no shape is selected', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.selectShape(null)
+
+        store.duplicateSelectedShape()
+
+        expect(store.shapes).toHaveLength(1)
+      })
+
+      it('creates a copy of the selected shape with offset', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle', 100, 100)
+
+        store.duplicateSelectedShape()
+
+        expect(store.shapes).toHaveLength(2)
+        expect(store.shapes[1]?.x).toBe(120)
+        expect(store.shapes[1]?.y).toBe(120)
+      })
+
+      it('selects the duplicated shape', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+
+        store.duplicateSelectedShape()
+
+        expect(store.selectedShapeId).toBe('rectangle-2')
+      })
+
+      it('preserves shape properties', () => {
+        const store = useShapesStore()
+        store.addShape('triangle', 100, 100)
+        const shape = store.shapes[0]!
+        shape.width = 200
+        shape.height = 150
+        shape.rotation = 45
+        shape.outline = '#ff0000'
+        shape.fill = '#00ff00'
+
+        store.duplicateSelectedShape()
+
+        const duplicated = store.shapes[1]!
+        expect(duplicated.type).toBe('triangle')
+        expect(duplicated.width).toBe(200)
+        expect(duplicated.height).toBe(150)
+        expect(duplicated.rotation).toBe(45)
+        expect(duplicated.outline).toBe('#ff0000')
+        expect(duplicated.fill).toBe('#00ff00')
+      })
+
+      it('allows undo of duplicate operation', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.duplicateSelectedShape()
+
+        expect(store.shapes).toHaveLength(2)
+
+        store.undo()
+
+        expect(store.shapes).toHaveLength(1)
+      })
+    })
   })
 })

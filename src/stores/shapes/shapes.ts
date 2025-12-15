@@ -2,11 +2,16 @@ import { defineStore } from 'pinia'
 import type { Shape } from '@/types/Shape'
 import type { ShapeType } from '@/types/ShapeType'
 
+const MAX_HISTORY_SIZE = 50
+
 export const useShapesStore = defineStore('shapes', {
   state: () => ({
     shapes: [] as Shape[],
     selectedShapeId: null as string | null,
     nextId: 1,
+    history: [[]] as Shape[][], // Start with empty state
+    historyIndex: 0, // Points to current state in history
+    clipboard: null as Shape | null, // Single shape clipboard for copy/paste
   }),
 
   getters: {
@@ -18,9 +23,69 @@ export const useShapesStore = defineStore('shapes', {
     sortedShapes: (state) => {
       return [...state.shapes].sort((a, b) => a.zIndex - b.zIndex)
     },
+
+    canUndo: (state) => {
+      return state.historyIndex > 0
+    },
+
+    canRedo: (state) => {
+      return state.historyIndex < state.history.length - 1
+    },
+
+    hasCopiedShape: (state) => {
+      return state.clipboard !== null
+    },
   },
 
   actions: {
+    saveSnapshot() {
+      // Remove any future history if we're not at the end (branching)
+      if (this.canRedo) {
+        this.history = this.history.slice(0, this.historyIndex + 1)
+      }
+
+      // Deep clone the current shapes array and push as new state
+      const snapshot = JSON.parse(JSON.stringify(this.shapes)) as Shape[]
+      this.history.push(snapshot)
+      this.historyIndex = this.history.length - 1
+
+      // Cap history at MAX_HISTORY_SIZE
+      if (this.history.length > MAX_HISTORY_SIZE) {
+        this.history.shift()
+        this.historyIndex = this.history.length - 1
+      }
+    },
+
+    undo() {
+      if (!this.canUndo) return
+
+      this.historyIndex--
+      this.shapes = JSON.parse(JSON.stringify(this.history[this.historyIndex]))
+
+      // Clear selection if the selected shape no longer exists
+      if (
+        this.selectedShapeId &&
+        !this.shapes.find((s) => s.id === this.selectedShapeId)
+      ) {
+        this.selectedShapeId = null
+      }
+    },
+
+    redo() {
+      if (!this.canRedo) return
+
+      this.historyIndex++
+      this.shapes = JSON.parse(JSON.stringify(this.history[this.historyIndex]))
+
+      // Clear selection if the selected shape no longer exists
+      if (
+        this.selectedShapeId &&
+        !this.shapes.find((s) => s.id === this.selectedShapeId)
+      ) {
+        this.selectedShapeId = null
+      }
+    },
+
     addShape(type: ShapeType, x: number = 100, y: number = 100) {
       const newShape: Shape = {
         id: `${type}-${this.nextId++}`,
@@ -36,6 +101,7 @@ export const useShapesStore = defineStore('shapes', {
       }
       this.shapes.push(newShape)
       this.selectedShapeId = newShape.id
+      this.saveSnapshot()
     },
 
     deleteShape(id: string) {
@@ -45,6 +111,7 @@ export const useShapesStore = defineStore('shapes', {
         if (this.selectedShapeId === id) {
           this.selectedShapeId = null
         }
+        this.saveSnapshot()
       }
     },
 
@@ -58,12 +125,22 @@ export const useShapesStore = defineStore('shapes', {
       this.selectedShapeId = id
     },
 
+    endDrag() {
+      // Save snapshot at the end of drag operation
+      this.saveSnapshot()
+    },
+
     updateShapePosition(id: string, deltaX: number, deltaY: number) {
       const shape = this.shapes.find((s) => s.id === id)
       if (shape) {
         shape.x += deltaX
         shape.y += deltaY
       }
+    },
+
+    endResize() {
+      // Save snapshot at the end of resize operation
+      this.saveSnapshot()
     },
 
     updateShapeSize(
@@ -91,7 +168,7 @@ export const useShapesStore = defineStore('shapes', {
           shape.height = Math.max(20, shape.height - deltaY)
           shape.y += deltaY
           break
-        case 'nw': // Northwest - top left
+        case 'nw': // Northwest - top left<
           shape.width = Math.max(20, shape.width - deltaX)
           shape.height = Math.max(20, shape.height - deltaY)
           shape.x += deltaX
@@ -119,12 +196,63 @@ export const useShapesStore = defineStore('shapes', {
       const shape = this.shapes.find((s) => s.id === this.selectedShapeId)
       if (shape) {
         shape.rotation = (shape.rotation + 90) % 360
+        this.saveSnapshot()
       }
     },
 
     clearAll() {
       this.shapes = []
       this.selectedShapeId = null
+      this.saveSnapshot()
+    },
+
+    copySelectedShape() {
+      if (!this.selectedShapeId) return
+      const shape = this.shapes.find((s) => s.id === this.selectedShapeId)
+      if (shape) {
+        // Deep clone the shape to clipboard
+        this.clipboard = JSON.parse(JSON.stringify(shape)) as Shape
+      }
+    },
+
+    pasteShape() {
+      if (!this.clipboard) return
+
+      const pastedShape: Shape = {
+        ...JSON.parse(JSON.stringify(this.clipboard)),
+        id: `${this.clipboard.type}-${this.nextId++}`,
+        x: this.clipboard.x + 20,
+        y: this.clipboard.y + 20,
+        zIndex: this.shapes.length,
+      }
+
+      this.shapes.push(pastedShape)
+      this.selectedShapeId = pastedShape.id
+      this.saveSnapshot()
+
+      // Update clipboard position for subsequent pastes
+      this.clipboard.x += 20
+      this.clipboard.y += 20
+    },
+
+    //TODO(jwi): replace deep clone with a utility function (lodash)
+    duplicateSelectedShape() {
+      if (!this.selectedShapeId) return
+      const pastedShape: Shape = {
+        ...JSON.parse(
+          JSON.stringify(
+            JSON.parse(JSON.stringify(this.selectedShape)) as Shape
+          )
+        ),
+        id: `${(JSON.parse(JSON.stringify(this.selectedShape)) as Shape).type}-${this.nextId++}`,
+        x: (JSON.parse(JSON.stringify(this.selectedShape)) as Shape).x + 20,
+        y: (JSON.parse(JSON.stringify(this.selectedShape)) as Shape).y + 20,
+        zIndex: this.shapes.length,
+      }
+
+      this.shapes.push(pastedShape)
+      this.selectedShapeId = pastedShape.id
+      this.saveSnapshot()
     },
   },
 })

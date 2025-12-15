@@ -21,7 +21,7 @@ export function useShapeRotation() {
   }
 
   /**
-   * Rotates a point around the center (50, 50) by given degrees (clockwise)
+   * Rotate a point around the center (50, 50) by given degrees (clockwise)
    */
   const rotatePoint = (point: Point, degrees: number): Point => {
     const centerX = 50

@@ -6,34 +6,47 @@
   >
     <h3 class="text-lg font-semibold mb-4">Sidebar</h3>
 
-    <!-- Add-Shape Buttons -->
     <div class="flex flex-col gap-2 mb-4">
-      <button
-        class="px-4 py-2 border border-gray-300 bg-white rounded cursor-pointer text-sm transition-all hover:bg-gray-200 hover:border-gray-600"
-        @click="$emit('add-shape', 'rectangle')"
+      <div
+        class="px-4 py-2 border border-gray-300 bg-white rounded cursor-grab text-sm transition-all hover:bg-gray-200 hover:border-gray-600 active:cursor-grabbing"
+        draggable="true"
+        @dragstart="onDragStart($event, 'rectangle')"
       >
-        Add Rectangle
-      </button>
+        Rectangle
+      </div>
 
-      <button
-        class="px-4 py-2 border border-gray-300 bg-white rounded cursor-pointer text-sm transition-all hover:bg-gray-200 hover:border-gray-600"
-        @click="$emit('add-shape', 'triangle')"
+      <div
+        class="px-4 py-2 border border-gray-300 bg-white rounded cursor-grab text-sm transition-all hover:bg-gray-200 hover:border-gray-600 active:cursor-grabbing"
+        draggable="true"
+        @dragstart="onDragStart($event, 'triangle')"
       >
-        Add Triangle
-      </button>
+        Triangle
+      </div>
 
-      <button
-        class="px-4 py-2 border border-gray-300 bg-white rounded cursor-pointer text-sm transition-all hover:bg-gray-200 hover:border-gray-600"
-        @click="$emit('add-shape', 'trapezoid')"
+      <div
+        class="px-4 py-2 border border-gray-300 bg-white rounded cursor-grab text-sm transition-all hover:bg-gray-200 hover:border-gray-600 active:cursor-grabbing"
+        draggable="true"
+        @dragstart="onDragStart($event, 'trapezoid')"
       >
-        Add Trapezoid
-      </button>
+        Trapezoid
+      </div>
     </div>
   </aside>
 </template>
 
 <script setup lang="ts">
 import type { ShapeType } from '@/types/ShapeType'
+function onDragStart(e: DragEvent, type: ShapeType) {
+  if (!e.dataTransfer) return
+
+  // store the shape type inside the drag event (so the drop area can read it)
+  e.dataTransfer.setData('application/x-shape', type)
+
+  // also set text/plain for max browser compatibility
+  e.dataTransfer.setData('text/plain', type)
+
+  e.dataTransfer.effectAllowed = 'copy'
+}
 
 defineEmits<{
   'add-shape': [type: ShapeType]

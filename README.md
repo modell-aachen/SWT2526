@@ -2,8 +2,6 @@
 
 Our SWT 2025 application.
 
-TODO: Proper Readme :P
-
 ## Setup
 
 Make sure you have `NodeJS v24` and `yarn v1` installed
@@ -18,8 +16,6 @@ Navigate to: http://localhost:5173/view or http://localhost:5173/edit
 ## Features
 
 ### Refactor
-
-- Wrapper in Composables auslagern Sam & Jakob
 
 ### Required
 

@@ -6,6 +6,7 @@
     @mousedown="handleCanvasClick"
     @keydown.delete="$emit('delete-selected')"
     @keydown.backspace="$emit('delete-selected')"
+    @keydown="handleKeyDown"
   >
     <!-- Grid pattern -->
     <svg
@@ -35,6 +36,8 @@
 const emit = defineEmits<{
   'canvas-click': []
   'delete-selected': []
+  undo: []
+  redo: []
 }>()
 
 const handleCanvasClick = (event: MouseEvent) => {
@@ -44,6 +47,23 @@ const handleCanvasClick = (event: MouseEvent) => {
     (event.target as HTMLElement).classList.contains('grid-pattern')
   ) {
     emit('canvas-click')
+  }
+}
+
+//TODO(jwi): Refactor Hotkey Handling into its own composable
+const handleKeyDown = (event: KeyboardEvent) => {
+  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
+  const modifierKey = isMac ? event.metaKey : event.ctrlKey
+
+  if (modifierKey && event.key === 'z' && !event.shiftKey) {
+    event.preventDefault()
+    emit('undo')
+  } else if (
+    (modifierKey && event.key === 'z' && event.shiftKey) ||
+    (modifierKey && event.key === 'y')
+  ) {
+    event.preventDefault()
+    emit('redo')
   }
 }
 </script>

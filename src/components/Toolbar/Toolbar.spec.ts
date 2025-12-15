@@ -4,6 +4,7 @@ import Toolbar from './Toolbar.vue'
 
 const defaultProps = {
   hasSelectedShape: false,
+  hasCopiedShape: false,
   canUndo: false,
   canRedo: false,
 }
@@ -54,6 +55,25 @@ describe('Toolbar', () => {
 
       expect(wrapper.find('[data-testid="undo-button"]').exists()).toBe(true)
       expect(wrapper.find('[data-testid="redo-button"]').exists()).toBe(true)
+    })
+
+    it('renders copy and paste buttons', () => {
+      const wrapper = mount(Toolbar, {
+        props: defaultProps,
+      })
+
+      expect(wrapper.find('[data-testid="copy-button"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="paste-button"]').exists()).toBe(true)
+    })
+
+    it('renders duplicate button', () => {
+      const wrapper = mount(Toolbar, {
+        props: defaultProps,
+      })
+
+      expect(wrapper.find('[data-testid="duplicate-button"]').exists()).toBe(
+        true
+      )
     })
   })
 
@@ -246,6 +266,113 @@ describe('Toolbar', () => {
       await redoButton.trigger('click')
 
       expect(wrapper.emitted('redo')).toBeTruthy()
+    })
+  })
+
+  describe('copy/paste buttons', () => {
+    it('copy button is disabled when hasSelectedShape is false', () => {
+      const wrapper = mount(Toolbar, {
+        props: defaultProps,
+      })
+
+      const copyButton = wrapper.find('[data-testid="copy-button"]')
+      expect(copyButton.attributes('disabled')).toBeDefined()
+    })
+
+    it('copy button is enabled when hasSelectedShape is true', () => {
+      const wrapper = mount(Toolbar, {
+        props: {
+          ...defaultProps,
+          hasSelectedShape: true,
+        },
+      })
+
+      const copyButton = wrapper.find('[data-testid="copy-button"]')
+      expect(copyButton.attributes('disabled')).toBeUndefined()
+    })
+
+    it('paste button is disabled when hasCopiedShape is false', () => {
+      const wrapper = mount(Toolbar, {
+        props: defaultProps,
+      })
+
+      const pasteButton = wrapper.find('[data-testid="paste-button"]')
+      expect(pasteButton.attributes('disabled')).toBeDefined()
+    })
+
+    it('paste button is enabled when hasCopiedShape is true', () => {
+      const wrapper = mount(Toolbar, {
+        props: {
+          ...defaultProps,
+          hasCopiedShape: true,
+        },
+      })
+
+      const pasteButton = wrapper.find('[data-testid="paste-button"]')
+      expect(pasteButton.attributes('disabled')).toBeUndefined()
+    })
+
+    it('emits copy-selected when copy button is clicked', async () => {
+      const wrapper = mount(Toolbar, {
+        props: {
+          ...defaultProps,
+          hasSelectedShape: true,
+        },
+      })
+
+      const copyButton = wrapper.find('[data-testid="copy-button"]')
+      await copyButton.trigger('click')
+
+      expect(wrapper.emitted('copy-selected')).toBeTruthy()
+    })
+
+    it('emits paste when paste button is clicked', async () => {
+      const wrapper = mount(Toolbar, {
+        props: {
+          ...defaultProps,
+          hasCopiedShape: true,
+        },
+      })
+
+      const pasteButton = wrapper.find('[data-testid="paste-button"]')
+      await pasteButton.trigger('click')
+
+      expect(wrapper.emitted('paste')).toBeTruthy()
+    })
+
+    it('duplicate button is disabled when hasSelectedShape is false', () => {
+      const wrapper = mount(Toolbar, {
+        props: defaultProps,
+      })
+
+      const duplicateButton = wrapper.find('[data-testid="duplicate-button"]')
+      expect(duplicateButton.attributes('disabled')).toBeDefined()
+    })
+
+    it('duplicate button is enabled when hasSelectedShape is true', () => {
+      const wrapper = mount(Toolbar, {
+        props: {
+          ...defaultProps,
+          hasSelectedShape: true,
+        },
+      })
+
+      const duplicateButton = wrapper.find('[data-testid="duplicate-button"]')
+      expect(duplicateButton.attributes('disabled')).toBeUndefined()
+    })
+
+    it('emits duplicate when duplicate button is clicked', async () => {
+      const wrapper = mount(Toolbar, {
+        props: {
+          ...defaultProps,
+          hasSelectedShape: true,
+        },
+      })
+
+      const duplicateButton = wrapper.find('[data-testid="duplicate-button"]')
+      await duplicateButton.trigger('click')
+
+      expect(wrapper.emitted('duplicate')).toBeTruthy()
     })
   })
 

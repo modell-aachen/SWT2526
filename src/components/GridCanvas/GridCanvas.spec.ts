@@ -188,6 +188,33 @@ describe('GridCanvas', () => {
 
       expect(wrapper.emitted('delete-selected')).toHaveLength(1)
     })
+
+    it('emits copy-selected on Ctrl+C', async () => {
+      const wrapper = mount(GridCanvas)
+      const canvas = wrapper.find('[data-testid="canvas-container"]')
+
+      await canvas.trigger('keydown', { key: 'c', ctrlKey: true })
+
+      expect(wrapper.emitted('copy-selected')).toBeTruthy()
+    })
+
+    it('emits paste on Ctrl+V', async () => {
+      const wrapper = mount(GridCanvas)
+      const canvas = wrapper.find('[data-testid="canvas-container"]')
+
+      await canvas.trigger('keydown', { key: 'v', ctrlKey: true })
+
+      expect(wrapper.emitted('paste')).toBeTruthy()
+    })
+
+    it('emits duplicate on Ctrl+D', async () => {
+      const wrapper = mount(GridCanvas)
+      const canvas = wrapper.find('[data-testid="canvas-container"]')
+
+      await canvas.trigger('keydown', { key: 'd', ctrlKey: true })
+
+      expect(wrapper.emitted('duplicate')).toBeTruthy()
+    })
   })
 
   describe('accessibility', () => {

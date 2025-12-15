@@ -7,8 +7,8 @@
     @mousedown.stop="handleMouseDown"
   >
     <!-- Shape content -->
-    <component
-      :is="shapeComponent"
+    <PolygonShape
+      :shape-type="shapeType"
       :width="width"
       :height="height"
       :rotation="rotation"
@@ -42,9 +42,7 @@ import { computed } from 'vue'
 import type { CSSProperties } from 'vue'
 import type { ShapeType } from '@/types/ShapeType'
 import type { ResizeHandle } from '@/types/ResizeHandle'
-import Rectangle from '../shapes/Rectangle/RectangleComponent.vue'
-import Triangle from '../shapes/Triangle/TriangleComponent.vue'
-import Trapezoid from '../shapes/Trapezoid/TrapezoidComponent.vue'
+import PolygonShape from '../shapes/PolygonShape.vue'
 import { useDraggable } from '@/composables/useDraggable'
 import { useResizable } from '@/composables/useResizable'
 
@@ -79,19 +77,6 @@ const emit = defineEmits<{
 
 const { startDrag } = useDraggable(emit)
 const { startResize } = useResizable(emit)
-
-const shapeComponent = computed(() => {
-  switch (props.shapeType) {
-    case 'rectangle':
-      return Rectangle
-    case 'triangle':
-      return Triangle
-    case 'trapezoid':
-      return Trapezoid
-    default:
-      return Rectangle
-  }
-})
 
 const wrapperStyle = computed<CSSProperties>(() => ({
   position: 'absolute',

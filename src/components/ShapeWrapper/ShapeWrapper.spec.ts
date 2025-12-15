@@ -1,9 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ShapeWrapper from './ShapeWrapper.vue'
-import Rectangle from '../shapes/Rectangle/RectangleComponent.vue'
-import Triangle from '../shapes/Triangle/TriangleComponent.vue'
-import Trapezoid from '../shapes/Trapezoid/TrapezoidComponent.vue'
+import PolygonShape from '../shapes/PolygonShape.vue'
 
 describe('ShapeWrapper', () => {
   beforeEach(() => {
@@ -52,7 +50,7 @@ describe('ShapeWrapper', () => {
       expect(style).toContain('height: 80px')
     })
 
-    it('renders Rectangle component for rectangle type', () => {
+    it('renders PolygonShape component for rectangle type', () => {
       const wrapper = mount(ShapeWrapper, {
         props: {
           x: 100,
@@ -63,10 +61,12 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      expect(wrapper.findComponent(Rectangle).exists()).toBe(true)
+      const polygonShape = wrapper.findComponent(PolygonShape)
+      expect(polygonShape.exists()).toBe(true)
+      expect(polygonShape.props('shapeType')).toBe('rectangle')
     })
 
-    it('renders Triangle component for triangle type', () => {
+    it('renders PolygonShape component for triangle type', () => {
       const wrapper = mount(ShapeWrapper, {
         props: {
           x: 100,
@@ -77,10 +77,12 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      expect(wrapper.findComponent(Triangle).exists()).toBe(true)
+      const polygonShape = wrapper.findComponent(PolygonShape)
+      expect(polygonShape.exists()).toBe(true)
+      expect(polygonShape.props('shapeType')).toBe('triangle')
     })
 
-    it('renders Trapezoid component for trapezoid type', () => {
+    it('renders PolygonShape component for trapezoid type', () => {
       const wrapper = mount(ShapeWrapper, {
         props: {
           x: 100,
@@ -91,7 +93,9 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      expect(wrapper.findComponent(Trapezoid).exists()).toBe(true)
+      const polygonShape = wrapper.findComponent(PolygonShape)
+      expect(polygonShape.exists()).toBe(true)
+      expect(polygonShape.props('shapeType')).toBe('trapezoid')
     })
 
     it('passes width and height to shape component', () => {
@@ -105,9 +109,9 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      const rectangle = wrapper.findComponent(Rectangle)
-      expect(rectangle.props('width')).toBe(150)
-      expect(rectangle.props('height')).toBe(200)
+      const polygonShape = wrapper.findComponent(PolygonShape)
+      expect(polygonShape.props('width')).toBe(150)
+      expect(polygonShape.props('height')).toBe(200)
     })
 
     it('passes outline prop to shape component', () => {
@@ -122,8 +126,8 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      const rectangle = wrapper.findComponent(Rectangle)
-      expect(rectangle.props('outline')).toBe('#ff0000')
+      const polygonShape = wrapper.findComponent(PolygonShape)
+      expect(polygonShape.props('outline')).toBe('#ff0000')
     })
 
     it('passes fill prop to shape component', () => {
@@ -138,8 +142,8 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      const rectangle = wrapper.findComponent(Rectangle)
-      expect(rectangle.props('fill')).toBe('#00ff00')
+      const polygonShape = wrapper.findComponent(PolygonShape)
+      expect(polygonShape.props('fill')).toBe('#00ff00')
     })
 
     it('uses default outline when not provided', () => {
@@ -153,8 +157,8 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      const rectangle = wrapper.findComponent(Rectangle)
-      expect(rectangle.props('outline')).toBe('var(--ma-text-01)')
+      const polygonShape = wrapper.findComponent(PolygonShape)
+      expect(polygonShape.props('outline')).toBe('var(--ma-text-01)')
     })
 
     it('uses default fill when not provided', () => {
@@ -168,8 +172,8 @@ describe('ShapeWrapper', () => {
         },
       })
 
-      const rectangle = wrapper.findComponent(Rectangle)
-      expect(rectangle.props('fill')).toBe('transparent')
+      const polygonShape = wrapper.findComponent(PolygonShape)
+      expect(polygonShape.props('fill')).toBe('transparent')
     })
   })
 

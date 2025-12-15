@@ -1,119 +1,150 @@
 <template>
   <div
     data-testid="toolbar-container"
-    class="flex gap-2 p-3 bg-ma-grey-100 border-b border-ma-grey-300 shrink-0"
+    class="flex flex-wrap items-center gap-2 p-3 bg-ma-grey-100 border-b border-ma-grey-300 shrink-0"
   >
-    <button
+    <!-- Undo/Redo -->
+    <WhiteboardButton
       data-testid="undo-button"
+      variant="secondary"
+      size="icon"
       :disabled="!canUndo"
-      class="px-4 py-2 border border-ma-grey-500 bg-ma-white text-ma-grey-900 rounded cursor-pointer text-sm transition-all hover:bg-ma-grey-200 hover:border-ma-grey-600 disabled:opacity-50 disabled:cursor-not-allowed"
+      title="Undo"
       @click="$emit('undo')"
     >
       <Undo2 class="w-4 h-4" />
-    </button>
-    <button
+    </WhiteboardButton>
+    <WhiteboardButton
       data-testid="redo-button"
+      variant="secondary"
+      size="icon"
       :disabled="!canRedo"
-      class="px-4 py-2 border border-ma-grey-500 bg-ma-white text-ma-grey-900 rounded cursor-pointer text-sm transition-all hover:bg-ma-grey-200 hover:border-ma-grey-600 disabled:opacity-50 disabled:cursor-not-allowed"
+      title="Redo"
       @click="$emit('redo')"
     >
       <Redo2 class="w-4 h-4" />
-    </button>
-    <div class="w-px bg-ma-grey-300 mx-2"></div>
-    <button
+    </WhiteboardButton>
+
+    <div class="w-px h-6 bg-ma-grey-300 mx-1"></div>
+
+    <!-- Copy/Paste/Duplicate -->
+    <WhiteboardButton
       data-testid="copy-button"
+      variant="secondary"
+      size="icon"
       :disabled="!hasSelectedShape"
-      class="px-4 py-2 border border-ma-grey-500 bg-ma-white text-ma-grey-900 rounded cursor-pointer text-sm transition-all hover:bg-ma-grey-200 hover:border-ma-grey-600 disabled:opacity-50 disabled:cursor-not-allowed"
+      title="Copy"
       @click="$emit('copy-selected')"
     >
       <Copy class="w-4 h-4" />
-    </button>
-    <button
+    </WhiteboardButton>
+    <WhiteboardButton
       data-testid="paste-button"
+      variant="secondary"
+      size="icon"
       :disabled="!hasCopiedShape"
-      class="px-4 py-2 border border-ma-grey-500 bg-ma-white text-ma-grey-900 rounded cursor-pointer text-sm transition-all hover:bg-ma-grey-200 hover:border-ma-grey-600 disabled:opacity-50 disabled:cursor-not-allowed"
+      title="Paste"
       @click="$emit('paste')"
     >
       <ClipboardPaste class="w-4 h-4" />
-    </button>
-    <button
+    </WhiteboardButton>
+    <WhiteboardButton
       data-testid="duplicate-button"
+      variant="secondary"
+      size="icon"
       :disabled="!hasSelectedShape"
-      class="px-4 py-2 border border-ma-grey-500 bg-ma-white text-ma-grey-900 rounded cursor-pointer text-sm transition-all hover:bg-ma-grey-200 hover:border-ma-grey-600 disabled:opacity-50 disabled:cursor-not-allowed"
+      title="Duplicate"
       @click="$emit('duplicate')"
     >
       <CopyPlus class="w-4 h-4" />
-    </button>
-    <div class="w-px bg-ma-grey-300 mx-2"></div>
-    <button
-      data-testid="add-rectangle-button"
-      class="px-4 py-2 border border-ma-primary-500 bg-ma-primary-500 text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-primary-600 hover:border-ma-primary-600"
-      @click="$emit('add-shape', 'rectangle')"
+    </WhiteboardButton>
+
+    <div class="w-px h-6 bg-ma-grey-300 mx-1"></div>
+
+    <!-- Shape buttons with previews -->
+    <WhiteboardButton
+      v-for="shape in shapes"
+      :key="shape.type"
+      :data-testid="`add-${shape.type}-button`"
+      variant="default"
+      size="icon"
+      :title="`Add ${shape.label}`"
+      @click="$emit('add-shape', shape.type)"
     >
-      Add Rectangle
-    </button>
-    <button
-      data-testid="add-triangle-button"
-      class="px-4 py-2 border border-ma-primary-500 bg-ma-primary-500 text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-primary-600 hover:border-ma-primary-600"
-      @click="$emit('add-shape', 'triangle')"
-    >
-      Add Triangle
-    </button>
-    <button
-      data-testid="add-trapezoid-button"
-      class="px-4 py-2 border border-ma-primary-500 bg-ma-primary-500 text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-primary-600 hover:border-ma-primary-600"
-      @click="$emit('add-shape', 'trapezoid')"
-    >
-      Add Trapezoid
-    </button>
-    <button
+      <ShapeIcon :shape-type="shape.type" :size="20" stroke="white" />
+    </WhiteboardButton>
+
+    <div
+      data-testid="toolbar-separator"
+      class="w-px h-6 bg-ma-grey-300 mx-1"
+    ></div>
+
+    <!-- Rotate -->
+    <WhiteboardButton
       data-testid="rotate-button"
+      variant="secondary"
+      size="icon"
       :disabled="!hasSelectedShape"
-      class="px-4 py-2 border border-ma-primary-500 bg-ma-primary-500 text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-primary-600 hover:border-ma-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
+      title="Rotate 90°"
       @click="$emit('rotate-selected')"
     >
-      Rotate 90°
-    </button>
-    <div data-testid="toolbar-separator" class="w-px bg-ma-grey-300 mx-2"></div>
-    <button
-      data-testid="rotate-button"
-      :disabled="!hasSelectedShape"
-      class="px-4 py-2 border border-ma-danger bg-ma-danger text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-      @click="$emit('rotate-selected')"
-    >
-      Rotate 90°
-    </button>
-    <button
+      <RotateCw class="w-4 h-4" />
+    </WhiteboardButton>
+
+    <!-- Delete -->
+    <WhiteboardButton
       data-testid="delete-button"
+      variant="destructive"
+      size="icon"
       :disabled="!hasSelectedShape"
-      class="px-4 py-2 border border-ma-danger bg-ma-danger text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+      title="Delete Selected"
       @click="$emit('delete-selected')"
     >
-      Delete Selected
-    </button>
-    <button
+      <Trash2 class="w-4 h-4" />
+    </WhiteboardButton>
+
+    <!-- Clear All -->
+    <WhiteboardButton
       data-testid="clear-all-button"
-      class="px-4 py-2 border border-ma-grey-500 bg-ma-grey-500 text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-grey-600 hover:border-ma-grey-600"
+      variant="ghost"
+      size="icon"
+      title="Clear All"
       @click="$emit('clear-all')"
     >
-      Clear All
-    </button>
-    <div class="w-px bg-ma-grey-300 mx-2"></div>
-    <button
+      <XCircle class="w-4 h-4" />
+    </WhiteboardButton>
+
+    <div class="w-px h-6 bg-ma-grey-300 mx-1"></div>
+
+    <!-- Dark Mode Toggle -->
+    <WhiteboardButton
       data-testid="toggle-dark-mode-button"
-      class="px-4 py-2 border border-ma-grey-500 bg-ma-white text-ma-grey-900 rounded cursor-pointer text-sm transition-all hover:bg-ma-grey-200 hover:border-ma-grey-600"
+      variant="secondary"
+      size="icon"
+      title="Toggle Dark Mode"
       @click="toggleDarkMode"
     >
-      Toggle Dark Mode
-    </button>
-    <Slider :default-value="[50]" :max="100" :step="1" class="w-[60%]" />
+      <Moon class="w-4 h-4" />
+    </WhiteboardButton>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { ShapeType } from '@/types/ShapeType'
-import Slider from '@/components/ui/slider/Slider.vue'
-import { Undo2, Redo2, Copy, ClipboardPaste, CopyPlus } from 'lucide-vue-next'
+import { SHAPE_DEFINITIONS } from '@/constants/shapes'
+import { WhiteboardButton } from '@/components/ui/whiteboard-button'
+import ShapeIcon from './ShapeIcon.vue'
+import {
+  Undo2,
+  Redo2,
+  Copy,
+  ClipboardPaste,
+  CopyPlus,
+  RotateCw,
+  Trash2,
+  XCircle,
+  Moon,
+} from 'lucide-vue-next'
 
 defineProps<{
   hasSelectedShape: boolean
@@ -133,6 +164,13 @@ defineEmits<{
   undo: []
   redo: []
 }>()
+
+// Generate shapes array from SHAPE_DEFINITIONS
+const shapes = Object.entries(SHAPE_DEFINITIONS).map(([type, def]) => ({
+  type: type as ShapeType,
+  label: def.label,
+}))
+
 const toggleDarkMode = () => {
   document.documentElement.classList.toggle('dark-mode')
 }

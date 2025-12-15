@@ -1,1 +1,10 @@
-export type ShapeType = 'rectangle' | 'triangle' | 'trapezoid'
+export type ShapeType =
+  | 'rectangle'
+  | 'triangle'
+  | 'trapezoid'
+  | 'diamond'
+  | 'ellipse'
+  | 'parallelogram'
+  | 'hexagon'
+  | 'chevron'
+  | 'roundedRectangle'

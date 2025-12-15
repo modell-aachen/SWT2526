@@ -48,4 +48,3 @@ jobs:
           git add CHANGELOG.md
           git commit -m "chore(release): update changelog" || echo "No changes to commit"
           git push
-

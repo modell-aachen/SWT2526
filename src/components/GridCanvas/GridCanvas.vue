@@ -36,6 +36,9 @@
 const emit = defineEmits<{
   'canvas-click': []
   'delete-selected': []
+  'copy-selected': []
+  paste: []
+  duplicate: []
   undo: []
   redo: []
 }>()
@@ -64,6 +67,15 @@ const handleKeyDown = (event: KeyboardEvent) => {
   ) {
     event.preventDefault()
     emit('redo')
+  } else if (modifierKey && event.key === 'c') {
+    event.preventDefault()
+    emit('copy-selected')
+  } else if (modifierKey && event.key === 'v') {
+    event.preventDefault()
+    emit('paste')
+  } else if (modifierKey && event.key === 'd') {
+    event.preventDefault()
+    emit('duplicate')
   }
 }
 </script>

@@ -21,6 +21,31 @@
     </button>
     <div class="w-px bg-ma-grey-300 mx-2"></div>
     <button
+      data-testid="copy-button"
+      :disabled="!hasSelectedShape"
+      class="px-4 py-2 border border-ma-grey-500 bg-ma-white text-ma-grey-900 rounded cursor-pointer text-sm transition-all hover:bg-ma-grey-200 hover:border-ma-grey-600 disabled:opacity-50 disabled:cursor-not-allowed"
+      @click="$emit('copy-selected')"
+    >
+      <Copy class="w-4 h-4" />
+    </button>
+    <button
+      data-testid="paste-button"
+      :disabled="!hasCopiedShape"
+      class="px-4 py-2 border border-ma-grey-500 bg-ma-white text-ma-grey-900 rounded cursor-pointer text-sm transition-all hover:bg-ma-grey-200 hover:border-ma-grey-600 disabled:opacity-50 disabled:cursor-not-allowed"
+      @click="$emit('paste')"
+    >
+      <ClipboardPaste class="w-4 h-4" />
+    </button>
+    <button
+      data-testid="duplicate-button"
+      :disabled="!hasSelectedShape"
+      class="px-4 py-2 border border-ma-grey-500 bg-ma-white text-ma-grey-900 rounded cursor-pointer text-sm transition-all hover:bg-ma-grey-200 hover:border-ma-grey-600 disabled:opacity-50 disabled:cursor-not-allowed"
+      @click="$emit('duplicate')"
+    >
+      <CopyPlus class="w-4 h-4" />
+    </button>
+    <div class="w-px bg-ma-grey-300 mx-2"></div>
+    <button
       data-testid="add-rectangle-button"
       class="px-4 py-2 border border-ma-primary-500 bg-ma-primary-500 text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-primary-600 hover:border-ma-primary-600"
       @click="$emit('add-shape', 'rectangle')"
@@ -80,10 +105,11 @@
 <script setup lang="ts">
 import type { ShapeType } from '@/types/ShapeType'
 import Slider from '@/components/ui/slider/Slider.vue'
-import { Undo2, Redo2 } from 'lucide-vue-next'
+import { Undo2, Redo2, Copy, ClipboardPaste, CopyPlus } from 'lucide-vue-next'
 
 defineProps<{
   hasSelectedShape: boolean
+  hasCopiedShape: boolean
   canUndo: boolean
   canRedo: boolean
 }>()
@@ -93,6 +119,9 @@ defineEmits<{
   'rotate-selected': []
   'delete-selected': []
   'clear-all': []
+  'copy-selected': []
+  paste: []
+  duplicate: []
   undo: []
   redo: []
 }>()

@@ -5,12 +5,16 @@
   >
     <Toolbar
       :has-selected-shape="!!shapesStore.selectedShapeId"
+      :has-copied-shape="shapesStore.hasCopiedShape"
       :can-undo="shapesStore.canUndo"
       :can-redo="shapesStore.canRedo"
       @add-shape="addShape"
       @rotate-selected="rotateSelected"
       @delete-selected="deleteSelected"
       @clear-all="clearAll"
+      @copy-selected="shapesStore.copySelectedShape()"
+      @paste="shapesStore.pasteShape()"
+      @duplicate="shapesStore.duplicateSelectedShape()"
       @undo="shapesStore.undo()"
       @redo="shapesStore.redo()"
     />
@@ -18,6 +22,9 @@
     <GridCanvas
       @canvas-click="handleCanvasClick"
       @delete-selected="deleteSelected"
+      @copy-selected="shapesStore.copySelectedShape()"
+      @paste="shapesStore.pasteShape()"
+      @duplicate="shapesStore.duplicateSelectedShape()"
       @undo="shapesStore.undo()"
       @redo="shapesStore.redo()"
     >

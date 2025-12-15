@@ -11,6 +11,7 @@ export const useShapesStore = defineStore('shapes', {
     nextId: 1,
     history: [[]] as Shape[][], // Start with empty state
     historyIndex: 0, // Points to current state in history
+    clipboard: null as Shape | null, // Single shape clipboard for copy/paste
   }),
 
   getters: {
@@ -29,6 +30,10 @@ export const useShapesStore = defineStore('shapes', {
 
     canRedo: (state) => {
       return state.historyIndex < state.history.length - 1
+    },
+
+    hasCopiedShape: (state) => {
+      return state.clipboard !== null
     },
   },
 
@@ -198,6 +203,55 @@ export const useShapesStore = defineStore('shapes', {
     clearAll() {
       this.shapes = []
       this.selectedShapeId = null
+      this.saveSnapshot()
+    },
+
+    copySelectedShape() {
+      if (!this.selectedShapeId) return
+      const shape = this.shapes.find((s) => s.id === this.selectedShapeId)
+      if (shape) {
+        // Deep clone the shape to clipboard
+        this.clipboard = JSON.parse(JSON.stringify(shape)) as Shape
+      }
+    },
+
+    pasteShape() {
+      if (!this.clipboard) return
+
+      const pastedShape: Shape = {
+        ...JSON.parse(JSON.stringify(this.clipboard)),
+        id: `${this.clipboard.type}-${this.nextId++}`,
+        x: this.clipboard.x + 20,
+        y: this.clipboard.y + 20,
+        zIndex: this.shapes.length,
+      }
+
+      this.shapes.push(pastedShape)
+      this.selectedShapeId = pastedShape.id
+      this.saveSnapshot()
+
+      // Update clipboard position for subsequent pastes
+      this.clipboard.x += 20
+      this.clipboard.y += 20
+    },
+
+    //TODO(jwi): replace deep clone with a utility function (lodash)
+    duplicateSelectedShape() {
+      if (!this.selectedShapeId) return
+      const pastedShape: Shape = {
+        ...JSON.parse(
+          JSON.stringify(
+            JSON.parse(JSON.stringify(this.selectedShape)) as Shape
+          )
+        ),
+        id: `${(JSON.parse(JSON.stringify(this.selectedShape)) as Shape).type}-${this.nextId++}`,
+        x: (JSON.parse(JSON.stringify(this.selectedShape)) as Shape).x + 20,
+        y: (JSON.parse(JSON.stringify(this.selectedShape)) as Shape).y + 20,
+        zIndex: this.shapes.length,
+      }
+
+      this.shapes.push(pastedShape)
+      this.selectedShapeId = pastedShape.id
       this.saveSnapshot()
     },
   },

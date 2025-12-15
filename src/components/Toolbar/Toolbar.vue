@@ -66,6 +66,14 @@
     >
       Add Trapezoid
     </button>
+    <button
+      data-testid="rotate-button"
+      :disabled="!hasSelectedShape"
+      class="px-4 py-2 border border-ma-primary-500 bg-ma-primary-500 text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-primary-600 hover:border-ma-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
+      @click="$emit('rotate-selected')"
+    >
+      Rotate 90°
+    </button>
     <div data-testid="toolbar-separator" class="w-px bg-ma-grey-300 mx-2"></div>
     <button
       data-testid="rotate-button"

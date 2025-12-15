@@ -2,11 +2,15 @@ import { defineStore } from 'pinia'
 import type { Shape } from '@/types/Shape'
 import type { ShapeType } from '@/types/ShapeType'
 
+const MAX_HISTORY_SIZE = 50
+
 export const useShapesStore = defineStore('shapes', {
   state: () => ({
     shapes: [] as Shape[],
     selectedShapeId: null as string | null,
     nextId: 1,
+    history: [[]] as Shape[][], // Start with empty state
+    historyIndex: 0, // Points to current state in history
   }),
 
   getters: {
@@ -18,9 +22,65 @@ export const useShapesStore = defineStore('shapes', {
     sortedShapes: (state) => {
       return [...state.shapes].sort((a, b) => a.zIndex - b.zIndex)
     },
+
+    canUndo: (state) => {
+      return state.historyIndex > 0
+    },
+
+    canRedo: (state) => {
+      return state.historyIndex < state.history.length - 1
+    },
   },
 
   actions: {
+    saveSnapshot() {
+      // Remove any future history if we're not at the end (branching)
+      if (this.canRedo) {
+        this.history = this.history.slice(0, this.historyIndex + 1)
+      }
+
+      // Deep clone the current shapes array and push as new state
+      const snapshot = JSON.parse(JSON.stringify(this.shapes)) as Shape[]
+      this.history.push(snapshot)
+      this.historyIndex = this.history.length - 1
+
+      // Cap history at MAX_HISTORY_SIZE
+      if (this.history.length > MAX_HISTORY_SIZE) {
+        this.history.shift()
+        this.historyIndex = this.history.length - 1
+      }
+    },
+
+    undo() {
+      if (!this.canUndo) return
+
+      this.historyIndex--
+      this.shapes = JSON.parse(JSON.stringify(this.history[this.historyIndex]))
+
+      // Clear selection if the selected shape no longer exists
+      if (
+        this.selectedShapeId &&
+        !this.shapes.find((s) => s.id === this.selectedShapeId)
+      ) {
+        this.selectedShapeId = null
+      }
+    },
+
+    redo() {
+      if (!this.canRedo) return
+
+      this.historyIndex++
+      this.shapes = JSON.parse(JSON.stringify(this.history[this.historyIndex]))
+
+      // Clear selection if the selected shape no longer exists
+      if (
+        this.selectedShapeId &&
+        !this.shapes.find((s) => s.id === this.selectedShapeId)
+      ) {
+        this.selectedShapeId = null
+      }
+    },
+
     addShape(type: ShapeType, x: number = 100, y: number = 100) {
       const newShape: Shape = {
         id: `${type}-${this.nextId++}`,
@@ -36,6 +96,7 @@ export const useShapesStore = defineStore('shapes', {
       }
       this.shapes.push(newShape)
       this.selectedShapeId = newShape.id
+      this.saveSnapshot()
     },
 
     deleteShape(id: string) {
@@ -45,6 +106,7 @@ export const useShapesStore = defineStore('shapes', {
         if (this.selectedShapeId === id) {
           this.selectedShapeId = null
         }
+        this.saveSnapshot()
       }
     },
 
@@ -58,12 +120,22 @@ export const useShapesStore = defineStore('shapes', {
       this.selectedShapeId = id
     },
 
+    endDrag() {
+      // Save snapshot at the end of drag operation
+      this.saveSnapshot()
+    },
+
     updateShapePosition(id: string, deltaX: number, deltaY: number) {
       const shape = this.shapes.find((s) => s.id === id)
       if (shape) {
         shape.x += deltaX
         shape.y += deltaY
       }
+    },
+
+    endResize() {
+      // Save snapshot at the end of resize operation
+      this.saveSnapshot()
     },
 
     updateShapeSize(
@@ -91,7 +163,7 @@ export const useShapesStore = defineStore('shapes', {
           shape.height = Math.max(20, shape.height - deltaY)
           shape.y += deltaY
           break
-        case 'nw': // Northwest - top left
+        case 'nw': // Northwest - top left<
           shape.width = Math.max(20, shape.width - deltaX)
           shape.height = Math.max(20, shape.height - deltaY)
           shape.x += deltaX
@@ -119,12 +191,14 @@ export const useShapesStore = defineStore('shapes', {
       const shape = this.shapes.find((s) => s.id === this.selectedShapeId)
       if (shape) {
         shape.rotation = (shape.rotation + 90) % 360
+        this.saveSnapshot()
       }
     },
 
     clearAll() {
       this.shapes = []
       this.selectedShapeId = null
+      this.saveSnapshot()
     },
   },
 })

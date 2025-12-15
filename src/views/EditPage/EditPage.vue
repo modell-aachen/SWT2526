@@ -5,15 +5,21 @@
   >
     <Toolbar
       :has-selected-shape="!!shapesStore.selectedShapeId"
+      :can-undo="shapesStore.canUndo"
+      :can-redo="shapesStore.canRedo"
       @add-shape="addShape"
       @rotate-selected="rotateSelected"
       @delete-selected="deleteSelected"
       @clear-all="clearAll"
+      @undo="shapesStore.undo()"
+      @redo="shapesStore.redo()"
     />
 
     <GridCanvas
       @canvas-click="handleCanvasClick"
       @delete-selected="deleteSelected"
+      @undo="shapesStore.undo()"
+      @redo="shapesStore.redo()"
     >
       <ShapeWrapper
         v-for="shape in shapesStore.sortedShapes"
@@ -29,10 +35,12 @@
         :selected="shape.id === shapesStore.selectedShapeId"
         @click="selectShape(shape.id)"
         @drag="(deltaX, deltaY) => handleDrag(shape.id, deltaX, deltaY)"
+        @drag-end="shapesStore.endDrag()"
         @resize="
           (handle, deltaX, deltaY) =>
             handleResize(shape.id, handle, deltaX, deltaY)
         "
+        @resize-end="shapesStore.endResize()"
       />
     </GridCanvas>
   </div>

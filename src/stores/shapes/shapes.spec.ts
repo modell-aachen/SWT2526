@@ -1058,5 +1058,6 @@ describe('useShapesStore', () => {
 
         expect(store.shapes).toHaveLength(1)
       })
-    })  })
+    })
+  })
 })

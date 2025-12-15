@@ -71,7 +71,9 @@ describe('Toolbar', () => {
         props: defaultProps,
       })
 
-      expect(wrapper.find('[data-testid="duplicate-button"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="duplicate-button"]').exists()).toBe(
+        true
+      )
     })
   })
 

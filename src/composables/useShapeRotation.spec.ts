@@ -1,15 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import { ref } from 'vue'
 import { useShapeRotation } from './useShapeRotation'
+import { getShapePoints } from '@/constants/shapes'
 
 describe('useShapeRotation', () => {
-  const {
-    getBasePoints,
-    parsePoints,
-    rotatePoint,
-    pointsToString,
-    getRotatedPoints,
-  } = useShapeRotation()
+  const { parsePoints, rotatePoint, pointsToString, getRotatedPoints } =
+    useShapeRotation()
 
   describe('parsePoints', () => {
     it('should parse a valid SVG points string into Point objects', () => {
@@ -106,27 +102,10 @@ describe('useShapeRotation', () => {
     })
   })
 
-  describe('getBasePoints', () => {
-    it('should return correct base points for rectangle', () => {
-      const result = getBasePoints('rectangle')
-      expect(result).toBe('5,5 95,5 95,95 5,95')
-    })
-
-    it('should return correct base points for triangle', () => {
-      const result = getBasePoints('triangle')
-      expect(result).toBe('50,5 95,95 5,95')
-    })
-
-    it('should return correct base points for trapezoid', () => {
-      const result = getBasePoints('trapezoid')
-      expect(result).toBe('25,5 75,5 95,95 5,95')
-    })
-  })
-
   describe('getRotatedPoints', () => {
     it('should return base points when rotation is 0', () => {
       const result = getRotatedPoints('rectangle', 0)
-      const basePoints = getBasePoints('rectangle')
+      const basePoints = getShapePoints('rectangle')
 
       expect(result).toBe(basePoints)
     })
@@ -134,6 +113,8 @@ describe('useShapeRotation', () => {
     it('should rotate rectangle points 90 degrees clockwise', () => {
       const result = getRotatedPoints('40,45 60,45 60,55 40,55', 90)
       const points = parsePoints(result)
+
+      expect(points).toHaveLength(4)
 
       // Original point (40,45) rotates 90° clockwise around (50,50)
       expect(points[0].x).toBeCloseTo(55, 1)
@@ -181,7 +162,7 @@ describe('useShapeRotation', () => {
     })
 
     it('should handle 360 degree rotation returning to original', () => {
-      const basePoints = getBasePoints('rectangle')
+      const basePoints = getShapePoints('rectangle')
       const result = getRotatedPoints('rectangle', 360)
       const originalPoints = parsePoints(basePoints)
       const rotatedPoints = parsePoints(result)
@@ -219,7 +200,7 @@ describe('useShapeRotation', () => {
 
       // Initial value
       const initial = rotatedPoints.value
-      expect(initial).toBe(getBasePoints('triangle'))
+      expect(initial).toBe(getShapePoints('triangle'))
 
       // Change rotation
       rotation.value = 90

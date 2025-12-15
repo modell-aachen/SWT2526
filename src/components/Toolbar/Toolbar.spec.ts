@@ -16,9 +16,34 @@ describe('Toolbar', () => {
         props: defaultProps,
       })
 
-      expect(wrapper.text()).toContain('Add Rectangle')
-      expect(wrapper.text()).toContain('Add Triangle')
-      expect(wrapper.text()).toContain('Add Trapezoid')
+      // Check shape buttons exist via data-testid (now using icon previews instead of text)
+      expect(
+        wrapper.find('[data-testid="add-rectangle-button"]').exists()
+      ).toBe(true)
+      expect(wrapper.find('[data-testid="add-triangle-button"]').exists()).toBe(
+        true
+      )
+      expect(
+        wrapper.find('[data-testid="add-trapezoid-button"]').exists()
+      ).toBe(true)
+      expect(wrapper.find('[data-testid="add-diamond-button"]').exists()).toBe(
+        true
+      )
+      expect(wrapper.find('[data-testid="add-ellipse-button"]').exists()).toBe(
+        true
+      )
+      expect(wrapper.find('[data-testid="add-hexagon-button"]').exists()).toBe(
+        true
+      )
+      expect(wrapper.find('[data-testid="add-chevron-button"]').exists()).toBe(
+        true
+      )
+      expect(
+        wrapper.find('[data-testid="add-parallelogram-button"]').exists()
+      ).toBe(true)
+      expect(
+        wrapper.find('[data-testid="add-roundedRectangle-button"]').exists()
+      ).toBe(true)
     })
 
     it('renders delete and clear buttons', () => {
@@ -26,8 +51,11 @@ describe('Toolbar', () => {
         props: defaultProps,
       })
 
-      expect(wrapper.text()).toContain('Delete Selected')
-      expect(wrapper.text()).toContain('Clear All')
+      // Check action buttons exist via data-testid (now using icons instead of text)
+      expect(wrapper.find('[data-testid="delete-button"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="clear-all-button"]').exists()).toBe(
+        true
+      )
     })
 
     it('applies correct styling classes', () => {

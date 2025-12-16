@@ -4,17 +4,12 @@
     class="flex flex-col h-screen w-screen overflow-hidden bg-bg-maincontent"
   >
     <Toolbar
-      :has-selected-shape="!!shapesStore.selectedShapeId"
-      :has-copied-shape="shapesStore.hasCopiedShape"
       :can-undo="shapesStore.canUndo"
       :can-redo="shapesStore.canRedo"
+      :has-copied-shape="shapesStore.hasCopiedShape"
       @add-shape="addShape"
-      @rotate-selected="rotateSelected"
-      @delete-selected="deleteSelected"
       @clear-all="clearAll"
-      @copy-selected="shapesStore.copySelectedShape()"
       @paste="shapesStore.pasteShape()"
-      @duplicate="shapesStore.duplicateSelectedShape()"
       @undo="shapesStore.undo()"
       @redo="shapesStore.redo()"
     />
@@ -48,6 +43,10 @@
             handleResize(shape.id, handle, deltaX, deltaY)
         "
         @resize-end="shapesStore.endResize()"
+        @copy="shapesStore.copySelectedShape()"
+        @duplicate="shapesStore.duplicateSelectedShape()"
+        @rotate="shapesStore.rotateSelectedShape()"
+        @delete="shapesStore.deleteSelectedShape()"
       />
     </GridCanvas>
   </div>
@@ -64,10 +63,6 @@ const shapesStore = useShapesStore()
 
 const addShape = (type: ShapeType) => {
   shapesStore.addShape(type)
-}
-
-const rotateSelected = () => {
-  shapesStore.rotateSelectedShape()
 }
 
 const deleteSelected = () => {

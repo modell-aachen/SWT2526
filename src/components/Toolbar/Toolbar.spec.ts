@@ -3,7 +3,6 @@ import { mount } from '@vue/test-utils'
 import Toolbar from './Toolbar.vue'
 
 const defaultProps = {
-  hasSelectedShape: false,
   hasCopiedShape: false,
   canUndo: false,
   canRedo: false,
@@ -21,12 +20,11 @@ describe('Toolbar', () => {
       expect(wrapper.text()).toContain('Add Trapezoid')
     })
 
-    it('renders delete and clear buttons', () => {
+    it('renders clear all button', () => {
       const wrapper = mount(Toolbar, {
         props: defaultProps,
       })
 
-      expect(wrapper.text()).toContain('Delete Selected')
       expect(wrapper.text()).toContain('Clear All')
     })
 
@@ -39,15 +37,6 @@ describe('Toolbar', () => {
       expect(toolbar.exists()).toBe(true)
     })
 
-    it('renders separator between shape and action buttons', () => {
-      const wrapper = mount(Toolbar, {
-        props: defaultProps,
-      })
-
-      const separator = wrapper.find('[data-testid="toolbar-separator"]')
-      expect(separator.exists()).toBe(true)
-    })
-
     it('renders undo and redo buttons', () => {
       const wrapper = mount(Toolbar, {
         props: defaultProps,
@@ -57,23 +46,12 @@ describe('Toolbar', () => {
       expect(wrapper.find('[data-testid="redo-button"]').exists()).toBe(true)
     })
 
-    it('renders copy and paste buttons', () => {
+    it('renders paste button', () => {
       const wrapper = mount(Toolbar, {
         props: defaultProps,
       })
 
-      expect(wrapper.find('[data-testid="copy-button"]').exists()).toBe(true)
       expect(wrapper.find('[data-testid="paste-button"]').exists()).toBe(true)
-    })
-
-    it('renders duplicate button', () => {
-      const wrapper = mount(Toolbar, {
-        props: defaultProps,
-      })
-
-      expect(wrapper.find('[data-testid="duplicate-button"]').exists()).toBe(
-        true
-      )
     })
   })
 
@@ -116,60 +94,6 @@ describe('Toolbar', () => {
 
       expect(wrapper.emitted('add-shape')).toBeTruthy()
       expect(wrapper.emitted('add-shape')?.[0]).toEqual(['trapezoid'])
-    })
-  })
-
-  describe('delete button', () => {
-    it('is disabled when hasSelectedShape is false', () => {
-      const wrapper = mount(Toolbar, {
-        props: defaultProps,
-      })
-
-      const deleteButton = wrapper.find('[data-testid="delete-button"]')
-
-      expect(deleteButton.attributes('disabled')).toBeDefined()
-    })
-
-    it('is enabled when hasSelectedShape is true', () => {
-      const wrapper = mount(Toolbar, {
-        props: {
-          ...defaultProps,
-          hasSelectedShape: true,
-        },
-      })
-
-      const deleteButton = wrapper.find('[data-testid="delete-button"]')
-
-      expect(deleteButton.attributes('disabled')).toBeUndefined()
-    })
-
-    it('emits delete-selected when clicked', async () => {
-      const wrapper = mount(Toolbar, {
-        props: {
-          ...defaultProps,
-          hasSelectedShape: true,
-        },
-      })
-
-      const deleteButton = wrapper.find('[data-testid="delete-button"]')
-      await deleteButton.trigger('click')
-
-      expect(wrapper.emitted('delete-selected')).toBeTruthy()
-    })
-
-    it('has correct red styling', () => {
-      const wrapper = mount(Toolbar, {
-        props: {
-          ...defaultProps,
-          hasSelectedShape: true,
-        },
-      })
-
-      const deleteButton = wrapper.find('[data-testid="delete-button"]')
-
-      expect(deleteButton.classes()).toContain('border-ma-danger')
-      expect(deleteButton.classes()).toContain('bg-ma-danger')
-      expect(deleteButton.classes()).toContain('text-white')
     })
   })
 
@@ -269,28 +193,7 @@ describe('Toolbar', () => {
     })
   })
 
-  describe('copy/paste buttons', () => {
-    it('copy button is disabled when hasSelectedShape is false', () => {
-      const wrapper = mount(Toolbar, {
-        props: defaultProps,
-      })
-
-      const copyButton = wrapper.find('[data-testid="copy-button"]')
-      expect(copyButton.attributes('disabled')).toBeDefined()
-    })
-
-    it('copy button is enabled when hasSelectedShape is true', () => {
-      const wrapper = mount(Toolbar, {
-        props: {
-          ...defaultProps,
-          hasSelectedShape: true,
-        },
-      })
-
-      const copyButton = wrapper.find('[data-testid="copy-button"]')
-      expect(copyButton.attributes('disabled')).toBeUndefined()
-    })
-
+  describe('paste button', () => {
     it('paste button is disabled when hasCopiedShape is false', () => {
       const wrapper = mount(Toolbar, {
         props: defaultProps,
@@ -312,20 +215,6 @@ describe('Toolbar', () => {
       expect(pasteButton.attributes('disabled')).toBeUndefined()
     })
 
-    it('emits copy-selected when copy button is clicked', async () => {
-      const wrapper = mount(Toolbar, {
-        props: {
-          ...defaultProps,
-          hasSelectedShape: true,
-        },
-      })
-
-      const copyButton = wrapper.find('[data-testid="copy-button"]')
-      await copyButton.trigger('click')
-
-      expect(wrapper.emitted('copy-selected')).toBeTruthy()
-    })
-
     it('emits paste when paste button is clicked', async () => {
       const wrapper = mount(Toolbar, {
         props: {
@@ -338,41 +227,6 @@ describe('Toolbar', () => {
       await pasteButton.trigger('click')
 
       expect(wrapper.emitted('paste')).toBeTruthy()
-    })
-
-    it('duplicate button is disabled when hasSelectedShape is false', () => {
-      const wrapper = mount(Toolbar, {
-        props: defaultProps,
-      })
-
-      const duplicateButton = wrapper.find('[data-testid="duplicate-button"]')
-      expect(duplicateButton.attributes('disabled')).toBeDefined()
-    })
-
-    it('duplicate button is enabled when hasSelectedShape is true', () => {
-      const wrapper = mount(Toolbar, {
-        props: {
-          ...defaultProps,
-          hasSelectedShape: true,
-        },
-      })
-
-      const duplicateButton = wrapper.find('[data-testid="duplicate-button"]')
-      expect(duplicateButton.attributes('disabled')).toBeUndefined()
-    })
-
-    it('emits duplicate when duplicate button is clicked', async () => {
-      const wrapper = mount(Toolbar, {
-        props: {
-          ...defaultProps,
-          hasSelectedShape: true,
-        },
-      })
-
-      const duplicateButton = wrapper.find('[data-testid="duplicate-button"]')
-      await duplicateButton.trigger('click')
-
-      expect(wrapper.emitted('duplicate')).toBeTruthy()
     })
   })
 

@@ -20,7 +20,6 @@ Navigate to: http://localhost:5173/view or http://localhost:5173/edit
 ### Required
 
 - Detail Popup (Per Shape - Settings) Elisabeth & Laura
-- Duplicate Button (Strg + C, V, Z, X etc) Jakob & Sam
 - Rotation by 90 degrees only Elisabeth & Laura
 - Sidebar with visible Shapes (drag and drop) Jan & Wiem
 - Responsive
@@ -43,6 +42,7 @@ Navigate to: http://localhost:5173/view or http://localhost:5173/edit
 - Legend
 - Versioning of a Diagram
 - Polygons as Shape (Hexagon -> Movable Points, new Page?)
+- Visual History Snapshots
 
 ### Highly Optional
 

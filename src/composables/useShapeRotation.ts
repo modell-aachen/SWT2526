@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import type { ShapeType } from '@/types/ShapeType'
+import { useShapeBasePoints } from './useShapeBasePoints'
 
 interface Point {
   x: number
@@ -7,6 +8,8 @@ interface Point {
 }
 
 export function useShapeRotation() {
+  const { getBasePoints } = useShapeBasePoints()
+
   /**
    * Parse SVG points string into array of Point objects
    */
@@ -53,22 +56,6 @@ export function useShapeRotation() {
   }
 
   /**
-   * Get the base points for a shape type
-   */
-  const getBasePoints = (shapeType: ShapeType): string => {
-    switch (shapeType) {
-      case 'rectangle':
-        return '5,5 95,5 95,95 5,95'
-      case 'triangle':
-        return '50,5 95,95 5,95'
-      case 'trapezoid':
-        return '25,5 75,5 95,95 5,95'
-      default:
-        return '5,5 95,5 95,95 5,95'
-    }
-  }
-
-  /**
    * Calculate rotated points for a shape or custom points string
    */
   const getRotatedPoints = (
@@ -102,7 +89,6 @@ export function useShapeRotation() {
     parsePoints,
     rotatePoint,
     pointsToString,
-    getBasePoints,
     getRotatedPoints,
     useRotatedPoints,
   }

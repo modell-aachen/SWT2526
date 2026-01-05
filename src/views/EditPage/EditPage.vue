@@ -4,40 +4,55 @@
     class="flex h-screen w-screen overflow-hidden bg-bg-maincontent"
   >
     <Sidebar />
-
     <div class="flex flex-col flex-1">
-      <Toolbar
-        :has-selected-shape="!!shapesStore.selectedShapeId"
-        @add-shape="addShape"
-        @rotate-selected="rotateSelected"
-        @delete-selected="deleteSelected"
-        @clear-all="clearAll"
+    <Toolbar
+      :can-undo="shapesStore.canUndo"
+      :can-redo="shapesStore.canRedo"
+      :has-copied-shape="shapesStore.hasCopiedShape"
+      @add-shape="addShape"
+      @clear-all="clearAll"
+      @paste="shapesStore.pasteShape()"
+      @undo="shapesStore.undo()"
+      @redo="shapesStore.redo()"
+    />
+
+    <GridCanvas
+      ref="canvasRef"
+      @canvas-click="handleCanvasClick"
+      @delete-selected="deleteSelected"
+      @copy-selected="shapesStore.copySelectedShape()"
+      @paste="shapesStore.pasteShape()"
+      @duplicate="shapesStore.duplicateSelectedShape()"
+      @undo="shapesStore.undo()"
+      @redo="shapesStore.redo()"
+    >
+      <ShapeWrapper
+        v-for="shape in shapesStore.sortedShapes"
+        :key="shape.id"
+        :x="shape.x"
+        :y="shape.y"
+        :width="shape.width"
+        :height="shape.height"
+        :rotation="shape.rotation"
+        :shape-type="shape.type"
+        :outline="shape.outline"
+        :fill="shape.fill"
+        :selected="shape.id === shapesStore.selectedShapeId"
+        @click="selectShape(shape.id)"
+        @drag="(deltaX, deltaY) => handleDrag(shape.id, deltaX, deltaY)"
+        @drag-end="shapesStore.endDrag()"
+        @resize="
+          (handle, deltaX, deltaY) =>
+            handleResize(shape.id, handle, deltaX, deltaY)
+        "
+        @resize-end="shapesStore.endResize()"
+        @copy="shapesStore.copySelectedShape()"
+        @duplicate="shapesStore.duplicateSelectedShape()"
+        @rotate="shapesStore.rotateSelectedShape()"
+        @delete="shapesStore.deleteSelectedShape()"
       />
-
-      <GridCanvas
-        ref="canvasRef"
-        @canvas-click="handleCanvasClick"
-        @delete-selected="deleteSelected"
-      >
-        <ShapeWrapper
-          v-for="shape in shapesStore.sortedShapes"
-          :key="shape.id"
-          :x="shape.x"
-          :y="shape.y"
-          :width="shape.width"
-          :height="shape.height"
-          :rotation="shape.rotation"
-          :shape-type="shape.type"
-          :outline="shape.outline"
-          :fill="shape.fill"
-          :selected="shape.id === shapesStore.selectedShapeId"
-          @click="selectShape(shape.id)"
-          @drag="(dx, dy) => handleDrag(shape.id, dx, dy)"
-          @resize="(handle, dx, dy) => handleResize(shape.id, handle, dx, dy)"
-        />
-      </GridCanvas>
+    </GridCanvas>
     </div>
-
     <DragGhost />
   </div>
 </template>
@@ -71,10 +86,6 @@ watch(canvasRef, (newRef) => {
 
 const addShape = (type: ShapeType) => {
   shapesStore.addShape(type)
-}
-
-const rotateSelected = () => {
-  shapesStore.rotateSelectedShape()
 }
 
 const deleteSelected = () => {

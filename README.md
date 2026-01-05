@@ -2,8 +2,6 @@
 
 Our SWT 2025 application.
 
-TODO: Proper Readme :P
-
 ## Setup
 
 Make sure you have `NodeJS v24` and `yarn v1` installed
@@ -19,12 +17,9 @@ Navigate to: http://localhost:5173/view or http://localhost:5173/edit
 
 ### Refactor
 
-- Wrapper in Composables auslagern Sam & Jakob
-
 ### Required
 
 - Detail Popup (Per Shape - Settings) Elisabeth & Laura
-- Duplicate Button (Strg + C, V, Z, X etc) Jakob & Sam
 - Rotation by 90 degrees only Elisabeth & Laura
 - Sidebar with visible Shapes (drag and drop) Jan & Wiem
 - Responsive
@@ -47,6 +42,7 @@ Navigate to: http://localhost:5173/view or http://localhost:5173/edit
 - Legend
 - Versioning of a Diagram
 - Polygons as Shape (Hexagon -> Movable Points, new Page?)
+- Visual History Snapshots
 
 ### Highly Optional
 

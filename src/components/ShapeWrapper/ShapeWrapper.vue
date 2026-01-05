@@ -16,6 +16,17 @@
       :fill="fill"
     />
 
+    <!-- Floating context bar for selected shape -->
+    <ShapeContextBar
+      v-if="selected"
+      :shape-width="width"
+      :shape-y="y"
+      @copy="$emit('copy')"
+      @duplicate="$emit('duplicate')"
+      @rotate="$emit('rotate')"
+      @delete="$emit('delete')"
+    />
+
     <!-- Selection border and resize handles -->
     <div v-if="selected" class="absolute inset-0 pointer-events-none">
       <div
@@ -45,6 +56,7 @@ import type { ResizeHandle } from '@/types/ResizeHandle'
 import Rectangle from '../shapes/Rectangle/RectangleComponent.vue'
 import Triangle from '../shapes/Triangle/TriangleComponent.vue'
 import Trapezoid from '../shapes/Trapezoid/TrapezoidComponent.vue'
+import ShapeContextBar from '../ShapeContextBar/ShapeContextBar.vue'
 import { useDraggable } from '@/composables/useDraggable'
 import { useResizable } from '@/composables/useResizable'
 
@@ -75,6 +87,10 @@ const emit = defineEmits<{
   resize: [handle: string, deltaX: number, deltaY: number]
   resizeEnd: []
   click: [event: MouseEvent]
+  copy: []
+  duplicate: []
+  rotate: []
+  delete: []
 }>()
 
 const { startDrag } = useDraggable(emit)

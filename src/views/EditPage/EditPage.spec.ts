@@ -50,14 +50,15 @@ describe('EditPage', () => {
   })
 
   describe('toolbar integration', () => {
-    it('passes hasSelectedShape prop to Toolbar', () => {
+    it('passes hasCopiedShape prop to Toolbar', () => {
       const store = useShapesStore()
       store.addShape('rectangle')
+      store.copySelectedShape()
 
       const wrapper = mount(EditPage)
       const toolbar = wrapper.findComponent(Toolbar)
 
-      expect(toolbar.props('hasSelectedShape')).toBe(true)
+      expect(toolbar.props('hasCopiedShape')).toBe(true)
     })
 
     it('adds shape when Toolbar emits add-shape', async () => {
@@ -69,18 +70,6 @@ describe('EditPage', () => {
 
       expect(store.shapes).toHaveLength(1)
       expect(store.shapes[0].type).toBe('rectangle')
-    })
-
-    it('deletes shape when Toolbar emits delete-selected', async () => {
-      const store = useShapesStore()
-      store.addShape('rectangle')
-
-      const wrapper = mount(EditPage)
-      const toolbar = wrapper.findComponent(Toolbar)
-
-      await toolbar.vm.$emit('delete-selected')
-
-      expect(store.shapes).toHaveLength(0)
     })
 
     it('shows confirmation and clears all when Toolbar emits clear-all', async () => {

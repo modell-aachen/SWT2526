@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <div
-      v-if="dragContext?.isDragging.value"
+      v-if="isDragging"
       data-testid="drag-ghost"
       class="fixed pointer-events-none z-[9999] opacity-70"
       :style="ghostStyle"
@@ -18,20 +18,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject } from 'vue'
-import { DRAG_CONTEXT_KEY, type DragContext } from '@/types/DragContext'
+import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useDragStore } from '@/stores/drag/dragGhost'
 import Rectangle from '../shapes/Rectangle/RectangleComponent.vue'
 import Triangle from '../shapes/Triangle/TriangleComponent.vue'
 import Trapezoid from '../shapes/Trapezoid/TrapezoidComponent.vue'
 
 const SHAPE_SIZE = 100
 
-const dragContext = inject<DragContext>(DRAG_CONTEXT_KEY)
+const dragStore = useDragStore()
+const { isDragging, draggedShapeType, ghostPosition } = storeToRefs(dragStore)
 
 const shapeComponent = computed(() => {
-  if (!dragContext?.draggedShapeType.value) return Rectangle
+  if (!draggedShapeType.value) return Rectangle
 
-  switch (dragContext.draggedShapeType.value) {
+  switch (draggedShapeType.value) {
     case 'rectangle':
       return Rectangle
     case 'triangle':
@@ -44,8 +46,8 @@ const shapeComponent = computed(() => {
 })
 
 const ghostStyle = computed(() => ({
-  left: `${dragContext?.ghostPosition.value.x ?? 0}px`,
-  top: `${dragContext?.ghostPosition.value.y ?? 0}px`,
+  left: `${ghostPosition.value.x}px`,
+  top: `${ghostPosition.value.y}px`,
   width: `${SHAPE_SIZE}px`,
   height: `${SHAPE_SIZE}px`,
 }))

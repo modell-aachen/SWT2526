@@ -17,9 +17,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed } from 'vue'
 import type { ShapeType } from '@/types/ShapeType'
-import { DRAG_CONTEXT_KEY, type DragContext } from '@/types/DragContext'
+import { useDragStore } from '@/stores/drag/dragGhost'
 import Rectangle from '../shapes/Rectangle/RectangleComponent.vue'
 import Triangle from '../shapes/Triangle/TriangleComponent.vue'
 import Trapezoid from '../shapes/Trapezoid/TrapezoidComponent.vue'
@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<Props>(), {
   size: 40,
 })
 
-const dragContext = inject<DragContext>(DRAG_CONTEXT_KEY)
+const dragStore = useDragStore()
 
 const shapeComponent = computed(() => {
   switch (props.shapeType) {
@@ -49,8 +49,6 @@ const shapeComponent = computed(() => {
 })
 
 const handleMouseDown = (event: MouseEvent) => {
-  if (dragContext) {
-    dragContext.startDrag(props.shapeType, event)
-  }
+  dragStore.startDrag(props.shapeType, event)
 }
 </script>

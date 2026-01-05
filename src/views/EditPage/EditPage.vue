@@ -43,32 +43,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, provide, onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useShapesStore } from '@/stores/shapes/shapes'
+import { useDragStore } from '@/stores/drag/dragGhost'
 import ShapeWrapper from '@/components/ShapeWrapper/ShapeWrapper.vue'
 import Toolbar from '@/components/Toolbar/Toolbar.vue'
 import GridCanvas from '@/components/GridCanvas/GridCanvas.vue'
 import Sidebar from '@/components/Sidebar/Sidebar.vue'
 import DragGhost from '@/components/DragGhost/DragGhost.vue'
 import type { ShapeType } from '@/types/ShapeType'
-import { DRAG_CONTEXT_KEY } from '@/types/DragContext'
-import { useDragToAdd } from '@/composables/useDragToAdd'
 
 const shapesStore = useShapesStore()
-
-const dragContext = useDragToAdd()
-provide(DRAG_CONTEXT_KEY, dragContext)
+const dragStore = useDragStore()
 
 const canvasRef = ref<InstanceType<typeof GridCanvas> | null>(null)
 onMounted(() => {
   if (canvasRef.value?.$el) {
-    dragContext.setCanvasElement(canvasRef.value.$el)
+    dragStore.setCanvasElement(canvasRef.value.$el)
   }
 })
 
 watch(canvasRef, (newRef) => {
   if (newRef?.$el) {
-    dragContext.setCanvasElement(newRef.$el)
+    dragStore.setCanvasElement(newRef.$el)
   }
 })
 

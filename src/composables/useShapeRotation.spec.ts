@@ -1,15 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { ref } from 'vue'
 import { useShapeRotation } from './useShapeRotation'
+import { useShapeBasePoints } from './useShapeBasePoints'
 
 describe('useShapeRotation', () => {
-  const {
-    getBasePoints,
-    parsePoints,
-    rotatePoint,
-    pointsToString,
-    getRotatedPoints,
-  } = useShapeRotation()
+  const { parsePoints, rotatePoint, pointsToString, getRotatedPoints } =
+    useShapeRotation()
+  const { getBasePoints } = useShapeBasePoints()
 
   describe('parsePoints', () => {
     it('parses a valid SVG points string into Point objects', () => {
@@ -116,130 +112,105 @@ describe('useShapeRotation', () => {
       })
     })
 
-    describe('getBasePoints', () => {
-      it('returns correct base points for rectangle', () => {
-        const result = getBasePoints('rectangle')
-        expect(result).toBe('5,5 95,5 95,95 5,95')
-      })
+    it('returns base points when rotation is 360', () => {
+      const basePoints = getBasePoints('triangle')
+      const result = getRotatedPoints(basePoints, 360)
+      const points = parsePoints(result)
+      const baseParsedPoints = parsePoints(basePoints)
 
-      it('returns correct base points for triangle', () => {
-        const result = getBasePoints('triangle')
-        expect(result).toBe('50,5 95,95 5,95')
-      })
+      expect(points[0].x).toBeCloseTo(baseParsedPoints[0].x, 5)
+      expect(points[0].y).toBeCloseTo(baseParsedPoints[0].y, 5)
 
-      it('returns correct base points for trapezoid', () => {
-        const result = getBasePoints('trapezoid')
-        expect(result).toBe('25,5 75,5 95,95 5,95')
-      })
+      expect(points[1].x).toBeCloseTo(baseParsedPoints[1].x, 5)
+      expect(points[1].y).toBeCloseTo(baseParsedPoints[1].y, 5)
+
+      expect(points[2].x).toBeCloseTo(baseParsedPoints[2].x, 5)
+      expect(points[2].y).toBeCloseTo(baseParsedPoints[2].y, 5)
     })
 
-    describe('getRotatedPoints', () => {
-      it('returns base points when rotation is 0', () => {
-        const result = getRotatedPoints('triangle', 0)
-        const basePoints = getBasePoints('triangle')
+    it('rotates all given points of a rectangular shape by 90 degrees clockwise', () => {
+      const result = getRotatedPoints('40,45 60,45 60,55 40,55', 90)
+      const points = parsePoints(result)
 
-        expect(result).toBe(basePoints)
-      })
+      // Original point (40,45) rotates 90° clockwise around (50,50)
+      expect(points[0].x).toBeCloseTo(55, 5)
+      expect(points[0].y).toBeCloseTo(40, 5)
 
-      it('returns base points when rotation is 360', () => {
-        const result = getRotatedPoints('triangle', 360)
-        const points = parsePoints(result)
-        const basePoints = parsePoints(getBasePoints('triangle'))
+      // Original point (60,45) rotates 90° clockwise around (50,50)
+      expect(points[1].x).toBeCloseTo(55, 5)
+      expect(points[1].y).toBeCloseTo(60, 5)
 
-        expect(points[0].x).toBeCloseTo(basePoints[0].x, 5)
-        expect(points[0].y).toBeCloseTo(basePoints[0].y, 5)
+      // Original point (60,55) rotates 90° clockwise around (50,50)
+      expect(points[2].x).toBeCloseTo(45, 5)
+      expect(points[2].y).toBeCloseTo(60, 5)
 
-        expect(points[1].x).toBeCloseTo(basePoints[1].x, 5)
-        expect(points[1].y).toBeCloseTo(basePoints[1].y, 5)
+      // Original point (40,55) rotates 90° clockwise around (50,50)
+      expect(points[3].x).toBeCloseTo(45, 5)
+      expect(points[3].y).toBeCloseTo(40, 5)
+    })
 
-        expect(points[2].x).toBeCloseTo(basePoints[2].x, 5)
-        expect(points[2].y).toBeCloseTo(basePoints[2].y, 5)
-      })
+    it('can handle multiple 90 degree rotations', () => {
+      const rotation0 = parsePoints(getBasePoints('triangle'))
 
-      it('rotates all given points of a rectangular shape by 90 degrees clockwise', () => {
-        const result = getRotatedPoints('40,45 60,45 60,55 40,55', 90)
-        const points = parsePoints(result)
+      const rotation90 = parsePoints(
+        getRotatedPoints(pointsToString(rotation0), 90)
+      )
 
-        // Original point (40,45) rotates 90° clockwise around (50,50)
-        expect(points[0].x).toBeCloseTo(55, 5)
-        expect(points[0].y).toBeCloseTo(40, 5)
+      const rotation180 = parsePoints(
+        getRotatedPoints(pointsToString(rotation90), 90)
+      )
 
-        // Original point (60,45) rotates 90° clockwise around (50,50)
-        expect(points[1].x).toBeCloseTo(55, 5)
-        expect(points[1].y).toBeCloseTo(60, 5)
+      const rotation270 = parsePoints(
+        getRotatedPoints(pointsToString(rotation180), 90)
+      )
 
-        // Original point (60,55) rotates 90° clockwise around (50,50)
-        expect(points[2].x).toBeCloseTo(45, 5)
-        expect(points[2].y).toBeCloseTo(60, 5)
+      //Top
+      expect(rotation0[0].x).toBe(50)
+      expect(rotation0[0].y).toBe(5)
 
-        // Original point (40,55) rotates 90° clockwise around (50,50)
-        expect(points[3].x).toBeCloseTo(45, 5)
-        expect(points[3].y).toBeCloseTo(40, 5)
-      })
+      //Top turned right after rotation by 90 degrees
+      expect(rotation90[0].x).toBeCloseTo(95, 5)
+      expect(rotation90[0].y).toBeCloseTo(50, 5)
 
-      it('can handle multiple 90 degree rotations', () => {
-        const rotation0 = parsePoints(getRotatedPoints('triangle', 0))
+      //Top turned bottom after rotation by another 90 degrees
+      expect(rotation180[0].x).toBeCloseTo(50, 5)
+      expect(rotation180[0].y).toBeCloseTo(95, 5)
 
-        const rotation90 = parsePoints(
-          getRotatedPoints(pointsToString(rotation0), 90)
-        )
+      //Top turned left after rotation by another 90 degrees
+      expect(rotation270[0].x).toBeCloseTo(5, 5)
+      expect(rotation270[0].y).toBeCloseTo(50, 5)
 
-        const rotation180 = parsePoints(
-          getRotatedPoints(pointsToString(rotation90), 90)
-        )
+      //Right
+      expect(rotation0[1].x).toBe(95)
+      expect(rotation0[1].y).toBe(95)
 
-        const rotation270 = parsePoints(
-          getRotatedPoints(pointsToString(rotation180), 90)
-        )
+      //Right turned bottom after rotation by 90 degrees
+      expect(rotation90[1].x).toBeCloseTo(5, 5)
+      expect(rotation90[1].y).toBeCloseTo(95, 5)
 
-        //Top
-        expect(rotation0[0].x).toBe(50)
-        expect(rotation0[0].y).toBe(5)
+      //Right turned top left after rotation by another 90 degrees
+      expect(rotation180[1].x).toBeCloseTo(5, 5)
+      expect(rotation180[1].y).toBeCloseTo(5, 5)
 
-        //Top turned right after rotation by 90 degrees
-        expect(rotation90[0].x).toBeCloseTo(95, 5)
-        expect(rotation90[0].y).toBeCloseTo(50, 5)
+      //Left
+      expect(rotation0[2].x).toBe(5)
+      expect(rotation0[2].y).toBe(95)
 
-        //Top turned bottom after rotation by another 90 degrees
-        expect(rotation180[0].x).toBeCloseTo(50, 5)
-        expect(rotation180[0].y).toBeCloseTo(95, 5)
+      //Left turnes top after rotation by 90 degrees
+      expect(rotation90[2].x).toBeCloseTo(5, 5)
+      expect(rotation90[2].y).toBeCloseTo(5, 5)
 
-        //Top turned left after rotation by another 90 degrees
-        expect(rotation270[0].x).toBeCloseTo(5, 5)
-        expect(rotation270[0].y).toBeCloseTo(50, 5)
+      //Left turnes top right after rotation by another 90 degrees
+      expect(rotation180[2].x).toBeCloseTo(95, 5)
+      expect(rotation180[2].y).toBeCloseTo(5, 5)
 
-        //Right
-        expect(rotation0[1].x).toBe(95)
-        expect(rotation0[1].y).toBe(95)
+      //Right turned top after rotation by another 90 degrees
+      expect(rotation270[1].x).toBeCloseTo(95, 5)
+      expect(rotation270[1].y).toBeCloseTo(5, 5)
 
-        //Right turned bottom after rotation by 90 degrees
-        expect(rotation90[1].x).toBeCloseTo(5, 5)
-        expect(rotation90[1].y).toBeCloseTo(95, 5)
-
-        //Right turned top left after rotation by another 90 degrees
-        expect(rotation180[1].x).toBeCloseTo(5, 5)
-        expect(rotation180[1].y).toBeCloseTo(5, 5)
-
-        //Left
-        expect(rotation0[2].x).toBe(5)
-        expect(rotation0[2].y).toBe(95)
-
-        //Left turnes top after rotation by 90 degrees
-        expect(rotation90[2].x).toBeCloseTo(5, 5)
-        expect(rotation90[2].y).toBeCloseTo(5, 5)
-
-        //Left turnes top right after rotation by another 90 degrees
-        expect(rotation180[2].x).toBeCloseTo(95, 5)
-        expect(rotation180[2].y).toBeCloseTo(5, 5)
-
-        //Right turned top after rotation by another 90 degrees
-        expect(rotation270[1].x).toBeCloseTo(95, 5)
-        expect(rotation270[1].y).toBeCloseTo(5, 5)
-
-        //Left turnes bottom after rotation by another 90 degrees
-        expect(rotation270[2].x).toBeCloseTo(95, 5)
-        expect(rotation270[2].y).toBeCloseTo(95, 5)
-      })
+      //Left turnes bottom after rotation by another 90 degrees
+      expect(rotation270[2].x).toBeCloseTo(95, 5)
+      expect(rotation270[2].y).toBeCloseTo(95, 5)
     })
   })
 })

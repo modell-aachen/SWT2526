@@ -1,6 +1,4 @@
 import { computed } from 'vue'
-import type { ShapeType } from '@/types/ShapeType'
-import { useShapeBasePoints } from './useShapeBasePoints'
 
 interface Point {
   x: number
@@ -8,8 +6,6 @@ interface Point {
 }
 
 export function useShapeRotation() {
-  const { getBasePoints } = useShapeBasePoints()
-
   /**
    * Parse SVG points string into array of Point objects
    */
@@ -56,33 +52,21 @@ export function useShapeRotation() {
   }
 
   /**
-   * Calculate rotated points for a shape or custom points string
+   * Calculate rotated points for a given points string
    */
-  const getRotatedPoints = (
-    shapeTypeOrPoints: ShapeType | string,
-    rotation: number
-  ): string => {
-    // Check if it's a predefined shape type or custom points
-    const basePoints =
-      shapeTypeOrPoints === 'rectangle' ||
-      shapeTypeOrPoints === 'triangle' ||
-      shapeTypeOrPoints === 'trapezoid'
-        ? getBasePoints(shapeTypeOrPoints as ShapeType)
-        : shapeTypeOrPoints
-
-    const points = parsePoints(basePoints)
-    const rotatedPoints = points.map((point) => rotatePoint(point, rotation))
+  const getRotatedPoints = (points: string, rotation: number): string => {
+    const parsedPoints = parsePoints(points)
+    const rotatedPoints = parsedPoints.map((point) =>
+      rotatePoint(point, rotation)
+    )
     return pointsToString(rotatedPoints)
   }
 
   /**
    * Create a computed property for rotated points
    */
-  const useRotatedPoints = (
-    shapeTypeOrPoints: () => ShapeType | string,
-    rotation: () => number
-  ) => {
-    return computed(() => getRotatedPoints(shapeTypeOrPoints(), rotation()))
+  const useRotatedPoints = (points: () => string, rotation: () => number) => {
+    return computed(() => getRotatedPoints(points(), rotation()))
   }
 
   return {

@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useShapeRotation } from '@/composables/useShapeRotation'
+import { useShapeBasePoints } from '@/composables/useShapeBasePoints'
 
 const props = defineProps({
   width: { type: Number, required: true },
@@ -28,8 +29,9 @@ const props = defineProps({
 })
 
 const { getRotatedPoints } = useShapeRotation()
+const { getBasePoints } = useShapeBasePoints()
 
 const rotatedPoints = computed(() =>
-  getRotatedPoints('rectangle', props.rotation)
+  getRotatedPoints(getBasePoints('rectangle'), props.rotation)
 )
 </script>

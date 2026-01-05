@@ -16,7 +16,7 @@ describe('EditPage', () => {
     it('renders the page container', () => {
       const wrapper = mount(EditPage)
 
-      const container = wrapper.find('.flex.flex-col.h-screen.w-screen')
+      const container = wrapper.find('[data-testid="edit-page-container"]')
       expect(container.exists()).toBe(true)
     })
 

@@ -3,8 +3,7 @@
     data-testid="edit-page-container"
     class="flex h-screen w-screen overflow-hidden bg-bg-maincontent"
   >
-
-    <Sidebar @add-shape="addShape" />
+    <Sidebar />
 
     <div class="flex flex-col flex-1">
       <Toolbar
@@ -16,6 +15,7 @@
       />
 
       <GridCanvas
+        ref="canvasRef"
         @canvas-click="handleCanvasClick"
         @delete-selected="deleteSelected"
       >
@@ -37,18 +37,40 @@
         />
       </GridCanvas>
     </div>
+
+    <DragGhost />
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, provide, onMounted, watch } from 'vue'
 import { useShapesStore } from '@/stores/shapes/shapes'
 import ShapeWrapper from '@/components/ShapeWrapper/ShapeWrapper.vue'
 import Toolbar from '@/components/Toolbar/Toolbar.vue'
 import GridCanvas from '@/components/GridCanvas/GridCanvas.vue'
 import Sidebar from '@/components/Sidebar/Sidebar.vue'
+import DragGhost from '@/components/DragGhost/DragGhost.vue'
 import type { ShapeType } from '@/types/ShapeType'
+import { DRAG_CONTEXT_KEY } from '@/types/DragContext'
+import { useDragToAdd } from '@/composables/useDragToAdd'
 
 const shapesStore = useShapesStore()
+
+const dragContext = useDragToAdd()
+provide(DRAG_CONTEXT_KEY, dragContext)
+
+const canvasRef = ref<InstanceType<typeof GridCanvas> | null>(null)
+onMounted(() => {
+  if (canvasRef.value?.$el) {
+    dragContext.setCanvasElement(canvasRef.value.$el)
+  }
+})
+
+watch(canvasRef, (newRef) => {
+  if (newRef?.$el) {
+    dragContext.setCanvasElement(newRef.$el)
+  }
+})
 
 const addShape = (type: ShapeType) => {
   shapesStore.addShape(type)
@@ -89,4 +111,3 @@ const handleResize = (
   shapesStore.updateShapeSize(id, handle, deltaX, deltaY)
 }
 </script>
-

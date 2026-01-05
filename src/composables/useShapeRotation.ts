@@ -1,5 +1,4 @@
 import { computed } from 'vue'
-import type { ShapeType } from '@/types/ShapeType'
 
 interface Point {
   x: number
@@ -53,56 +52,27 @@ export function useShapeRotation() {
   }
 
   /**
-   * Get the base points for a shape type
+   * Calculate rotated points for a given points string
    */
-  const getBasePoints = (shapeType: ShapeType): string => {
-    switch (shapeType) {
-      case 'rectangle':
-        return '5,5 95,5 95,95 5,95'
-      case 'triangle':
-        return '50,5 95,95 5,95'
-      case 'trapezoid':
-        return '25,5 75,5 95,95 5,95'
-      default:
-        return '5,5 95,5 95,95 5,95'
-    }
-  }
-
-  /**
-   * Calculate rotated points for a shape or custom points string
-   */
-  const getRotatedPoints = (
-    shapeTypeOrPoints: ShapeType | string,
-    rotation: number
-  ): string => {
-    // Check if it's a predefined shape type or custom points
-    const basePoints =
-      shapeTypeOrPoints === 'rectangle' ||
-      shapeTypeOrPoints === 'triangle' ||
-      shapeTypeOrPoints === 'trapezoid'
-        ? getBasePoints(shapeTypeOrPoints as ShapeType)
-        : shapeTypeOrPoints
-
-    const points = parsePoints(basePoints)
-    const rotatedPoints = points.map((point) => rotatePoint(point, rotation))
+  const getRotatedPoints = (points: string, rotation: number): string => {
+    const parsedPoints = parsePoints(points)
+    const rotatedPoints = parsedPoints.map((point) =>
+      rotatePoint(point, rotation)
+    )
     return pointsToString(rotatedPoints)
   }
 
   /**
    * Create a computed property for rotated points
    */
-  const useRotatedPoints = (
-    shapeTypeOrPoints: () => ShapeType | string,
-    rotation: () => number
-  ) => {
-    return computed(() => getRotatedPoints(shapeTypeOrPoints(), rotation()))
+  const useRotatedPoints = (points: () => string, rotation: () => number) => {
+    return computed(() => getRotatedPoints(points(), rotation()))
   }
 
   return {
     parsePoints,
     rotatePoint,
     pointsToString,
-    getBasePoints,
     getRotatedPoints,
     useRotatedPoints,
   }

@@ -10,8 +10,8 @@
         :is="shapeComponent"
         :width="SHAPE_SIZE"
         :height="SHAPE_SIZE"
-        outline="#000"
-        fill="rgba(0, 0, 0, 0.1)"
+        outline="var(--ma-primary-600)"
+        fill="var(--ma-primary-100)"
       />
     </div>
   </Teleport>

@@ -1,7 +1,7 @@
 <template>
   <div
     data-testid="sidebar-shape-item"
-    class="flex items-center justify-center p-3 bg-white border border-ma-grey-300 rounded-lg cursor-grab hover:border-ma-primary-500 hover:shadow-md transition-all select-none"
+    class="flex items-center justify-center p-3 bg-ma-white border border-ma-grey-300 rounded-lg cursor-grab hover:border-ma-primary-500 hover:bg-ma-primary-100 hover:shadow-md transition-all select-none"
     @mousedown="handleMouseDown"
   >
     <div class="pointer-events-none">

@@ -4,7 +4,7 @@
     data-testid="sidebar-container"
     class="w-72 flex flex-col gap-2 p-3 bg-ma-grey-100 border-r border-ma-grey-300 shrink-0 h-full"
   >
-    <h3 class="text-lg font-semibold mb-4">Shapes</h3>
+    <h3 class="text-lg font-semibold mb-4 text-ma-text-01">Shapes</h3>
 
     <!-- Draggable shape items -->
     <div class="flex flex-col gap-2 mb-4">

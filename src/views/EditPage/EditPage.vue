@@ -3,17 +3,24 @@
     data-testid="edit-page-container"
     class="flex h-screen w-screen overflow-hidden bg-bg-maincontent"
   >
-    <Sidebar />
-    <div class="flex flex-col flex-1">
-      <Toolbar
-        :can-undo="shapesStore.canUndo"
-        :can-redo="shapesStore.canRedo"
-        :has-copied-shape="shapesStore.hasCopiedShape"
-        @clear-all="clearAll"
-        @paste="shapesStore.pasteShape()"
-        @undo="shapesStore.undo()"
-        @redo="shapesStore.redo()"
-      />
+    <AppSidebar :is-collapsed="sidebarCollapsed" />
+
+    <div class="flex flex-col flex-1 relative">
+      <!-- Floating sidebar toggle -->
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        data-testid="sidebar-toggle"
+        class="absolute top-3 left-3 z-10 bg-ma-grey-100 border border-ma-grey-300 shadow-sm"
+        title="Toggle sidebar"
+        @click="sidebarCollapsed = !sidebarCollapsed"
+      >
+        <PanelLeftClose
+          v-if="!sidebarCollapsed"
+          class="w-5 h-5 text-ma-text-01"
+        />
+        <PanelLeft v-else class="w-5 h-5 text-ma-text-01" />
+      </Button>
 
       <GridCanvas
         ref="canvasRef"
@@ -50,24 +57,29 @@
           @rotate="shapesStore.rotateSelectedShape()"
           @delete="shapesStore.deleteSelectedShape()"
         />
+        <ZoomControls />
       </GridCanvas>
     </div>
+
     <DragGhost />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
+import { PanelLeft, PanelLeftClose } from 'lucide-vue-next'
+import { Button } from '@/components/ui/button'
 import { useShapesStore } from '@/stores/shapes/shapes'
 import { useDragStore } from '@/stores/drag/dragGhost'
 import ShapeWrapper from '@/components/ShapeWrapper/ShapeWrapper.vue'
-import Toolbar from '@/components/Toolbar/Toolbar.vue'
 import GridCanvas from '@/components/GridCanvas/GridCanvas.vue'
-import Sidebar from '@/components/Sidebar/Sidebar.vue'
+import AppSidebar from '@/components/Sidebar/AppSidebar.vue'
 import DragGhost from '@/components/DragGhost/DragGhost.vue'
+import ZoomControls from '@/components/ZoomControls/ZoomControls.vue'
 
 const shapesStore = useShapesStore()
 const dragStore = useDragStore()
+const sidebarCollapsed = ref(false)
 
 const canvasRef = ref<InstanceType<typeof GridCanvas> | null>(null)
 onMounted(() => {
@@ -84,12 +96,6 @@ watch(canvasRef, (newRef) => {
 
 const deleteSelected = () => {
   shapesStore.deleteSelectedShape()
-}
-
-const clearAll = () => {
-  if (confirm('Are you sure you want to clear all shapes?')) {
-    shapesStore.clearAll()
-  }
 }
 
 const selectShape = (id: string | null) => {

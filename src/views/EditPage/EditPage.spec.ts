@@ -4,7 +4,6 @@ import { setActivePinia, createPinia } from 'pinia'
 import EditPage from './EditPage.vue'
 import { useShapesStore } from '../../stores/shapes/shapes'
 import ShapeWrapper from '../../components/ShapeWrapper/ShapeWrapper.vue'
-import Toolbar from '../../components/Toolbar/Toolbar.vue'
 import GridCanvas from '../../components/GridCanvas/GridCanvas.vue'
 
 describe('EditPage', () => {
@@ -18,12 +17,6 @@ describe('EditPage', () => {
 
       const container = wrapper.find('[data-testid="edit-page-container"]')
       expect(container.exists()).toBe(true)
-    })
-
-    it('renders Toolbar component', () => {
-      const wrapper = mount(EditPage)
-
-      expect(wrapper.findComponent(Toolbar).exists()).toBe(true)
     })
 
     it('renders GridCanvas component', () => {
@@ -47,48 +40,17 @@ describe('EditPage', () => {
 
       expect(wrapper.findAllComponents(ShapeWrapper)).toHaveLength(2)
     })
-  })
 
-  describe('toolbar integration', () => {
-    it('passes hasCopiedShape prop to Toolbar', () => {
-      const store = useShapesStore()
-      store.addShape('rectangle')
-      store.copySelectedShape()
-
+    it('renders sidebar toggle button', () => {
       const wrapper = mount(EditPage)
-      const toolbar = wrapper.findComponent(Toolbar)
 
-      expect(toolbar.props('hasCopiedShape')).toBe(true)
+      expect(wrapper.find('[data-testid="sidebar-toggle"]').exists()).toBe(true)
     })
 
-    it('shows confirmation and clears all when Toolbar emits clear-all', async () => {
-      vi.spyOn(window, 'confirm').mockReturnValue(true)
-
-      const store = useShapesStore()
-      store.addShape('rectangle')
-      store.addShape('triangle')
-
+    it('renders zoom controls', () => {
       const wrapper = mount(EditPage)
-      const toolbar = wrapper.findComponent(Toolbar)
 
-      await toolbar.vm.$emit('clear-all')
-
-      expect(store.shapes).toHaveLength(0)
-    })
-
-    it('does not clear shapes when clear-all is cancelled', async () => {
-      vi.spyOn(window, 'confirm').mockReturnValue(false)
-
-      const store = useShapesStore()
-      store.addShape('rectangle')
-      store.addShape('triangle')
-
-      const wrapper = mount(EditPage)
-      const toolbar = wrapper.findComponent(Toolbar)
-
-      await toolbar.vm.$emit('clear-all')
-
-      expect(store.shapes).toHaveLength(2)
+      expect(wrapper.find('[data-testid="zoom-controls"]').exists()).toBe(true)
     })
   })
 

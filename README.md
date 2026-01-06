@@ -22,14 +22,13 @@ Navigate to: http://localhost:5173/view or http://localhost:5173/edit
 - Detail Popup (Per Shape - Settings) Elisabeth & Laura
 - Rotation by 90 degrees only Elisabeth & Laura
 - Sidebar with visible Shapes (drag and drop) Jan & Wiem
-- Responsive
-- Shape Link
-- Zoom-Button
-- Text Advanced (Text Color, Fontsize, Font Family, Extra: Render Markdown?, FA-Icons)
+- View Page/Zoombutton Elisabeth & Laura
+- Shape Link Sam & Jan
+- Text Advanced (Text Color, Fontsize, Font Family, Extra: Render Markdown?, FA-Icons, Text dynamic Size) Sam & Jan
 - Text Upside, disregarding rotation -> Text speparated from Shapes
-- Shape Groups (Shapewrapper for multiple Ids?)
+- Shape Groups (Shapewrapper for multiple Ids?) Jakob & Wiem
+- Responsive
 - Arrow Shape / More shapes
-- View Page
 - JSON Export
 - JSON Import (Validate JSON)
 

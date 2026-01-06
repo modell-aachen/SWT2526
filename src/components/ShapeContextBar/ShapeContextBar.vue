@@ -21,15 +21,17 @@
     >
       <CopyPlus class="w-4 h-4" />
     </button>
-    <div class="w-px bg-ma-grey-300 mx-0.5"></div>
-    <button
-      data-testid="context-rotate-button"
-      class="p-1.5 border border-ma-grey-400 bg-ma-white text-ma-grey-700 rounded cursor-pointer transition-all hover:bg-ma-grey-200 hover:border-ma-grey-500"
-      title="Rotate 90°"
-      @click="$emit('rotate')"
-    >
-      <RotateCw class="w-4 h-4" />
-    </button>
+    <template v-if="!multiSelect">
+      <div class="w-px bg-ma-grey-300 mx-0.5"></div>
+      <button
+        data-testid="context-rotate-button"
+        class="p-1.5 border border-ma-grey-400 bg-ma-white text-ma-grey-700 rounded cursor-pointer transition-all hover:bg-ma-grey-200 hover:border-ma-grey-500"
+        title="Rotate 90°"
+        @click="$emit('rotate')"
+      >
+        <RotateCw class="w-4 h-4" />
+      </button>
+    </template>
     <div class="w-px bg-ma-grey-300 mx-0.5"></div>
     <button
       data-testid="context-delete-button"
@@ -50,9 +52,12 @@ import { Copy, CopyPlus, RotateCw, Trash2 } from 'lucide-vue-next'
 interface Props {
   shapeWidth: number
   shapeY: number
+  multiSelect?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  multiSelect: false,
+})
 
 defineEmits<{
   copy: []

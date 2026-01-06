@@ -13,9 +13,9 @@ describe('useShapesStore', () => {
       expect(store.shapes).toEqual([])
     })
 
-    it('starts with no selected shape', () => {
+    it('starts with no selected shapes', () => {
       const store = useShapesStore()
-      expect(store.selectedShapeId).toBeNull()
+      expect(store.selectedShapeIds).toEqual([])
     })
 
     it('starts with nextId of 1', () => {
@@ -96,7 +96,7 @@ describe('useShapesStore', () => {
       const store = useShapesStore()
       store.addShape('rectangle')
 
-      expect(store.selectedShapeId).toBe('rectangle-1')
+      expect(store.selectedShapeIds).toEqual(['rectangle-1'])
     })
 
     it('sets correct zIndex based on array length', () => {
@@ -120,26 +120,27 @@ describe('useShapesStore', () => {
       expect(store.shapes).toHaveLength(0)
     })
 
-    it('clears selectedShapeId when deleting selected shape', () => {
+    it('clears selectedShapeIds when deleting selected shape', () => {
       const store = useShapesStore()
       store.addShape('rectangle')
       const shapeId = store.shapes[0]?.id
 
       store.deleteShape(shapeId!)
 
-      expect(store.selectedShapeId).toBeNull()
+      expect(store.selectedShapeIds).toEqual([])
     })
 
-    it('keeps selectedShapeId when deleting non-selected shape', () => {
+    it('keeps other selected shapes when deleting one', () => {
       const store = useShapesStore()
       store.addShape('rectangle')
       store.addShape('triangle')
       const firstShapeId = store.shapes[0]?.id
+      const secondShapeId = store.shapes[1]?.id
 
-      store.selectShape(store.shapes[1]!.id)
+      store.selectShapes([firstShapeId!, secondShapeId!])
       store.deleteShape(firstShapeId!)
 
-      expect(store.selectedShapeId).toBe(store.shapes[0]?.id)
+      expect(store.selectedShapeIds).toEqual([secondShapeId])
     })
 
     it('does nothing when deleting non-existent shape', () => {
@@ -152,15 +153,28 @@ describe('useShapesStore', () => {
     })
   })
 
-  describe('deleteSelectedShape', () => {
-    it('deletes the currently selected shape', () => {
+  describe('deleteSelectedShapes', () => {
+    it('deletes the currently selected shapes', () => {
       const store = useShapesStore()
       store.addShape('rectangle')
 
-      store.deleteSelectedShape()
+      store.deleteSelectedShapes()
 
       expect(store.shapes).toHaveLength(0)
-      expect(store.selectedShapeId).toBeNull()
+      expect(store.selectedShapeIds).toEqual([])
+    })
+
+    it('deletes multiple selected shapes', () => {
+      const store = useShapesStore()
+      store.addShape('rectangle')
+      store.addShape('triangle')
+      store.addShape('trapezoid')
+      store.selectShapes([store.shapes[0]!.id, store.shapes[1]!.id])
+
+      store.deleteSelectedShapes()
+
+      expect(store.shapes).toHaveLength(1)
+      expect(store.shapes[0]?.type).toBe('trapezoid')
     })
 
     it('does nothing when no shape is selected', () => {
@@ -168,21 +182,21 @@ describe('useShapesStore', () => {
       store.addShape('rectangle')
       store.selectShape(null)
 
-      store.deleteSelectedShape()
+      store.deleteSelectedShapes()
 
       expect(store.shapes).toHaveLength(1)
     })
   })
 
   describe('selectShape', () => {
-    it('sets the selected shape id', () => {
+    it('sets the selected shape id (replace mode)', () => {
       const store = useShapesStore()
       store.addShape('rectangle')
       const shapeId = store.shapes[0]?.id
 
       store.selectShape(shapeId!)
 
-      expect(store.selectedShapeId).toBe(shapeId)
+      expect(store.selectedShapeIds).toEqual([shapeId])
     })
 
     it('can deselect by passing null', () => {
@@ -190,7 +204,37 @@ describe('useShapesStore', () => {
       store.addShape('rectangle')
       store.selectShape(null)
 
-      expect(store.selectedShapeId).toBeNull()
+      expect(store.selectedShapeIds).toEqual([])
+    })
+
+    it('toggles selection in toggle mode', () => {
+      const store = useShapesStore()
+      store.addShape('rectangle')
+      store.addShape('triangle')
+      const firstId = store.shapes[0]?.id
+      const secondId = store.shapes[1]?.id
+
+      store.selectShape(firstId!)
+      store.selectShape(secondId!, 'toggle')
+
+      expect(store.selectedShapeIds).toContain(firstId)
+      expect(store.selectedShapeIds).toContain(secondId)
+
+      store.selectShape(firstId!, 'toggle')
+      expect(store.selectedShapeIds).toEqual([secondId])
+    })
+
+    it('adds to selection in add mode', () => {
+      const store = useShapesStore()
+      store.addShape('rectangle')
+      store.addShape('triangle')
+      const firstId = store.shapes[0]?.id
+      const secondId = store.shapes[1]?.id
+
+      store.selectShape(firstId!)
+      store.selectShape(secondId!, 'add')
+
+      expect(store.selectedShapeIds).toEqual([firstId, secondId])
     })
   })
 
@@ -360,19 +404,19 @@ describe('useShapesStore', () => {
       expect(store.shapes).toEqual([])
     })
 
-    it('clears selected shape id', () => {
+    it('clears selected shape ids', () => {
       const store = useShapesStore()
       store.addShape('rectangle')
 
       store.clearAll()
 
-      expect(store.selectedShapeId).toBeNull()
+      expect(store.selectedShapeIds).toEqual([])
     })
   })
 
   describe('getters', () => {
     describe('selectedShape', () => {
-      it('returns the selected shape object', () => {
+      it('returns the first selected shape object', () => {
         const store = useShapesStore()
         store.addShape('rectangle')
         const shapeId = store.shapes[0]?.id
@@ -391,9 +435,28 @@ describe('useShapesStore', () => {
 
       it('returns null when selected id does not exist', () => {
         const store = useShapesStore()
-        store.selectedShapeId = 'non-existent'
+        store.selectedShapeIds = ['non-existent']
 
         expect(store.selectedShape).toBeNull()
+      })
+    })
+
+    describe('selectedShapes', () => {
+      it('returns all selected shapes', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.addShape('triangle')
+        store.selectShapes([store.shapes[0]!.id, store.shapes[1]!.id])
+
+        expect(store.selectedShapes).toHaveLength(2)
+      })
+
+      it('returns empty array when no shapes selected', () => {
+        const store = useShapesStore()
+        store.addShape('rectangle')
+        store.selectShape(null)
+
+        expect(store.selectedShapes).toEqual([])
       })
     })
 
@@ -504,10 +567,10 @@ describe('useShapesStore', () => {
         expect(store.shapes).toHaveLength(2)
       })
 
-      it('restores previous state after rotateSelectedShape', () => {
+      it('restores previous state after rotateSelectedShapes', () => {
         const store = useShapesStore()
         store.addShape('rectangle')
-        store.rotateSelectedShape()
+        store.rotateSelectedShapes()
 
         expect(store.shapes[0]?.rotation).toBe(90)
 
@@ -543,11 +606,11 @@ describe('useShapesStore', () => {
         store.addShape('rectangle')
         const shapeId = store.shapes[0]?.id
 
-        expect(store.selectedShapeId).toBe(shapeId)
+        expect(store.selectedShapeIds).toEqual([shapeId])
 
         store.undo()
 
-        expect(store.selectedShapeId).toBeNull()
+        expect(store.selectedShapeIds).toEqual([])
       })
 
       it('preserves selection if selected shape still exists after undo', () => {
@@ -559,7 +622,7 @@ describe('useShapesStore', () => {
         store.selectShape(firstShapeId!)
         store.undo()
 
-        expect(store.selectedShapeId).toBe(firstShapeId)
+        expect(store.selectedShapeIds).toEqual([firstShapeId])
       })
     })
 
@@ -617,7 +680,7 @@ describe('useShapesStore', () => {
 
         store.redo()
 
-        expect(store.selectedShapeId).toBeNull()
+        expect(store.selectedShapeIds).toEqual([])
       })
     })
 

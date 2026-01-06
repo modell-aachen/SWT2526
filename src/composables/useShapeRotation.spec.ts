@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest'
-import { ref } from 'vue'
 import { useShapeRotation } from './useShapeRotation'
 
 describe('useShapeRotation', () => {
@@ -158,7 +157,7 @@ describe('useShapeRotation', () => {
 
       it('rotates all given points of a rectangular shape by 90 degrees clockwise', () => {
         const result = getRotatedPoints('40,45 60,45 60,55 40,55', 90)
-        const points = parsePoints(result)
+        const points = parsePoints(result)!
 
         // Original point (40,45) rotates 90° clockwise around (50,50)
         expect(points[0].x).toBeCloseTo(55, 5)

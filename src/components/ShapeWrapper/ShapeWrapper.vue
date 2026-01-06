@@ -16,9 +16,9 @@
       :fill="fill"
     />
 
-    <!-- Floating context bar for selected shape -->
+    <!-- Floating context bar for selected shape (only for single selection) -->
     <ShapeContextBar
-      v-if="selected"
+      v-if="selected && showResizeHandles"
       :shape-width="width"
       :shape-y="y"
       @copy="$emit('copy')"
@@ -34,9 +34,10 @@
         class="absolute -inset-0.5 border-2 border-ma-primary-500 pointer-events-none"
       ></div>
 
-      <!-- Resize handles -->
+      <!-- Resize handles (only for single selection) -->
       <div
         v-for="handle in resizeHandles"
+        v-show="showResizeHandles"
         :key="handle.position"
         :data-testid="`resize-handle-${handle.position}`"
         class="absolute w-2 h-2 bg-ma-primary-500 border border-white rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
@@ -70,6 +71,7 @@ interface Props {
   outline?: string
   fill?: string
   selected?: boolean
+  showResizeHandles?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -77,6 +79,7 @@ const props = withDefaults(defineProps<Props>(), {
   rotation: 0,
   fill: 'transparent',
   selected: false,
+  showResizeHandles: true,
 })
 
 const emit = defineEmits<{

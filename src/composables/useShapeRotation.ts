@@ -15,7 +15,7 @@ export function useShapeRotation() {
       .trim()
       .split(/\s+/)
       .map((point) => {
-        const [x, y] = point.split(',').map(Number)
+        const [x = 0, y = 0] = point.split(',').map(Number)
         return { x, y }
       })
   }

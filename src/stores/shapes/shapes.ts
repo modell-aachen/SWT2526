@@ -7,17 +7,24 @@ const MAX_HISTORY_SIZE = 50
 export const useShapesStore = defineStore('shapes', {
   state: () => ({
     shapes: [] as Shape[],
-    selectedShapeId: null as string | null,
+    selectedShapeIds: [] as string[],
     nextId: 1,
     history: [[]] as Shape[][], // Start with empty state
     historyIndex: 0, // Points to current state in history
-    clipboard: null as Shape | null, // Single shape clipboard for copy/paste
+    clipboard: [] as Shape[], // Multiple shapes clipboard for copy/paste
   }),
 
   getters: {
+    selectedShapes: (state) => {
+      return state.shapes.filter((s) => state.selectedShapeIds.includes(s.id))
+    },
+
+    // Keep for backward compatibility / single-shape operations
     selectedShape: (state) => {
-      if (!state.selectedShapeId) return null
-      return state.shapes.find((s) => s.id === state.selectedShapeId) || null
+      if (state.selectedShapeIds.length === 0) return null
+      return (
+        state.shapes.find((s) => s.id === state.selectedShapeIds[0]) || null
+      )
     },
 
     sortedShapes: (state) => {
@@ -32,8 +39,35 @@ export const useShapesStore = defineStore('shapes', {
       return state.historyIndex < state.history.length - 1
     },
 
-    hasCopiedShape: (state) => {
-      return state.clipboard !== null
+    hasCopiedShapes: (state) => {
+      return state.clipboard.length > 0
+    },
+
+    hasSelection: (state) => {
+      return state.selectedShapeIds.length > 0
+    },
+
+    hasMultipleSelected: (state) => {
+      return state.selectedShapeIds.length > 1
+    },
+
+    isSelected: (state) => {
+      return (id: string) => state.selectedShapeIds.includes(id)
+    },
+
+    // Get bounding box of all selected shapes
+    selectionBounds: (state) => {
+      const selected = state.shapes.filter((s) =>
+        state.selectedShapeIds.includes(s.id)
+      )
+      if (selected.length === 0) return null
+
+      const minX = Math.min(...selected.map((s) => s.x))
+      const minY = Math.min(...selected.map((s) => s.y))
+      const maxX = Math.max(...selected.map((s) => s.x + s.width))
+      const maxY = Math.max(...selected.map((s) => s.y + s.height))
+
+      return { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
     },
   },
 
@@ -62,13 +96,10 @@ export const useShapesStore = defineStore('shapes', {
       this.historyIndex--
       this.shapes = JSON.parse(JSON.stringify(this.history[this.historyIndex]))
 
-      // Clear selection if the selected shape no longer exists
-      if (
-        this.selectedShapeId &&
-        !this.shapes.find((s) => s.id === this.selectedShapeId)
-      ) {
-        this.selectedShapeId = null
-      }
+      // Filter out selected shapes that no longer exist
+      this.selectedShapeIds = this.selectedShapeIds.filter((id) =>
+        this.shapes.some((s) => s.id === id)
+      )
     },
 
     redo() {
@@ -77,13 +108,10 @@ export const useShapesStore = defineStore('shapes', {
       this.historyIndex++
       this.shapes = JSON.parse(JSON.stringify(this.history[this.historyIndex]))
 
-      // Clear selection if the selected shape no longer exists
-      if (
-        this.selectedShapeId &&
-        !this.shapes.find((s) => s.id === this.selectedShapeId)
-      ) {
-        this.selectedShapeId = null
-      }
+      // Filter out selected shapes that no longer exist
+      this.selectedShapeIds = this.selectedShapeIds.filter((id) =>
+        this.shapes.some((s) => s.id === id)
+      )
     },
 
     addShape(type: ShapeType, x: number = 100, y: number = 100) {
@@ -100,7 +128,7 @@ export const useShapesStore = defineStore('shapes', {
         rotation: 0,
       }
       this.shapes.push(newShape)
-      this.selectedShapeId = newShape.id
+      this.selectedShapeIds = [newShape.id]
       this.saveSnapshot()
     },
 
@@ -108,21 +136,65 @@ export const useShapesStore = defineStore('shapes', {
       const index = this.shapes.findIndex((s) => s.id === id)
       if (index !== -1) {
         this.shapes.splice(index, 1)
-        if (this.selectedShapeId === id) {
-          this.selectedShapeId = null
-        }
+        this.selectedShapeIds = this.selectedShapeIds.filter(
+          (selectedId) => selectedId !== id
+        )
         this.saveSnapshot()
       }
     },
 
-    deleteSelectedShape() {
-      if (this.selectedShapeId) {
-        this.deleteShape(this.selectedShapeId)
+    deleteSelectedShapes() {
+      if (this.selectedShapeIds.length === 0) return
+
+      // Remove all selected shapes
+      this.shapes = this.shapes.filter(
+        (s) => !this.selectedShapeIds.includes(s.id)
+      )
+      this.selectedShapeIds = []
+      this.saveSnapshot()
+    },
+
+    // Selection modes: 'replace' (default), 'toggle', 'add'
+    selectShape(
+      id: string | null,
+      mode: 'replace' | 'toggle' | 'add' = 'replace'
+    ) {
+      if (id === null) {
+        this.selectedShapeIds = []
+        return
+      }
+
+      switch (mode) {
+        case 'replace':
+          this.selectedShapeIds = [id]
+          break
+        case 'toggle':
+          if (this.selectedShapeIds.includes(id)) {
+            this.selectedShapeIds = this.selectedShapeIds.filter(
+              (selectedId) => selectedId !== id
+            )
+          } else {
+            this.selectedShapeIds = [...this.selectedShapeIds, id]
+          }
+          break
+        case 'add':
+          if (!this.selectedShapeIds.includes(id)) {
+            this.selectedShapeIds = [...this.selectedShapeIds, id]
+          }
+          break
       }
     },
 
-    selectShape(id: string | null) {
-      this.selectedShapeId = id
+    selectShapes(ids: string[]) {
+      this.selectedShapeIds = ids
+    },
+
+    selectAll() {
+      this.selectedShapeIds = this.shapes.map((s) => s.id)
+    },
+
+    clearSelection() {
+      this.selectedShapeIds = []
     },
 
     endDrag() {
@@ -135,6 +207,17 @@ export const useShapesStore = defineStore('shapes', {
       if (shape) {
         shape.x += deltaX
         shape.y += deltaY
+      }
+    },
+
+    // Move all selected shapes together
+    updateSelectedShapesPosition(deltaX: number, deltaY: number) {
+      for (const id of this.selectedShapeIds) {
+        const shape = this.shapes.find((s) => s.id === id)
+        if (shape) {
+          shape.x += deltaX
+          shape.y += deltaY
+        }
       }
     },
 
@@ -191,67 +274,79 @@ export const useShapesStore = defineStore('shapes', {
       }
     },
 
-    rotateSelectedShape() {
-      if (!this.selectedShapeId) return
-      const shape = this.shapes.find((s) => s.id === this.selectedShapeId)
-      if (shape) {
-        shape.rotation = (shape.rotation + 90) % 360
-        this.saveSnapshot()
+    rotateSelectedShapes() {
+      if (this.selectedShapeIds.length === 0) return
+      for (const id of this.selectedShapeIds) {
+        const shape = this.shapes.find((s) => s.id === id)
+        if (shape) {
+          shape.rotation = (shape.rotation + 90) % 360
+        }
       }
+      this.saveSnapshot()
     },
 
     clearAll() {
       this.shapes = []
-      this.selectedShapeId = null
+      this.selectedShapeIds = []
       this.saveSnapshot()
     },
 
-    copySelectedShape() {
-      if (!this.selectedShapeId) return
-      const shape = this.shapes.find((s) => s.id === this.selectedShapeId)
-      if (shape) {
-        // Deep clone the shape to clipboard
-        this.clipboard = JSON.parse(JSON.stringify(shape)) as Shape
-      }
+    copySelectedShapes() {
+      if (this.selectedShapeIds.length === 0) return
+      // Deep clone all selected shapes to clipboard
+      this.clipboard = JSON.parse(
+        JSON.stringify(this.selectedShapes)
+      ) as Shape[]
     },
 
-    pasteShape() {
-      if (!this.clipboard) return
+    pasteShapes() {
+      if (this.clipboard.length === 0) return
 
-      const pastedShape: Shape = {
-        ...JSON.parse(JSON.stringify(this.clipboard)),
-        id: `${this.clipboard.type}-${this.nextId++}`,
-        x: this.clipboard.x + 20,
-        y: this.clipboard.y + 20,
-        zIndex: this.shapes.length,
+      const newIds: string[] = []
+
+      for (const clipboardShape of this.clipboard) {
+        const pastedShape: Shape = {
+          ...JSON.parse(JSON.stringify(clipboardShape)),
+          id: `${clipboardShape.type}-${this.nextId++}`,
+          x: clipboardShape.x + 20,
+          y: clipboardShape.y + 20,
+          zIndex: this.shapes.length,
+        }
+        this.shapes.push(pastedShape)
+        newIds.push(pastedShape.id)
       }
 
-      this.shapes.push(pastedShape)
-      this.selectedShapeId = pastedShape.id
+      this.selectedShapeIds = newIds
       this.saveSnapshot()
 
-      // Update clipboard position for subsequent pastes
-      this.clipboard.x += 20
-      this.clipboard.y += 20
+      // Update clipboard positions for subsequent pastes
+      for (const shape of this.clipboard) {
+        shape.x += 20
+        shape.y += 20
+      }
     },
 
-    //TODO(jwi): replace deep clone with a utility function (lodash)
-    duplicateSelectedShape() {
-      if (!this.selectedShapeId) return
-      const pastedShape: Shape = {
-        ...JSON.parse(
-          JSON.stringify(
-            JSON.parse(JSON.stringify(this.selectedShape)) as Shape
-          )
-        ),
-        id: `${(JSON.parse(JSON.stringify(this.selectedShape)) as Shape).type}-${this.nextId++}`,
-        x: (JSON.parse(JSON.stringify(this.selectedShape)) as Shape).x + 20,
-        y: (JSON.parse(JSON.stringify(this.selectedShape)) as Shape).y + 20,
-        zIndex: this.shapes.length,
+    duplicateSelectedShapes() {
+      if (this.selectedShapeIds.length === 0) return
+
+      const shapesToDuplicate = JSON.parse(
+        JSON.stringify(this.selectedShapes)
+      ) as Shape[]
+      const newIds: string[] = []
+
+      for (const shape of shapesToDuplicate) {
+        const duplicatedShape: Shape = {
+          ...shape,
+          id: `${shape.type}-${this.nextId++}`,
+          x: shape.x + 20,
+          y: shape.y + 20,
+          zIndex: this.shapes.length,
+        }
+        this.shapes.push(duplicatedShape)
+        newIds.push(duplicatedShape.id)
       }
 
-      this.shapes.push(pastedShape)
-      this.selectedShapeId = pastedShape.id
+      this.selectedShapeIds = newIds
       this.saveSnapshot()
     },
   },

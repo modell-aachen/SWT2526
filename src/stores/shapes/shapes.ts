@@ -20,7 +20,7 @@ export const useShapesStore = defineStore('shapes', {
       return state.shapes.find((s) => s.id === state.selectedShapeId) || null
     },
 
-    sortedShapes: (state) => {
+    sortedShapes: (state): Shape[] => {
       return [...state.shapes].sort((a, b) => a.zIndex - b.zIndex)
     },
 

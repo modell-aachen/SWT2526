@@ -10,16 +10,6 @@ const defaultProps = {
 
 describe('Toolbar', () => {
   describe('rendering', () => {
-    it('renders all shape add buttons', () => {
-      const wrapper = mount(Toolbar, {
-        props: defaultProps,
-      })
-
-      expect(wrapper.text()).toContain('Add Rectangle')
-      expect(wrapper.text()).toContain('Add Triangle')
-      expect(wrapper.text()).toContain('Add Trapezoid')
-    })
-
     it('renders clear all button', () => {
       const wrapper = mount(Toolbar, {
         props: defaultProps,
@@ -52,48 +42,6 @@ describe('Toolbar', () => {
       })
 
       expect(wrapper.find('[data-testid="paste-button"]').exists()).toBe(true)
-    })
-  })
-
-  describe('add shape buttons', () => {
-    it('emits add-shape with rectangle when clicking Add Rectangle', async () => {
-      const wrapper = mount(Toolbar, {
-        props: defaultProps,
-      })
-
-      const rectangleButton = wrapper.find(
-        '[data-testid="add-rectangle-button"]'
-      )
-      await rectangleButton.trigger('click')
-
-      expect(wrapper.emitted('add-shape')).toBeTruthy()
-      expect(wrapper.emitted('add-shape')?.[0]).toEqual(['rectangle'])
-    })
-
-    it('emits add-shape with triangle when clicking Add Triangle', async () => {
-      const wrapper = mount(Toolbar, {
-        props: defaultProps,
-      })
-
-      const triangleButton = wrapper.find('[data-testid="add-triangle-button"]')
-      await triangleButton.trigger('click')
-
-      expect(wrapper.emitted('add-shape')).toBeTruthy()
-      expect(wrapper.emitted('add-shape')?.[0]).toEqual(['triangle'])
-    })
-
-    it('emits add-shape with trapezoid when clicking Add Trapezoid', async () => {
-      const wrapper = mount(Toolbar, {
-        props: defaultProps,
-      })
-
-      const trapezoidButton = wrapper.find(
-        '[data-testid="add-trapezoid-button"]'
-      )
-      await trapezoidButton.trigger('click')
-
-      expect(wrapper.emitted('add-shape')).toBeTruthy()
-      expect(wrapper.emitted('add-shape')?.[0]).toEqual(['trapezoid'])
     })
   })
 

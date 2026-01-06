@@ -43,28 +43,6 @@
     </button>
     <div class="w-px bg-ma-grey-300 mx-2"></div>
     <button
-      data-testid="add-rectangle-button"
-      class="px-4 py-2 border border-ma-primary-500 bg-ma-primary-500 text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-primary-600 hover:border-ma-primary-600"
-      @click="$emit('add-shape', 'rectangle')"
-    >
-      Add Rectangle
-    </button>
-    <button
-      data-testid="add-triangle-button"
-      class="px-4 py-2 border border-ma-primary-500 bg-ma-primary-500 text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-primary-600 hover:border-ma-primary-600"
-      @click="$emit('add-shape', 'triangle')"
-    >
-      Add Triangle
-    </button>
-    <button
-      data-testid="add-trapezoid-button"
-      class="px-4 py-2 border border-ma-primary-500 bg-ma-primary-500 text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-primary-600 hover:border-ma-primary-600"
-      @click="$emit('add-shape', 'trapezoid')"
-    >
-      Add Trapezoid
-    </button>
-    <div class="w-px bg-ma-grey-300 mx-2"></div>
-    <button
       data-testid="clear-all-button"
       class="px-4 py-2 border border-ma-grey-500 bg-ma-grey-500 text-white rounded cursor-pointer text-sm transition-all hover:bg-ma-grey-600 hover:border-ma-grey-600"
       @click="$emit('clear-all')"
@@ -83,7 +61,6 @@
 </template>
 
 <script setup lang="ts">
-import type { ShapeType } from '@/types/ShapeType'
 import { Undo2, Redo2, ClipboardPaste } from 'lucide-vue-next'
 
 defineProps<{
@@ -93,7 +70,6 @@ defineProps<{
 }>()
 
 defineEmits<{
-  'add-shape': [type: ShapeType]
   'clear-all': []
   paste: []
   undo: []

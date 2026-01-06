@@ -61,17 +61,6 @@ describe('EditPage', () => {
       expect(toolbar.props('hasCopiedShape')).toBe(true)
     })
 
-    it('adds shape when Toolbar emits add-shape', async () => {
-      const wrapper = mount(EditPage)
-      const store = useShapesStore()
-      const toolbar = wrapper.findComponent(Toolbar)
-
-      await toolbar.vm.$emit('add-shape', 'rectangle')
-
-      expect(store.shapes).toHaveLength(1)
-      expect(store.shapes[0].type).toBe('rectangle')
-    })
-
     it('shows confirmation and clears all when Toolbar emits clear-all', async () => {
       vi.spyOn(window, 'confirm').mockReturnValue(true)
 

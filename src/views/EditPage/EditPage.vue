@@ -77,8 +77,8 @@ import { useDragStore } from '@/stores/drag/dragGhost'
 import ShapeWrapper from '@/components/ShapeWrapper/ShapeWrapper.vue'
 import GridCanvas from '@/components/GridCanvas/GridCanvas.vue'
 
-import LeftSidebar from '@/components/Sidebar/LeftSidebar.vue'
-import RightSidebar from '@/components/Sidebar/RightSidebar.vue'
+import LeftSidebar from '@/components/Sidebar/leftBar/LeftSidebar.vue'
+import RightSidebar from '@/components/Sidebar/rightBar/RightSidebar.vue'
 import DragGhost from '@/components/DragGhost/DragGhost.vue'
 import ZoomControls from '@/components/ZoomControls/ZoomControls.vue'
 

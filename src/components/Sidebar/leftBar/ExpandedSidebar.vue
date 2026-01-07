@@ -89,7 +89,7 @@ import {
   Trash2,
 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
-import SidebarGroup from './SidebarGroup.vue'
+import SidebarGroup from '@/components/Sidebar/SidebarGroup.vue'
 import ShapeButton from './ShapeButton.vue'
 import { useShapesStore } from '@/stores/shapes/shapes'
 import { useDarkMode } from '@/composables/useDarkMode'

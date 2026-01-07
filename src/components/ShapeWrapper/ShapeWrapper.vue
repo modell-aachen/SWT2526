@@ -45,6 +45,18 @@
         @mousedown.stop="handleResizeStart(handle.position, $event)"
       ></div>
     </div>
+
+    <!-- Link indicator -->
+    <a
+      v-if="link && !selected"
+      :href="link"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="absolute -top-3 -right-3 pointer-events-auto text-ma-text-01 bg-white border border-ma-grey-300 rounded-full p-1 shadow-md z-10 hover:bg-ma-grey-100 transition-colors"
+      @mousedown.stop
+    >
+      <Link2 class="w-4 h-4 text-blue-600" />
+    </a>
   </div>
 </template>
 
@@ -57,6 +69,7 @@ import Rectangle from '../shapes/Rectangle/RectangleComponent.vue'
 import Triangle from '../shapes/Triangle/TriangleComponent.vue'
 import Trapezoid from '../shapes/Trapezoid/TrapezoidComponent.vue'
 import ShapeContextBar from '../ShapeContextBar/ShapeContextBar.vue'
+import { Link2 } from 'lucide-vue-next'
 import { useDraggable } from '@/composables/useDraggable'
 import { useResizable } from '@/composables/useResizable'
 
@@ -70,6 +83,7 @@ interface Props {
   outline?: string
   fill?: string
   selected?: boolean
+  link?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {

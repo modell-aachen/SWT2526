@@ -11,4 +11,5 @@ export interface Shape {
   fill: string
   zIndex: number
   rotation: number
+  link?: string
 }

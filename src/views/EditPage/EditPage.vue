@@ -3,7 +3,7 @@
     data-testid="edit-page-container"
     class="flex h-screen w-screen overflow-hidden bg-bg-maincontent"
   >
-    <AppSidebar :is-collapsed="sidebarCollapsed" />
+    <LeftSidebar :is-collapsed="sidebarCollapsed" />
 
     <div class="flex flex-col flex-1 relative">
       <!-- Floating sidebar toggle -->
@@ -43,6 +43,7 @@
           :shape-type="shape.type"
           :outline="shape.outline"
           :fill="shape.fill"
+          :link="shape.link"
           :selected="shape.id === shapesStore.selectedShapeId"
           @click="selectShape(shape.id)"
           @drag="(deltaX, deltaY) => handleDrag(shape.id, deltaX, deltaY)"
@@ -61,6 +62,8 @@
       </GridCanvas>
     </div>
 
+    <RightSidebar />
+
     <DragGhost />
   </div>
 </template>
@@ -73,7 +76,9 @@ import { useShapesStore } from '@/stores/shapes/shapes'
 import { useDragStore } from '@/stores/drag/dragGhost'
 import ShapeWrapper from '@/components/ShapeWrapper/ShapeWrapper.vue'
 import GridCanvas from '@/components/GridCanvas/GridCanvas.vue'
-import AppSidebar from '@/components/Sidebar/AppSidebar.vue'
+
+import LeftSidebar from '@/components/Sidebar/LeftSidebar.vue'
+import RightSidebar from '@/components/Sidebar/RightSidebar.vue'
 import DragGhost from '@/components/DragGhost/DragGhost.vue'
 import ZoomControls from '@/components/ZoomControls/ZoomControls.vue'
 

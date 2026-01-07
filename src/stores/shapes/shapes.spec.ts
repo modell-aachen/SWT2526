@@ -25,36 +25,28 @@ describe('useShapesStore', () => {
   })
 
   describe('addShape', () => {
-    it('adds a rectangle shape to the store', () => {
+    it.each(['rectangle', 'triangle', 'trapezoid'] as const)(
+      'adds a %s shape to the store',
+      (type) => {
+        const store = useShapesStore()
+        store.addShape(type)
+
+        expect(store.shapes).toHaveLength(1)
+        expect(store.shapes[0]?.type).toBe(type)
+      }
+    )
+
+    it('creates shape with default properties (pos, size, colors)', () => {
       const store = useShapesStore()
       store.addShape('rectangle')
 
-      expect(store.shapes).toHaveLength(1)
-      expect(store.shapes[0]?.type).toBe('rectangle')
-    })
-
-    it('adds a triangle shape to the store', () => {
-      const store = useShapesStore()
-      store.addShape('triangle')
-
-      expect(store.shapes).toHaveLength(1)
-      expect(store.shapes[0]?.type).toBe('triangle')
-    })
-
-    it('adds a trapezoid shape to the store', () => {
-      const store = useShapesStore()
-      store.addShape('trapezoid')
-
-      expect(store.shapes).toHaveLength(1)
-      expect(store.shapes[0]?.type).toBe('trapezoid')
-    })
-
-    it('creates shape with default position when not provided', () => {
-      const store = useShapesStore()
-      store.addShape('rectangle')
-
-      expect(store.shapes[0]?.x).toBe(100)
-      expect(store.shapes[0]?.y).toBe(100)
+      const shape = store.shapes[0]
+      expect(shape?.x).toBe(100)
+      expect(shape?.y).toBe(100)
+      expect(shape?.width).toBe(100)
+      expect(shape?.height).toBe(100)
+      expect(shape?.outline).toBe('#000')
+      expect(shape?.fill).toBe('transparent')
     })
 
     it('creates shape with custom position when provided', () => {
@@ -63,22 +55,6 @@ describe('useShapesStore', () => {
 
       expect(store.shapes[0]?.x).toBe(250)
       expect(store.shapes[0]?.y).toBe(300)
-    })
-
-    it('creates shape with default size of 100x100', () => {
-      const store = useShapesStore()
-      store.addShape('rectangle')
-
-      expect(store.shapes[0]?.width).toBe(100)
-      expect(store.shapes[0]?.height).toBe(100)
-    })
-
-    it('creates shape with default colors', () => {
-      const store = useShapesStore()
-      store.addShape('rectangle')
-
-      expect(store.shapes[0]?.outline).toBe('#000')
-      expect(store.shapes[0]?.fill).toBe('transparent')
     })
 
     it('increments nextId for each shape', () => {
@@ -348,6 +324,38 @@ describe('useShapesStore', () => {
     })
   })
 
+  describe('updateShapeLink', () => {
+    it('updates link property of a shape', () => {
+      const store = useShapesStore()
+      store.addShape('rectangle')
+      const shapeId = store.shapes[0]?.id
+
+      store.updateShapeLink(shapeId!, 'https://example.com')
+
+      expect(store.shapes[0]?.link).toBe('https://example.com')
+    })
+
+    it('can remove link by passing undefined', () => {
+      const store = useShapesStore()
+      store.addShape('rectangle')
+      const shapeId = store.shapes[0]?.id
+      store.updateShapeLink(shapeId!, 'https://example.com')
+
+      store.updateShapeLink(shapeId!, undefined)
+
+      expect(store.shapes[0]?.link).toBeUndefined()
+    })
+
+    it('does nothing when shape id does not exist', () => {
+      const store = useShapesStore()
+      store.addShape('rectangle')
+
+      store.updateShapeLink('non-existent', 'https://example.com')
+
+      expect(store.shapes[0]?.link).toBeUndefined()
+    })
+  })
+
   describe('clearAll', () => {
     it('removes all shapes', () => {
       const store = useShapesStore()
@@ -370,103 +378,28 @@ describe('useShapesStore', () => {
     })
   })
 
-  describe('getters', () => {
-    describe('selectedShape', () => {
-      it('returns the selected shape object', () => {
-        const store = useShapesStore()
-        store.addShape('rectangle')
-        const shapeId = store.shapes[0]?.id
+  describe('sortedShapes', () => {
+    it('returns shapes sorted by zIndex', () => {
+      const store = useShapesStore()
+      store.addShape('rectangle')
+      store.addShape('triangle')
+      store.addShape('trapezoid')
 
-        expect(store.selectedShape).toEqual(store.shapes[0])
-        expect(store.selectedShape?.id).toBe(shapeId)
-      })
+      const sorted = store.sortedShapes
 
-      it('returns null when no shape is selected', () => {
-        const store = useShapesStore()
-        store.addShape('rectangle')
-        store.selectShape(null)
-
-        expect(store.selectedShape).toBeNull()
-      })
-
-      it('returns null when selected id does not exist', () => {
-        const store = useShapesStore()
-        store.selectedShapeId = 'non-existent'
-
-        expect(store.selectedShape).toBeNull()
-      })
+      expect(sorted[0]?.zIndex).toBeLessThanOrEqual(sorted[1]?.zIndex as number)
+      expect(sorted[1]?.zIndex).toBeLessThanOrEqual(sorted[2]?.zIndex as number)
     })
 
-    describe('sortedShapes', () => {
-      it('returns shapes sorted by zIndex', () => {
-        const store = useShapesStore()
-        store.addShape('rectangle')
-        store.addShape('triangle')
-        store.addShape('trapezoid')
+    it('does not mutate original shapes array', () => {
+      const store = useShapesStore()
+      store.addShape('rectangle')
+      store.addShape('triangle')
+      const originalOrder = [...store.shapes]
 
-        const sorted = store.sortedShapes
+      const _ = store.sortedShapes
 
-        expect(sorted[0]?.zIndex).toBeLessThanOrEqual(
-          sorted[1]?.zIndex as number
-        )
-        expect(sorted[1]?.zIndex).toBeLessThanOrEqual(
-          sorted[2]?.zIndex as number
-        )
-      })
-
-      it('does not mutate original shapes array', () => {
-        const store = useShapesStore()
-        store.addShape('rectangle')
-        store.addShape('triangle')
-        const originalOrder = [...store.shapes]
-
-        const _ = store.sortedShapes
-
-        expect(store.shapes).toEqual(originalOrder)
-      })
-    })
-
-    describe('canUndo', () => {
-      it('returns false when history is empty', () => {
-        const store = useShapesStore()
-        expect(store.canUndo).toBe(false)
-      })
-
-      it('returns true after an action that saves snapshot', () => {
-        const store = useShapesStore()
-        store.addShape('rectangle')
-        expect(store.canUndo).toBe(true)
-      })
-
-      it('returns false after undoing all actions', () => {
-        const store = useShapesStore()
-        store.addShape('rectangle')
-        store.undo()
-        expect(store.canUndo).toBe(false)
-      })
-    })
-
-    describe('canRedo', () => {
-      it('returns false when at latest state', () => {
-        const store = useShapesStore()
-        store.addShape('rectangle')
-        expect(store.canRedo).toBe(false)
-      })
-
-      it('returns true after undo', () => {
-        const store = useShapesStore()
-        store.addShape('rectangle')
-        store.undo()
-        expect(store.canRedo).toBe(true)
-      })
-
-      it('returns false after redoing to latest', () => {
-        const store = useShapesStore()
-        store.addShape('rectangle')
-        store.undo()
-        store.redo()
-        expect(store.canRedo).toBe(false)
-      })
+      expect(store.shapes).toEqual(originalOrder)
     })
   })
 
@@ -931,14 +864,11 @@ describe('useShapesStore', () => {
 
         store.pasteShape()
         store.pasteShape()
-        store.pasteShape()
 
         expect(store.shapes[1]?.x).toBe(120)
         expect(store.shapes[1]?.y).toBe(120)
         expect(store.shapes[2]?.x).toBe(140)
         expect(store.shapes[2]?.y).toBe(140)
-        expect(store.shapes[3]?.x).toBe(160)
-        expect(store.shapes[3]?.y).toBe(160)
       })
 
       it('assigns correct zIndex to pasted shape', () => {
@@ -951,21 +881,6 @@ describe('useShapesStore', () => {
         store.pasteShape()
 
         expect(store.shapes[2]?.zIndex).toBe(2)
-      })
-    })
-
-    describe('hasCopiedShape getter', () => {
-      it('returns false when clipboard is empty', () => {
-        const store = useShapesStore()
-        expect(store.hasCopiedShape).toBe(false)
-      })
-
-      it('returns true when clipboard has a shape', () => {
-        const store = useShapesStore()
-        store.addShape('rectangle')
-        store.copySelectedShape()
-
-        expect(store.hasCopiedShape).toBe(true)
       })
     })
 

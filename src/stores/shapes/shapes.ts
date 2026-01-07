@@ -98,6 +98,7 @@ export const useShapesStore = defineStore('shapes', {
         fill: 'transparent',
         zIndex: this.shapes.length,
         rotation: 0,
+        link: undefined,
       }
       this.shapes.push(newShape)
       this.selectedShapeId = newShape.id
@@ -253,6 +254,21 @@ export const useShapesStore = defineStore('shapes', {
       this.shapes.push(pastedShape)
       this.selectedShapeId = pastedShape.id
       this.saveSnapshot()
+    },
+    updateShapeLink(id: string, link: string | undefined) {
+      const shape = this.shapes.find((s) => s.id === id)
+      if (shape) {
+        shape.link = link
+        this.saveSnapshot()
+      }
+    },
+
+    removeShapeLink(id: string) {
+      const shape = this.shapes.find((s) => s.id === id)
+      if (shape) {
+        shape.link = undefined
+        this.saveSnapshot()
+      }
     },
   },
 })

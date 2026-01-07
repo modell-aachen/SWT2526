@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
-import AppSidebar from './AppSidebar.vue'
+import LeftSidebar from './LeftSidebar.vue'
 import { useShapesStore } from '@/stores/shapes/shapes'
 
-describe('AppSidebar', () => {
+describe('LeftSidebar', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     localStorage.clear()
@@ -13,7 +13,7 @@ describe('AppSidebar', () => {
 
   describe('rendering', () => {
     it('renders the sidebar container', () => {
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },
       })
 
@@ -21,7 +21,7 @@ describe('AppSidebar', () => {
     })
 
     it('shows "Tools" header when expanded', () => {
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },
       })
 
@@ -29,7 +29,7 @@ describe('AppSidebar', () => {
     })
 
     it('hides "Tools" header when collapsed', () => {
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: true },
       })
 
@@ -37,7 +37,7 @@ describe('AppSidebar', () => {
     })
 
     it('renders shape buttons for all shapes', () => {
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },
       })
 
@@ -46,7 +46,7 @@ describe('AppSidebar', () => {
     })
 
     it('renders sidebar group with Shapes title', () => {
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },
       })
 
@@ -57,7 +57,7 @@ describe('AppSidebar', () => {
 
   describe('footer buttons', () => {
     it('renders all footer action buttons', () => {
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },
       })
 
@@ -73,7 +73,7 @@ describe('AppSidebar', () => {
     })
 
     it('disables undo button when no history', () => {
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },
       })
 
@@ -85,7 +85,7 @@ describe('AppSidebar', () => {
       const store = useShapesStore()
       store.addShape('rectangle')
 
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },
       })
 
@@ -97,7 +97,7 @@ describe('AppSidebar', () => {
       const store = useShapesStore()
       store.addShape('rectangle')
 
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },
       })
 
@@ -110,7 +110,7 @@ describe('AppSidebar', () => {
       store.addShape('rectangle')
       store.undo()
 
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },
       })
 
@@ -124,7 +124,7 @@ describe('AppSidebar', () => {
       store.addShape('rectangle')
       store.addShape('triangle')
 
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },
       })
 
@@ -139,7 +139,7 @@ describe('AppSidebar', () => {
       const store = useShapesStore()
       store.addShape('rectangle')
 
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },
       })
 
@@ -150,7 +150,7 @@ describe('AppSidebar', () => {
 
   describe('collapsed state', () => {
     it('applies collapsed width class when collapsed', () => {
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: true },
       })
 
@@ -159,7 +159,7 @@ describe('AppSidebar', () => {
     })
 
     it('applies expanded width class when not collapsed', () => {
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },
       })
 
@@ -168,7 +168,7 @@ describe('AppSidebar', () => {
     })
 
     it('hides group toggle when sidebar is collapsed', () => {
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: true },
       })
 
@@ -178,7 +178,7 @@ describe('AppSidebar', () => {
     })
 
     it('shows group toggle when sidebar is expanded', () => {
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },
       })
 
@@ -190,7 +190,7 @@ describe('AppSidebar', () => {
 
   describe('SidebarGroup collapse', () => {
     it('can collapse Shapes group by clicking toggle', async () => {
-      const wrapper = mount(AppSidebar, {
+      const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },
       })
 

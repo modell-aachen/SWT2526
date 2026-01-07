@@ -4,6 +4,7 @@ import ShapeWrapper from './ShapeWrapper.vue'
 import Rectangle from '../shapes/Rectangle/RectangleComponent.vue'
 import Triangle from '../shapes/Triangle/TriangleComponent.vue'
 import Trapezoid from '../shapes/Trapezoid/TrapezoidComponent.vue'
+import { Link2 } from 'lucide-vue-next'
 
 describe('ShapeWrapper', () => {
   beforeEach(() => {
@@ -50,6 +51,27 @@ describe('ShapeWrapper', () => {
       expect(style).toContain('top: 200px')
       expect(style).toContain('width: 120px')
       expect(style).toContain('height: 80px')
+    })
+
+    it('renders link indicator when link prop is present', () => {
+      const wrapper = mount(ShapeWrapper, {
+        props: {
+          x: 100,
+          y: 100,
+          width: 100,
+          height: 100,
+          shapeType: 'rectangle',
+          link: 'https://example.com',
+        },
+      })
+
+      // Expect anchor tag
+      const link = wrapper.find('a')
+      expect(link.exists()).toBe(true)
+      expect(link.attributes('href')).toBe('https://example.com')
+      expect(link.attributes('target')).toBe('_blank')
+
+      expect(wrapper.findComponent(Link2).exists()).toBe(true)
     })
 
     it('renders Rectangle component for rectangle type', () => {

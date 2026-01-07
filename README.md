@@ -25,6 +25,17 @@ Navigate to: http://localhost:5173/view or http://localhost:5173/edit
 - View Page/Zoombutton Elisabeth & Laura
 - Shape Link Sam & Jan
 - Text Advanced (Text Color, Fontsize, Font Family, Extra: Render Markdown?, FA-Icons, Text dynamic Size) Sam & Jan
+
+### Text Advanced Umsetzung
+
+- Eigenständiges Textelement über unsichtbare Recheck Shape
+- Text Color, Fontsize, Font Family, ... selection option in right sidebar
+- Jede shape bekommt eine eigen Objekt mit informationen über die Text anordnung
+- es wird alogithmisch in jede shape eine maximal große Box gezeichnet, die dann wiederum den Text enthält
+- ein Text besteht aus einem Titel und einem Klartext
+- FA-Icons werden als eigene Shapes in der Left sidebar hinzugefügt
+- Text dynamic Size?
+
 - Text Upside, disregarding rotation -> Text speparated from Shapes
 - Shape Groups (Shapewrapper for multiple Ids?) Jakob & Wiem
 - Responsive

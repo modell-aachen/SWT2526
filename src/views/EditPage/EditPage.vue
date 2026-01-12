@@ -58,7 +58,6 @@
           @rotate="shapesStore.rotateSelectedShape()"
           @delete="shapesStore.deleteSelectedShape()"
         />
-        <ZoomControls />
       </GridCanvas>
     </div>
 
@@ -80,7 +79,6 @@ import GridCanvas from '@/components/GridCanvas/GridCanvas.vue'
 import LeftSidebar from '@/components/Sidebar/leftBar/LeftSidebar.vue'
 import RightSidebar from '@/components/Sidebar/rightBar/RightSidebar.vue'
 import DragGhost from '@/components/DragGhost/DragGhost.vue'
-import ZoomControls from '@/components/ZoomControls/ZoomControls.vue'
 
 const shapesStore = useShapesStore()
 const dragStore = useDragStore()

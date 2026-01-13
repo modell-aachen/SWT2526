@@ -15,7 +15,12 @@
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+        <pattern
+          id="grid"
+          :width="20 / zoomStore.zoom"
+          :height="20 / zoomStore.zoom"
+          patternUnits="userSpaceOnUse"
+        >
           <path
             data-testid="grid-pattern-path"
             d="M 20 0 L 0 0 0 20"
@@ -28,11 +33,21 @@
       <rect width="100%" height="100%" fill="url(#grid)" />
     </svg>
 
-    <slot />
+    <div
+      class="absolute top-0 left-0 w-full h-full"
+      :style="{
+        transform: `scale(${zoomStore.zoom})`,
+        transformOrigin: 'top left',
+      }"
+    >
+      <slot />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useZoomStore } from '@/stores/zoom/zoom'
+
 const emit = defineEmits<{
   'canvas-click': []
   'delete-selected': []
@@ -42,6 +57,8 @@ const emit = defineEmits<{
   undo: []
   redo: []
 }>()
+
+const zoomStore = useZoomStore()
 
 const handleCanvasClick = (event: MouseEvent) => {
   // Deselect when clicking on empty canvas

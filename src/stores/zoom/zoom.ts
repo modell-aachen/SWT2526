@@ -13,14 +13,14 @@ export const useZoomStore = defineStore('zoom', {
         zoomIn() {
             if (this.zoom < 3.0) {
                 // Max zoom 300%
-                this.zoom = Math.min(this.zoom * 1.2, 3.0)
+                this.zoom = Math.min(this.zoom + 0.1, 3.0)
             }
         },
 
         zoomOut() {
             if (this.zoom > 0.1) {
                 // Min zoom 10%
-                this.zoom = Math.max(this.zoom / 1.2, 0.1)
+                this.zoom = Math.max(this.zoom - 0.1, 0.1)
             }
         },
 

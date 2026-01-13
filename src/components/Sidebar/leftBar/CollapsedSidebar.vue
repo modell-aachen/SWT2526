@@ -107,8 +107,8 @@
           title="Toggle dark mode"
           @click="toggleDarkMode"
         >
-          <Moon v-if="isDark" class="w-4 h-4 text-ma-text-01" />
-          <Sun v-else class="w-4 h-4 text-ma-text-01" />
+          <Sun v-if="isDark" class="w-4 h-4 text-ma-text-01" />
+          <Moon v-else class="w-4 h-4 text-ma-text-01" />
         </Button>
       </div>
     </div>

@@ -6,41 +6,59 @@ export interface Rect {
   rotation: number
 }
 
-interface Point {
-  x: number
-  y: number
-}
-
 export type ResizeHandle = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw'
 
+const MIN_SIZE = 30
+
 /**
- * Rotates a point around a center.
+ * Transforms global mouse delta to local element space.
+ * Only supports 90° rotation increments (0, 90, 180, 270).
  */
-export function rotatePoint(
-  point: Point,
-  center: Point,
-  angleDegrees: number
-): Point {
-  const angleRadians = (angleDegrees * Math.PI) / 180
-  const cos = Math.cos(angleRadians)
-  const sin = Math.sin(angleRadians)
+function toLocalDelta(
+  deltaX: number,
+  deltaY: number,
+  rotation: number
+): { x: number; y: number } {
+  const normalizedRotation = ((rotation % 360) + 360) % 360
 
-  const dx = point.x - center.x
-  const dy = point.y - center.y
-
-  return {
-    x: center.x + dx * cos - dy * sin,
-    y: center.y + dx * sin + dy * cos,
+  switch (normalizedRotation) {
+    case 90:
+      return { x: deltaY, y: -deltaX }
+    case 180:
+      return { x: -deltaX, y: -deltaY }
+    case 270:
+      return { x: -deltaY, y: deltaX }
+    default: // 0
+      return { x: deltaX, y: deltaY }
   }
 }
 
 /**
- * Calculates the new state of a rotated element after resizing.
- *
- * Logic:
- * 1. Convert mouse delta to local coordinate system of the element.
- * 2. Apply delta to width/height/local-position based on handle.
- * 3. Convert back to global coordinates.
+ * Transforms local center shift back to global space.
+ * Only supports 90° rotation increments.
+ */
+function toGlobalShift(
+  shiftX: number,
+  shiftY: number,
+  rotation: number
+): { x: number; y: number } {
+  const normalizedRotation = ((rotation % 360) + 360) % 360
+
+  switch (normalizedRotation) {
+    case 90:
+      return { x: -shiftY, y: shiftX }
+    case 180:
+      return { x: -shiftX, y: -shiftY }
+    case 270:
+      return { x: shiftY, y: -shiftX }
+    default: // 0
+      return { x: shiftX, y: shiftY }
+  }
+}
+
+/**
+ * Calculates the new state of an element after resizing.
+ * Only supports 90° rotation increments (0, 90, 180, 270).
  */
 export function calculateNewElementState(
   element: Rect,
@@ -51,76 +69,42 @@ export function calculateNewElementState(
   const { x, y, width, height, rotation } = element
   const center = { x: x + width / 2, y: y + height / 2 }
 
-  // Rotate delta to local space (inverse rotation of the object)
-  // We are rotating the vector (deltaX, deltaY) by -rotation
-  const rad = (-rotation * Math.PI) / 180
-  const cos = Math.cos(rad)
-  const sin = Math.sin(rad)
-
-  const localDeltaX = deltaX * cos - deltaY * sin
-  const localDeltaY = deltaX * sin + deltaY * cos
+  // Convert mouse delta to local (element) space
+  const localDelta = toLocalDelta(deltaX, deltaY, rotation)
 
   let newWidth = width
   let newHeight = height
-  let newLocalCenterX = 0 // Relative shift from old center in local space
-  let newLocalCenterY = 0 // Relative shift from old center in local space
+  let localCenterShiftX = 0
+  let localCenterShiftY = 0
 
-  // Safety minimum size
-  const MIN_SIZE = 10
-
-  // Apply resizing in local unrotated space
-  // Note: delta is cumulative from drag start usually, but here we assume incremental?
-  // The wrapper emits dragging deltas.
-
-  // Horizontal
+  // Apply horizontal resize
   if (handle.includes('e')) {
-    newWidth = Math.max(MIN_SIZE, width + localDeltaX)
-    newLocalCenterX = (newWidth - width) / 2
+    newWidth = Math.max(MIN_SIZE, width + localDelta.x)
+    localCenterShiftX = (newWidth - width) / 2
   } else if (handle.includes('w')) {
-    const proposedWidth = width - localDeltaX
-    if (proposedWidth >= MIN_SIZE) {
-      newWidth = proposedWidth
-      newLocalCenterX = -(newWidth - width) / 2
-    } else {
-      // If we hit min size, stop moving center
-      // (Simplified logic, exact clamping requires more math)
-      newWidth = MIN_SIZE
-      newLocalCenterX = (MIN_SIZE - width) / 2
-    }
+    const proposedWidth = width - localDelta.x
+    newWidth = Math.max(MIN_SIZE, proposedWidth)
+    localCenterShiftX = -(newWidth - width) / 2
   }
 
-  // Vertical
+  // Apply vertical resize
   if (handle.includes('s')) {
-    newHeight = Math.max(MIN_SIZE, height + localDeltaY)
-    newLocalCenterY = (newHeight - height) / 2
+    newHeight = Math.max(MIN_SIZE, height + localDelta.y)
+    localCenterShiftY = (newHeight - height) / 2
   } else if (handle.includes('n')) {
-    const proposedHeight = height - localDeltaY
-    if (proposedHeight >= MIN_SIZE) {
-      newHeight = proposedHeight
-      newLocalCenterY = -(newHeight - height) / 2
-    } else {
-      newHeight = MIN_SIZE
-      newLocalCenterY = (MIN_SIZE - height) / 2
-    }
+    const proposedHeight = height - localDelta.y
+    newHeight = Math.max(MIN_SIZE, proposedHeight)
+    localCenterShiftY = -(newHeight - height) / 2
   }
 
-  // Calculate new global center
-  // Rotate the local center shift back to global space by +rotation
-  const globalShiftRad = (rotation * Math.PI) / 180
-  const gsCos = Math.cos(globalShiftRad)
-  const gsSin = Math.sin(globalShiftRad)
-
-  const globalShiftX = newLocalCenterX * gsCos - newLocalCenterY * gsSin
-  const globalShiftY = newLocalCenterX * gsSin + newLocalCenterY * gsCos
-
-  const newCenterX = center.x + globalShiftX
-  const newCenterY = center.y + globalShiftY
+  // Convert center shift back to global space
+  const globalShift = toGlobalShift(localCenterShiftX, localCenterShiftY, rotation)
 
   return {
-    x: newCenterX - newWidth / 2,
-    y: newCenterY - newHeight / 2,
+    x: center.x + globalShift.x - newWidth / 2,
+    y: center.y + globalShift.y - newHeight / 2,
     width: newWidth,
     height: newHeight,
-    rotation, // Rotation never changes during resize
+    rotation,
   }
 }

@@ -5,11 +5,13 @@
       :style="{ transform: `rotate(${element.rotation}deg)` }"
     >
       <!-- Render specific component based on type -->
+       <div class="overflow-hidden">
       <component
         :is="componentType"
         v-bind="componentProps"
         class="w-full h-full block"
       />
+      </div>
 
       <!-- Selection UI (Rotates with element) -->
       <div v-if="selected" class="absolute inset-0 pointer-events-none">
@@ -114,16 +116,11 @@ const wrapperStyle = computed(() => ({
   top: `${props.element.y}px`,
   width: `${props.element.width}px`,
   height: `${props.element.height}px`,
-  // We apply rotation to the INNER div, not the wrapper position itself.
-  // Wait, if we rotate the inner div, the bounding box of the wrapper
-  // is essentially the axis-aligned box of the unrotated element.
-  // This simplifies the logic because 'left/top' corresponds to 'x/y'.
 }))
 
 const handles: ResizeHandle[] = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w']
 
 const getHandleStyle = (handle: ResizeHandle) => {
-  // Position handles relative to the UNROTATED box (0..w, 0..h)
   switch (handle) {
     case 'nw':
       return { left: '0px', top: '0px' }

@@ -3,12 +3,10 @@
     data-testid="expanded-sidebar"
     class="flex flex-col h-full w-56 border-r border-ma-grey-300 bg-ma-grey-100"
   >
-    <!-- Header -->
     <div class="p-3 border-b border-ma-grey-300">
       <h2 class="font-semibold text-ma-text-01">Tools</h2>
     </div>
 
-    <!-- Scrollable content area -->
     <div class="flex-1 overflow-y-auto p-2">
       <SidebarGroup title="Shapes" :sidebar-collapsed="false">
         <ShapeButton

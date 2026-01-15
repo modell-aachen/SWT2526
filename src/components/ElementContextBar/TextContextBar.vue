@@ -1,8 +1,7 @@
 <template>
   <div
     data-testid="text-context-bar"
-    class="absolute flex gap-1 p-1.5 bg-ma-white border border-ma-grey-300 rounded-lg shadow-lg z-50"
-    :style="barStyle"
+    class="flex gap-1 p-1.5 bg-ma-white border border-ma-grey-300 rounded-lg shadow-lg"
     @mousedown.stop
   >
     <button
@@ -43,19 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { useContextBarPosition } from '@/composables/useContextBarPosition'
 import { Copy, CopyPlus, RotateCw, Trash2 } from 'lucide-vue-next'
-
-interface Props {
-  width: number
-  height: number
-  y: number
-  rotation?: number
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  rotation: 0,
-})
 
 defineEmits<{
   copy: []
@@ -63,11 +50,4 @@ defineEmits<{
   rotate: []
   delete: []
 }>()
-
-const { barStyle } = useContextBarPosition({
-  width: props.width,
-  height: props.height,
-  y: props.y,
-  rotation: props.rotation,
-})
 </script>

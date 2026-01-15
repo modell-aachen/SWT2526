@@ -3,17 +3,38 @@ import { mount } from '@vue/test-utils'
 import TextContextBar from './TextContextBar.vue'
 
 describe('TextContextBar', () => {
-  it('positions correctly using shared composable logic', () => {
-    const wrapper = mount(TextContextBar, {
-      props: {
-        width: 100,
-        height: 50,
-        y: 100,
-        rotation: 90,
-      },
-    })
+  it('renders all action buttons', () => {
+    const wrapper = mount(TextContextBar)
 
-    const style = (wrapper.element as HTMLElement).style
-    expect(style.top).toBe('-73px')
+    expect(wrapper.find('[data-testid="context-copy-button"]').exists()).toBe(
+      true
+    )
+    expect(
+      wrapper.find('[data-testid="context-duplicate-button"]').exists()
+    ).toBe(true)
+    expect(wrapper.find('[data-testid="context-rotate-button"]').exists()).toBe(
+      true
+    )
+    expect(wrapper.find('[data-testid="context-delete-button"]').exists()).toBe(
+      true
+    )
+  })
+
+  it('emits correct events when buttons are clicked', async () => {
+    const wrapper = mount(TextContextBar)
+
+    await wrapper.find('[data-testid="context-copy-button"]').trigger('click')
+    expect(wrapper.emitted('copy')).toBeTruthy()
+
+    await wrapper
+      .find('[data-testid="context-duplicate-button"]')
+      .trigger('click')
+    expect(wrapper.emitted('duplicate')).toBeTruthy()
+
+    await wrapper.find('[data-testid="context-rotate-button"]').trigger('click')
+    expect(wrapper.emitted('rotate')).toBeTruthy()
+
+    await wrapper.find('[data-testid="context-delete-button"]').trigger('click')
+    expect(wrapper.emitted('delete')).toBeTruthy()
   })
 })

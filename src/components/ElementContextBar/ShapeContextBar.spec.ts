@@ -3,45 +3,38 @@ import { mount } from '@vue/test-utils'
 import ShapeContextBar from './ShapeContextBar.vue'
 
 describe('ShapeContextBar', () => {
-  it('positions correctly when unrotated', () => {
-    const wrapper = mount(ShapeContextBar, {
-      props: {
-        shapeWidth: 100,
-        shapeHeight: 100,
-        shapeY: 100,
-        rotation: 0,
-      },
-    })
+  it('renders all action buttons', () => {
+    const wrapper = mount(ShapeContextBar)
 
-    const style = (wrapper.element as HTMLElement).style
-    expect(style.top).toBe('-48px')
+    expect(wrapper.find('[data-testid="context-copy-button"]').exists()).toBe(
+      true
+    )
+    expect(
+      wrapper.find('[data-testid="context-duplicate-button"]').exists()
+    ).toBe(true)
+    expect(wrapper.find('[data-testid="context-rotate-button"]').exists()).toBe(
+      true
+    )
+    expect(wrapper.find('[data-testid="context-delete-button"]').exists()).toBe(
+      true
+    )
   })
 
-  it('positions correctly when rotated 90 degrees', () => {
-    const wrapper = mount(ShapeContextBar, {
-      props: {
-        shapeWidth: 100,
-        shapeHeight: 50,
-        shapeY: 100,
-        rotation: 90,
-      },
-    })
+  it('emits correct events when buttons are clicked', async () => {
+    const wrapper = mount(ShapeContextBar)
 
-    const style = (wrapper.element as HTMLElement).style
-    expect(style.top).toBe('-73px')
-  })
+    await wrapper.find('[data-testid="context-copy-button"]').trigger('click')
+    expect(wrapper.emitted('copy')).toBeTruthy()
 
-  it('positions correctly when rotated 180 degrees', () => {
-    const wrapper = mount(ShapeContextBar, {
-      props: {
-        shapeWidth: 100,
-        shapeHeight: 100,
-        shapeY: 100,
-        rotation: 180,
-      },
-    })
+    await wrapper
+      .find('[data-testid="context-duplicate-button"]')
+      .trigger('click')
+    expect(wrapper.emitted('duplicate')).toBeTruthy()
 
-    const style = (wrapper.element as HTMLElement).style
-    expect(style.top).toBe('-48px')
+    await wrapper.find('[data-testid="context-rotate-button"]').trigger('click')
+    expect(wrapper.emitted('rotate')).toBeTruthy()
+
+    await wrapper.find('[data-testid="context-delete-button"]').trigger('click')
+    expect(wrapper.emitted('delete')).toBeTruthy()
   })
 })

@@ -1,55 +1,33 @@
 <template>
-  <!-- Outer container: positioned but NOT rotated -->
-  <div class="absolute" :style="containerStyle">
-    <!-- Context Bar (Outside rotation, always upright) -->
-    <div
-      v-if="selected"
-      class="absolute left-1/2 -translate-x-1/2"
-      style="top: -48px"
-    >
-      <ElementContextBar
-        :element="element"
-        @copy="$emit('copy')"
-        @duplicate="$emit('duplicate')"
-        @rotate="$emit('rotate')"
-        @delete="$emit('delete')"
+  <!-- Single rotating wrapper -->
+  <div class="absolute" :style="wrapperStyle" @mousedown.stop="handleMouseDown">
+    <!-- Content -->
+    <div class="w-full h-full overflow-hidden">
+      <component
+        :is="componentType"
+        v-bind="componentProps"
+        class="w-full h-full block"
       />
     </div>
 
-    <!-- Rotating wrapper -->
-    <div
-      class="w-full h-full"
-      :style="rotationStyle"
-      @mousedown.stop="handleMouseDown"
-    >
-      <!-- Content -->
-      <div class="w-full h-full overflow-hidden">
-        <component
-          :is="componentType"
-          v-bind="componentProps"
-          class="w-full h-full block"
-        />
-      </div>
+    <!-- Selection UI (Rotates with element) -->
+    <div v-if="selected" class="absolute inset-0 pointer-events-none">
+      <div
+        class="absolute -inset-0.5 border-2 border-ma-primary-500 pointer-events-none"
+      ></div>
 
-      <!-- Selection UI (Rotates with element) -->
-      <div v-if="selected" class="absolute inset-0 pointer-events-none">
-        <div
-          class="absolute -inset-0.5 border-2 border-ma-primary-500 pointer-events-none"
-        ></div>
-
-        <!-- Resize Handles -->
-        <div
-          v-for="handle in handles"
-          :key="handle"
-          class="absolute w-2 h-2 bg-ma-primary-500 border border-white rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer"
-          :style="getHandleStyle(handle)"
-          @mousedown.stop="handleResizeStart(handle, $event)"
-        ></div>
-      </div>
-
-      <!-- Link indicator -->
-      <ElementLink v-if="element.link && !selected" :link="element.link" />
+      <!-- Resize Handles -->
+      <div
+        v-for="handle in handles"
+        :key="handle"
+        class="absolute w-2 h-2 bg-ma-primary-500 border border-white rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer"
+        :style="getHandleStyle(handle)"
+        @mousedown.stop="handleResizeStart(handle, $event)"
+      ></div>
     </div>
+
+    <!-- Link indicator -->
+    <ElementLink v-if="element.link && !selected" :link="element.link" />
   </div>
 </template>
 
@@ -59,7 +37,6 @@ import type { CanvasElement, ShapeElement, TextElement } from '@/types/Element'
 import type { ResizeHandle } from '@/utils/elementTransforms'
 import GenericShape from '../Shapes/GenericShape.vue'
 import TextElementComponent from '../TextElement/TextElement.vue'
-import ElementContextBar from '../ElementContextBar/ElementContextBar.vue'
 import ElementLink from './ElementLink.vue'
 import { useDraggable } from '@/composables/useDraggable'
 import { useResizable } from '@/composables/useResizable'
@@ -71,8 +48,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   select: []
-  click: [e: MouseEvent] // Required by useDraggable
-  dragStart: [e: MouseEvent] // Required by useDraggable
+  click: [e: MouseEvent]
+  dragStart: [e: MouseEvent]
   drag: [deltaX: number, deltaY: number]
   dragEnd: []
   resize: [handle: ResizeHandle, deltaX: number, deltaY: number]
@@ -119,16 +96,12 @@ const componentProps = computed(() => {
   return {}
 })
 
-// Outer container: positioned but NOT rotated
-const containerStyle = computed(() => ({
+// Single wrapper with position AND rotation
+const wrapperStyle = computed(() => ({
   left: `${props.element.x}px`,
   top: `${props.element.y}px`,
   width: `${props.element.width}px`,
   height: `${props.element.height}px`,
-}))
-
-// Inner rotating div
-const rotationStyle = computed(() => ({
   transform: `rotate(${props.element.rotation}deg)`,
   transformOrigin: 'center center',
 }))

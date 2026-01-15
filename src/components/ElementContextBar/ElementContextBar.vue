@@ -1,10 +1,6 @@
 <template>
   <ShapeContextBar
     v-if="isShape"
-    :shape-width="element.width"
-    :shape-height="element.height"
-    :shape-y="element.y"
-    :rotation="element.rotation"
     @copy="$emit('copy')"
     @duplicate="$emit('duplicate')"
     @rotate="$emit('rotate')"
@@ -12,10 +8,6 @@
   />
   <TextContextBar
     v-else-if="isText"
-    :width="element.width"
-    :height="element.height"
-    :rotation="element.rotation"
-    :y="element.y"
     @copy="$emit('copy')"
     @duplicate="$emit('duplicate')"
     @rotate="$emit('rotate')"

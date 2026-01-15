@@ -45,11 +45,28 @@
     <RightSidebar />
 
     <DragGhost />
+
+    <!-- Context Bar (always upright, positioned based on selected element) -->
+    <ElementContextBar
+      v-if="elementsStore.selectedElement"
+      :element="elementsStore.selectedElement"
+      :style="contextBarStyle"
+      class="absolute z-50"
+      @copy="elementsStore.copySelectedElement()"
+      @duplicate="elementsStore.duplicateSelectedElement()"
+      @rotate="
+        handleElementRotate(
+          elementsStore.selectedElement.id,
+          elementsStore.selectedElement.rotation
+        )
+      "
+      @delete="elementsStore.deleteSelectedElement()"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useElementsStore } from '@/stores/elements/elements'
 import { useDragStore } from '@/stores/drag/dragGhost'
 import ElementWrapper from '@/components/ElementWrapper/ElementWrapper.vue'
@@ -61,6 +78,7 @@ import type { ResizeHandle } from '@/utils/elementTransforms'
 import LeftSidebar from '@/components/Sidebar/LeftBar/LeftSidebar.vue'
 import RightSidebar from '@/components/Sidebar/RightBar/RightSidebar.vue'
 import DragGhost from '@/components/DragGhost/DragGhost.vue'
+import ElementContextBar from '@/components/ElementContextBar/ElementContextBar.vue'
 
 const elementsStore = useElementsStore()
 const dragStore = useDragStore()
@@ -121,4 +139,42 @@ const handleUndo = () => {
 const handleRedo = () => {
   if (elementsStore.canRedo) elementsStore.redo()
 }
+
+// Position context bar above the selected element (in screen space)
+// Account for left sidebar width (~224px for expanded, ~56px for collapsed)
+// Position context bar above the selected element (in screen space)
+// Account for left sidebar width (~224px for expanded, ~56px for collapsed)
+const contextBarStyle = computed(() => {
+  const el = elementsStore.selectedElement
+  if (!el) return {}
+
+  const w = el.width
+  const h = el.height
+  const rotation = el.rotation
+
+  // Calculate center of element in canvas coordinates
+  const centerX = el.x + w / 2
+  const centerY = el.y + h / 2
+
+  // Calculate the y-distance from center to the top-most corner of the rotated box
+  // Convert angle to radians
+  const rad = (rotation * Math.PI) / 180
+  const absSin = Math.abs(Math.sin(rad))
+  const absCos = Math.abs(Math.cos(rad))
+
+  // The bounding box half-height is determined by projecting width and height onto the vertical axis
+  const boundingBoxHalfHeight = (w * absSin + h * absCos) / 2
+
+  // Visual top is center - half-height
+  const visualTopY = centerY - boundingBoxHalfHeight
+
+  // Offset for sidebar (approximate, could be refined)
+  const sidebarWidth = sidebarCollapsed.value ? 56 : 224
+
+  return {
+    left: `${sidebarWidth + centerX}px`,
+    top: `${visualTopY - 48}px`,
+    transform: 'translateX(-50%)',
+  }
+})
 </script>

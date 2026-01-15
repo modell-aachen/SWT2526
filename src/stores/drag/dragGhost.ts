@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type { ShapeType } from '@/types/ShapeType'
-import { useShapesStore } from '@/stores/shapes/shapes'
+import { useElementsStore } from '@/stores/elements/elements'
 
 const SHAPE_SIZE = 100
 
@@ -76,8 +76,8 @@ export const useDragStore = defineStore('drag', {
             SHAPE_SIZE / 2 +
             this.canvasElement.scrollTop
 
-          const shapesStore = useShapesStore()
-          shapesStore.addShape(this.draggedShapeType, x, y)
+          const elementsStore = useElementsStore()
+          elementsStore.addShape(this.draggedShapeType, x, y)
         }
       }
 

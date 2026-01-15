@@ -22,7 +22,7 @@ export function useResizable(emit: ResizeEvents) {
   const handleResizeEnd = () => {
     if (isResizing.value) {
       isResizing.value = false
-      emit('resizeEnd')
+      emit('resize-end')
     }
     document.removeEventListener('mousemove', handleResizeMove)
     document.removeEventListener('mouseup', handleResizeEnd)
@@ -34,7 +34,7 @@ export function useResizable(emit: ResizeEvents) {
     lastMouseX = event.clientX
     lastMouseY = event.clientY
 
-    emit('resizeStart', position, event)
+    emit('resize-start', position, event)
 
     document.addEventListener('mousemove', handleResizeMove)
     document.addEventListener('mouseup', handleResizeEnd)

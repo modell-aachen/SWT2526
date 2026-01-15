@@ -282,7 +282,7 @@ describe('useDraggable', () => {
 
   describe('event listener cleanup', () => {
     it('should remove event listeners on unmount', () => {
-      const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener')
+      vi.spyOn(document, 'removeEventListener')
       const { startDrag } = useDraggable(emit)
 
       const startEvent = new MouseEvent('mousedown', {

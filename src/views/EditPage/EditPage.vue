@@ -6,59 +6,39 @@
     <LeftSidebar :is-collapsed="sidebarCollapsed" />
 
     <div class="flex flex-col flex-1 relative">
-      <!-- Floating sidebar toggle -->
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        data-testid="sidebar-toggle"
-        class="absolute top-3 left-3 z-10 bg-ma-grey-100 border border-ma-grey-300 shadow-sm"
-        title="Toggle sidebar"
-        @click="sidebarCollapsed = !sidebarCollapsed"
-      >
-        <PanelLeftClose
-          v-if="!sidebarCollapsed"
-          class="w-5 h-5 text-ma-text-01"
-        />
-        <PanelLeft v-else class="w-5 h-5 text-ma-text-01" />
-      </Button>
+      <SidebarToggle
+        :is-collapsed="sidebarCollapsed"
+        @toggle="sidebarCollapsed = !sidebarCollapsed"
+      />
 
       <GridCanvas
         ref="canvasRef"
         @canvas-click="handleCanvasClick"
         @delete-selected="deleteSelected"
-        @copy-selected="shapesStore.copySelectedShape()"
-        @paste="shapesStore.pasteShape()"
-        @duplicate="shapesStore.duplicateSelectedShape()"
-        @undo="shapesStore.undo()"
-        @redo="shapesStore.redo()"
+        @copy-selected="elementsStore.copySelectedElement()"
+        @paste="elementsStore.pasteElement()"
+        @duplicate="elementsStore.duplicateSelectedElement()"
+        @undo="handleUndo"
+        @redo="handleRedo"
       >
-        <ShapeWrapper
-          v-for="shape in shapesStore.sortedShapes"
-          :key="shape.id"
-          :x="shape.x"
-          :y="shape.y"
-          :width="shape.width"
-          :height="shape.height"
-          :rotation="shape.rotation"
-          :shape-type="shape.type"
-          :outline="shape.outline"
-          :fill="shape.fill"
-          :link="shape.link"
-          :selected="shape.id === shapesStore.selectedShapeId"
-          @click="selectShape(shape.id)"
-          @drag="(deltaX, deltaY) => handleDrag(shape.id, deltaX, deltaY)"
-          @drag-end="shapesStore.endDrag()"
+        <ElementWrapper
+          v-for="element in elementsStore.sortedElements"
+          :key="element.id"
+          :element="element"
+          :selected="element.id === elementsStore.selectedElementId"
+          @select="selectElement(element.id)"
+          @drag="(deltaX, deltaY) => handleDrag(element.id, deltaX, deltaY)"
+          @drag-end="elementsStore.endDrag()"
           @resize="
             (handle, deltaX, deltaY) =>
-              handleResize(shape.id, handle, deltaX, deltaY)
+              handleResize(element.id, handle, deltaX, deltaY)
           "
-          @resize-end="shapesStore.endResize()"
-          @copy="shapesStore.copySelectedShape()"
-          @duplicate="shapesStore.duplicateSelectedShape()"
-          @rotate="shapesStore.rotateSelectedShape()"
-          @delete="shapesStore.deleteSelectedShape()"
+          @resize-end="elementsStore.endResize()"
+          @rotate="handleElementRotate(element.id, element.rotation)"
+          @delete="elementsStore.deleteSelectedElement()"
+          @copy="elementsStore.copySelectedElement()"
+          @duplicate="elementsStore.duplicateSelectedElement()"
         />
-        <ZoomControls />
       </GridCanvas>
     </div>
 
@@ -70,19 +50,19 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { PanelLeft, PanelLeftClose } from 'lucide-vue-next'
-import { Button } from '@/components/ui/button'
-import { useShapesStore } from '@/stores/shapes/shapes'
+import { useElementsStore } from '@/stores/elements/elements'
 import { useDragStore } from '@/stores/drag/dragGhost'
-import ShapeWrapper from '@/components/ShapeWrapper/ShapeWrapper.vue'
+import ElementWrapper from '@/components/ElementWrapper/ElementWrapper.vue'
 import GridCanvas from '@/components/GridCanvas/GridCanvas.vue'
+import SidebarToggle from './components/SidebarToggle.vue'
+import { calculateNewElementState } from '@/utils/elementTransforms'
+import type { ResizeHandle } from '@/utils/elementTransforms'
 
-import LeftSidebar from '@/components/Sidebar/leftBar/LeftSidebar.vue'
-import RightSidebar from '@/components/Sidebar/rightBar/RightSidebar.vue'
+import LeftSidebar from '@/components/Sidebar/LeftBar/LeftSidebar.vue'
+import RightSidebar from '@/components/Sidebar/RightBar/RightSidebar.vue'
 import DragGhost from '@/components/DragGhost/DragGhost.vue'
-import ZoomControls from '@/components/ZoomControls/ZoomControls.vue'
 
-const shapesStore = useShapesStore()
+const elementsStore = useElementsStore()
 const dragStore = useDragStore()
 const sidebarCollapsed = ref(false)
 
@@ -100,27 +80,45 @@ watch(canvasRef, (newRef) => {
 })
 
 const deleteSelected = () => {
-  shapesStore.deleteSelectedShape()
+  if (elementsStore.selectedElementId) elementsStore.deleteSelectedElement()
 }
 
-const selectShape = (id: string | null) => {
-  shapesStore.selectShape(id)
+const selectElement = (id: string) => {
+  elementsStore.selectElement(id)
 }
 
 const handleCanvasClick = () => {
-  shapesStore.selectShape(null)
+  elementsStore.selectElement(null)
 }
 
 const handleDrag = (id: string, deltaX: number, deltaY: number) => {
-  shapesStore.updateShapePosition(id, deltaX, deltaY)
+  elementsStore.updateElementPosition(id, deltaX, deltaY)
 }
 
 const handleResize = (
   id: string,
-  handle: string,
+  handle: ResizeHandle,
   deltaX: number,
   deltaY: number
 ) => {
-  shapesStore.updateShapeSize(id, handle, deltaX, deltaY)
+  const element = elementsStore.elements.find((e) => e.id === id)
+  if (!element) return
+
+  const newState = calculateNewElementState(element, handle, deltaX, deltaY)
+
+  elementsStore.updateElement(id, newState)
+}
+
+const handleElementRotate = (id: string, currentRotation: number) => {
+  elementsStore.updateElement(id, { rotation: (currentRotation + 90) % 360 })
+  elementsStore.saveSnapshot()
+}
+
+const handleUndo = () => {
+  if (elementsStore.canUndo) elementsStore.undo()
+}
+
+const handleRedo = () => {
+  if (elementsStore.canRedo) elementsStore.redo()
 }
 </script>

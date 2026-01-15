@@ -1,8 +1,12 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { setActivePinia, createPinia } from 'pinia'
 import GridCanvas from './GridCanvas.vue'
 
 describe('GridCanvas', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
   describe('rendering', () => {
     it('renders the canvas container', () => {
       const wrapper = mount(GridCanvas)

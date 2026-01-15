@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { CanvasElement, ShapeElement, TextElement } from '@/types/Element'
+import type { ShapeType } from '@/types/ShapeType'
 
 const MAX_HISTORY_SIZE = 50
 
@@ -86,11 +87,7 @@ export const useElementsStore = defineStore('elements', {
       this.saveSnapshot()
     },
 
-    addShape(
-      shapeType: 'rectangle' | 'triangle' | 'trapezoid',
-      x: number = 100,
-      y: number = 100
-    ) {
+    addShape(shapeType: ShapeType, x: number = 100, y: number = 100) {
       const newShape: ShapeElement = {
         id: `shape-${this.nextId++}`,
         type: 'shape',
@@ -151,9 +148,12 @@ export const useElementsStore = defineStore('elements', {
     },
 
     updateElement(id: string, updates: Partial<CanvasElement>) {
-      const element = this.elements.find((e) => e.id === id)
-      if (element) {
-        Object.assign(element, updates)
+      const index = this.elements.findIndex((e) => e.id === id)
+      if (index !== -1) {
+        this.elements[index] = {
+          ...this.elements[index],
+          ...updates,
+        } as CanvasElement
       }
     },
 

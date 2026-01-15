@@ -42,7 +42,7 @@ describe('LeftSidebar', () => {
       })
 
       const shapeButtons = wrapper.findAll('[data-testid="shape-button"]')
-      expect(shapeButtons).toHaveLength(3) // rectangle, triangle, trapezoid
+      expect(shapeButtons).toHaveLength(9) // rectangle, triangle, trapezoid
     })
 
     it('renders sidebar group with Shapes title', () => {

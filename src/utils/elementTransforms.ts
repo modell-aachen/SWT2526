@@ -98,7 +98,11 @@ export function calculateNewElementState(
   }
 
   // Convert center shift back to global space
-  const globalShift = toGlobalShift(localCenterShiftX, localCenterShiftY, rotation)
+  const globalShift = toGlobalShift(
+    localCenterShiftX,
+    localCenterShiftY,
+    rotation
+  )
 
   return {
     x: center.x + globalShift.x - newWidth / 2,

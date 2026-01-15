@@ -109,7 +109,7 @@ const handleResize = (
   elementsStore.updateElement(id, newState)
 }
 
-const handleElementRotate = (id: string, currentRotation: number) => {
+const handleElementRotate = async (id: string, currentRotation: number) => {
   elementsStore.updateElement(id, { rotation: (currentRotation + 90) % 360 })
   elementsStore.saveSnapshot()
 }

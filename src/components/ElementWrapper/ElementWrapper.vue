@@ -1,16 +1,34 @@
 <template>
-  <div class="absolute" :style="wrapperStyle" @mousedown.stop="handleMouseDown">
+  <!-- Outer container: positioned but NOT rotated -->
+  <div class="absolute" :style="containerStyle">
+    <!-- Context Bar (Outside rotation, always upright) -->
+    <div
+      v-if="selected"
+      class="absolute left-1/2 -translate-x-1/2"
+      style="top: -48px"
+    >
+      <ElementContextBar
+        :element="element"
+        @copy="$emit('copy')"
+        @duplicate="$emit('duplicate')"
+        @rotate="$emit('rotate')"
+        @delete="$emit('delete')"
+      />
+    </div>
+
+    <!-- Rotating wrapper -->
     <div
       class="w-full h-full"
-      :style="{ transform: `rotate(${element.rotation}deg)` }"
+      :style="rotationStyle"
+      @mousedown.stop="handleMouseDown"
     >
-      <!-- Render specific component based on type -->
-       <div class="overflow-hidden">
-      <component
-        :is="componentType"
-        v-bind="componentProps"
-        class="w-full h-full block"
-      />
+      <!-- Content -->
+      <div class="w-full h-full overflow-hidden">
+        <component
+          :is="componentType"
+          v-bind="componentProps"
+          class="w-full h-full block"
+        />
       </div>
 
       <!-- Selection UI (Rotates with element) -->
@@ -28,20 +46,10 @@
           @mousedown.stop="handleResizeStart(handle, $event)"
         ></div>
       </div>
+
+      <!-- Link indicator -->
+      <ElementLink v-if="element.link && !selected" :link="element.link" />
     </div>
-
-    <!-- Link indicator -->
-    <ElementLink v-if="element.link && !selected" :link="element.link" />
-
-    <!-- Context Bar (Does NOT rotate with element, stays upright) -->
-    <ElementContextBar
-      v-if="selected"
-      :element="element"
-      @copy="$emit('copy')"
-      @duplicate="$emit('duplicate')"
-      @rotate="$emit('rotate')"
-      @delete="$emit('delete')"
-    />
   </div>
 </template>
 
@@ -111,11 +119,18 @@ const componentProps = computed(() => {
   return {}
 })
 
-const wrapperStyle = computed(() => ({
+// Outer container: positioned but NOT rotated
+const containerStyle = computed(() => ({
   left: `${props.element.x}px`,
   top: `${props.element.y}px`,
   width: `${props.element.width}px`,
   height: `${props.element.height}px`,
+}))
+
+// Inner rotating div
+const rotationStyle = computed(() => ({
+  transform: `rotate(${props.element.rotation}deg)`,
+  transformOrigin: 'center center',
 }))
 
 const handles: ResizeHandle[] = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w']

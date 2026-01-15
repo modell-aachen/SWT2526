@@ -1,3 +1,5 @@
+import type { ShapeType } from './ShapeType'
+
 export type ElementType = 'shape' | 'text'
 
 export interface BaseElement {
@@ -14,7 +16,7 @@ export interface BaseElement {
 
 export interface ShapeElement extends BaseElement {
   type: 'shape'
-  shapeType: 'rectangle' | 'triangle' | 'trapezoid'
+  shapeType: ShapeType
   fill: string
   outline: string
   strokeWeight: number

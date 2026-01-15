@@ -48,6 +48,16 @@ defineEmits<{
   'clear-all': []
 }>()
 
-const shapes: ShapeType[] = ['rectangle', 'triangle', 'trapezoid']
+const shapes: ShapeType[] = [
+  'rectangle',
+  'triangle',
+  'trapezoid',
+  'chevron',
+  'hexagon',
+  'ellipse',
+  'diamond',
+  'parallelogram',
+  'pentagon',
+]
 const elementsStore = useElementsStore()
 </script>

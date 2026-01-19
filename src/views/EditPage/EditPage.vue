@@ -74,6 +74,7 @@ import GridCanvas from '@/components/GridCanvas/GridCanvas.vue'
 import SidebarToggle from './components/SidebarToggle.vue'
 import { calculateNewElementState } from '@/utils/elementTransforms'
 import type { ResizeHandle } from '@/utils/elementTransforms'
+import { useZoomStore } from '@/stores/zoom/zoom'
 
 import LeftSidebar from '@/components/Sidebar/LeftBar/LeftSidebar.vue'
 import RightSidebar from '@/components/Sidebar/RightBar/RightSidebar.vue'
@@ -83,6 +84,7 @@ import ElementContextBar from '@/components/ElementContextBar/ElementContextBar.
 const elementsStore = useElementsStore()
 const dragStore = useDragStore()
 const sidebarCollapsed = ref(false)
+const zoomStore = useZoomStore()
 
 const canvasRef = ref<InstanceType<typeof GridCanvas> | null>(null)
 onMounted(() => {
@@ -146,6 +148,7 @@ const handleRedo = () => {
 // Account for left sidebar width (~224px for expanded, ~56px for collapsed)
 const contextBarStyle = computed(() => {
   const el = elementsStore.selectedElement
+  const zoom = zoomStore.zoom
   if (!el) return {}
 
   const w = el.width
@@ -172,8 +175,8 @@ const contextBarStyle = computed(() => {
   const sidebarWidth = sidebarCollapsed.value ? 56 : 224
 
   return {
-    left: `${sidebarWidth + centerX}px`,
-    top: `${visualTopY - 48}px`,
+    left: `${sidebarWidth + centerX * zoom}px`,
+    top: `${visualTopY * zoom - 48}px`,
     transform: 'translateX(-50%)',
   }
 })

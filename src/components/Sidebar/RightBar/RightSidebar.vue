@@ -2,7 +2,8 @@
   <aside
     v-if="selectedElement"
     data-testid="right-sidebar"
-    class="flex flex-col h-full w-64 border-l border-ma-grey-300 bg-ma-grey-100 transition-all duration-200"
+    class="flex flex-col h-full border-l border-ma-grey-300 bg-ma-grey-100 transition-all duration-200 overflow-hidden"
+    :class="isCollapsed ? 'w-0 p-0 border-0' : 'w-64'"
   >
     <div class="p-4 border-b border-ma-grey-300">
       <h2 class="font-semibold text-ma-text-01">Properties</h2>
@@ -43,6 +44,14 @@
           label="Stroke Width"
           v-model="strokeWeightValue"
           @change="updateStrokeWeight"
+        />
+
+        <PropertyLinkInput
+          id="shape-link"
+          label="Link"
+          :model-value="selectedElement.link"
+          @save="updateLink"
+          @remove="removeLink"
         />
       </template>
 
@@ -100,6 +109,10 @@ import PropertySelectInput from './components/PropertySelectInput.vue'
 const elementsStore = useElementsStore()
 const selectedElement = computed(() => elementsStore.selectedElement)
 
+defineProps<{
+  isCollapsed?: boolean
+}>()
+
 // Local state
 const outlineColorValue = ref('#000000')
 const fillColorValue = ref('#transparent')
@@ -123,6 +136,10 @@ const fontFamilyOptions = [
 watch(
   selectedElement,
   (newElement) => {
+    if (newElement) {
+      xValue.value = newElement.x
+      yValue.value = newElement.y
+    }
     if (newElement && newElement.type === 'shape') {
       const shape = newElement as ShapeElement
       outlineColorValue.value = shape.outline || '#000000'
@@ -136,7 +153,7 @@ watch(
       fontSizeValue.value = text.fontSize
     }
   },
-  { immediate: true }
+  { immediate: true, deep: true }
 )
 
 const updateOutline = (val: string) => {

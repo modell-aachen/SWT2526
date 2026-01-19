@@ -20,7 +20,12 @@
 </template>
 
 <script setup lang="ts">
-import { PanelLeft, PanelLeftClose, PanelRight, PanelRightClose } from 'lucide-vue-next'
+import {
+  PanelLeft,
+  PanelLeftClose,
+  PanelRight,
+  PanelRightClose,
+} from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 
 withDefaults(

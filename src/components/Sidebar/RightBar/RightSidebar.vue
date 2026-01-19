@@ -31,17 +31,16 @@
           v-model="strokeWeightValue"
           @change="updateStrokeWeight"
         />
-        
-        
+
         <PropertyLinkInput
-        id="shape-link"
-        label="Link"
-        :model-value="selectedElement.link"
-        @save="updateLink"
-        @remove="removeLink"
+          id="shape-link"
+          label="Link"
+          :model-value="selectedElement.link"
+          @save="updateLink"
+          @remove="removeLink"
         />
       </template>
-      
+
       <PropertyNumericInput
         id="element-x"
         label="X-Coordinate"
@@ -56,7 +55,6 @@
         @change="updateY"
         class="flex-1"
       />
-
     </div>
   </aside>
 </template>
@@ -88,8 +86,8 @@ watch(
   selectedElement,
   (newElement) => {
     if (newElement) {
-        xValue.value = newElement.x
-        yValue.value = newElement.y
+      xValue.value = newElement.x
+      yValue.value = newElement.y
     }
     if (newElement && newElement.type === 'shape') {
       const shape = newElement as ShapeElement
@@ -121,13 +119,21 @@ const updateStrokeWeight = (val: number) => {
 
 const updateX = (val: number) => {
   if (selectedElement.value) {
-    elementsStore.setElementPosition(selectedElement.value.id, val, selectedElement.value.y)
+    elementsStore.setElementPosition(
+      selectedElement.value.id,
+      val,
+      selectedElement.value.y
+    )
   }
 }
 
 const updateY = (val: number) => {
   if (selectedElement.value) {
-    elementsStore.setElementPosition(selectedElement.value.id, selectedElement.value.x, val)
+    elementsStore.setElementPosition(
+      selectedElement.value.id,
+      selectedElement.value.x,
+      val
+    )
   }
 }
 

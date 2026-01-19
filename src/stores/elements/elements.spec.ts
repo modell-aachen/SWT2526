@@ -108,4 +108,17 @@ describe('Elements Store', () => {
     // Should trigger snapshot
     expect(store.canUndo).toBe(true)
   })
+
+  it('updates element position with snapshot', () => {
+    const store = useElementsStore()
+    store.addShape('rectangle', 100, 100)
+    const id = store.elements[0]!.id
+
+    // @ts-ignore
+    store.setElementPosition(id, 200, 300)
+
+    expect(store.elements[0]!.x).toBe(200)
+    expect(store.elements[0]!.y).toBe(300)
+    expect(store.canUndo).toBe(true)
+  })
 })

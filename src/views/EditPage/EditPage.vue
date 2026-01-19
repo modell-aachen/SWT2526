@@ -7,8 +7,16 @@
 
     <div class="flex flex-col flex-1 relative">
       <SidebarToggle
+        side="left"
         :is-collapsed="sidebarCollapsed"
         @toggle="sidebarCollapsed = !sidebarCollapsed"
+      />
+
+      <SidebarToggle
+        v-if="elementsStore.selectedElement"
+        side="right"
+        :is-collapsed="rightSidebarCollapsed"
+        @toggle="rightSidebarCollapsed = !rightSidebarCollapsed"
       />
 
       <GridCanvas
@@ -42,7 +50,7 @@
       </GridCanvas>
     </div>
 
-    <RightSidebar />
+    <RightSidebar :is-collapsed="rightSidebarCollapsed" />
 
     <DragGhost />
 
@@ -84,6 +92,7 @@ import ElementContextBar from '@/components/ElementContextBar/ElementContextBar.
 const elementsStore = useElementsStore()
 const dragStore = useDragStore()
 const sidebarCollapsed = ref(false)
+const rightSidebarCollapsed = ref(false)
 const zoomStore = useZoomStore()
 
 const canvasRef = ref<InstanceType<typeof GridCanvas> | null>(null)

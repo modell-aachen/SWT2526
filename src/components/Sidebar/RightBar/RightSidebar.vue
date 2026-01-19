@@ -10,6 +10,20 @@
     </div>
 
     <div class="p-4 flex flex-col gap-4">
+      <PropertyNumericInput
+        id="element-x"
+        label="X-Coordinate"
+        v-model="xValue"
+        @change="updateX"
+        class="flex-1"
+      />
+      <PropertyNumericInput
+        id="element-y"
+        label="Y-Coordinate"
+        v-model="yValue"
+        @change="updateY"
+        class="flex-1"
+      />
       <template v-if="selectedElement?.type === 'shape'">
         <PropertyColorInput
           id="shape-outline"
@@ -41,19 +55,42 @@
         />
       </template>
 
-      <PropertyNumericInput
-        id="element-x"
-        label="X-Coordinate"
-        v-model="xValue"
-        @change="updateX"
-        class="flex-1"
-      />
-      <PropertyNumericInput
-        id="element-y"
-        label="Y-Coordinate"
-        v-model="yValue"
-        @change="updateY"
-        class="flex-1"
+      <template v-if="selectedElement?.type === 'text'">
+        <PropertyTextInput
+          id="text-content"
+          label="Content"
+          v-model="textContentValue"
+          @update:modelValue="updateTextContent"
+        />
+
+        <PropertySelectInput
+          id="text-font-family"
+          label="Font Family"
+          v-model="fontFamilyValue"
+          :options="fontFamilyOptions"
+        />
+
+        <PropertyNumericInput
+          id="text-font-size"
+          label="Font Size"
+          v-model="fontSizeValue"
+          @change="updateFontSize"
+        />
+
+        <PropertyColorInput
+          id="text-color"
+          label="Color"
+          v-model="textColorValue"
+          @change="updateTextColor"
+        />
+      </template>
+
+      <PropertyLinkInput
+        id="shape-link"
+        label="Link"
+        :model-value="selectedElement.link"
+        @save="updateLink"
+        @remove="removeLink"
       />
     </div>
   </aside>
@@ -62,10 +99,12 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { useElementsStore } from '@/stores/elements/elements'
-import type { ShapeElement } from '@/types/Element'
+import type { ShapeElement, TextElement } from '@/types/Element'
 import PropertyColorInput from './components/PropertyColorInput.vue'
 import PropertyNumericInput from './components/PropertyNumericInput.vue'
 import PropertyLinkInput from './components/PropertyLinkInput.vue'
+import PropertyTextInput from './components/PropertyTextInput.vue'
+import PropertySelectInput from './components/PropertySelectInput.vue'
 
 const elementsStore = useElementsStore()
 const selectedElement = computed(() => elementsStore.selectedElement)
@@ -80,6 +119,18 @@ const fillColorValue = ref('#transparent')
 const strokeWeightValue = ref(1)
 const xValue = ref(0)
 const yValue = ref(0)
+const textContentValue = ref('')
+const fontFamilyValue = ref('Arial')
+const textColorValue = ref('#000000')
+const fontSizeValue = ref(16)
+
+const fontFamilyOptions = [
+  { label: 'Arial', value: 'Arial' },
+  { label: 'Helvetica', value: 'Helvetica' },
+  { label: 'Times New Roman', value: 'Times New Roman' },
+  { label: 'Courier New', value: 'Courier New' },
+  { label: 'Verdana', value: 'Verdana' },
+]
 
 // Update local state when selected shape changes
 watch(
@@ -94,6 +145,12 @@ watch(
       outlineColorValue.value = shape.outline || '#000000'
       fillColorValue.value = shape.fill || 'transparent'
       strokeWeightValue.value = shape.strokeWeight || 0
+    } else if (newElement && newElement.type === 'text') {
+      const text = newElement as TextElement
+      textContentValue.value = text.content
+      fontFamilyValue.value = text.fontFamily
+      textColorValue.value = text.color
+      fontSizeValue.value = text.fontSize
     }
   },
   { immediate: true, deep: true }
@@ -116,6 +173,14 @@ const updateStrokeWeight = (val: number) => {
     elementsStore.updateShapeStrokeWeight(selectedElement.value.id, val)
   }
 }
+
+watch(fontFamilyValue, (val) => {
+  if (selectedElement.value && selectedElement.value.type === 'text') {
+    elementsStore.updateTextElement(selectedElement.value.id, {
+      fontFamily: val,
+    })
+  }
+})
 
 const updateX = (val: number) => {
   if (selectedElement.value) {
@@ -146,6 +211,24 @@ const updateLink = (link: string | undefined) => {
 const removeLink = () => {
   if (selectedElement.value) {
     elementsStore.removeElementLink(selectedElement.value.id)
+  }
+}
+
+const updateTextContent = (val: string) => {
+  if (selectedElement.value && selectedElement.value.type === 'text') {
+    elementsStore.updateTextElement(selectedElement.value.id, { content: val })
+  }
+}
+
+const updateTextColor = (val: string) => {
+  if (selectedElement.value && selectedElement.value.type === 'text') {
+    elementsStore.updateTextElement(selectedElement.value.id, { color: val })
+  }
+}
+
+const updateFontSize = (val: number) => {
+  if (selectedElement.value && selectedElement.value.type === 'text') {
+    elementsStore.updateTextElement(selectedElement.value.id, { fontSize: val })
   }
 }
 </script>

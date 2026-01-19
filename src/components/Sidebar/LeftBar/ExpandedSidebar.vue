@@ -19,7 +19,7 @@
       <SidebarGroup title="Text" :sidebar-collapsed="false">
         <Button
           variant="ghost"
-          class="w-full justify-start gap-2 h-9 px-2"
+          class="w-full justify-start gap-2 h-9 px-2 text-ma-text-01"
           @click="elementsStore.addText()"
           title="Add Text"
         >

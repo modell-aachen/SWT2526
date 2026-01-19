@@ -244,6 +244,15 @@ export const useElementsStore = defineStore('elements', {
       }
     },
 
+    setElementPosition(id: string, x: number, y: number) {
+      const element = this.elements.find((e: CanvasElement) => e.id === id)
+      if (element) {
+        element.x = x
+        element.y = y
+        this.saveSnapshot()
+      }
+    },
+
     endDrag() {
       this.saveSnapshot()
     },

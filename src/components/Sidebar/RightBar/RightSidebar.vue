@@ -2,7 +2,8 @@
   <aside
     v-if="selectedElement"
     data-testid="right-sidebar"
-    class="flex flex-col h-full w-64 border-l border-ma-grey-300 bg-ma-grey-100 transition-all duration-200"
+    class="flex flex-col h-full border-l border-ma-grey-300 bg-ma-grey-100 transition-all duration-200 overflow-hidden"
+    :class="isCollapsed ? 'w-0 p-0 border-0' : 'w-64'"
   >
     <div class="p-4 border-b border-ma-grey-300">
       <h2 class="font-semibold text-ma-text-01">Properties</h2>
@@ -30,14 +31,29 @@
           v-model="strokeWeightValue"
           @change="updateStrokeWeight"
         />
+
+        <PropertyLinkInput
+          id="shape-link"
+          label="Link"
+          :model-value="selectedElement.link"
+          @save="updateLink"
+          @remove="removeLink"
+        />
       </template>
 
-      <PropertyLinkInput
-        id="shape-link"
-        label="Link"
-        :model-value="selectedElement.link"
-        @save="updateLink"
-        @remove="removeLink"
+      <PropertyNumericInput
+        id="element-x"
+        label="X-Coordinate"
+        v-model="xValue"
+        @change="updateX"
+        class="flex-1"
+      />
+      <PropertyNumericInput
+        id="element-y"
+        label="Y-Coordinate"
+        v-model="yValue"
+        @change="updateY"
+        class="flex-1"
       />
     </div>
   </aside>
@@ -54,15 +70,25 @@ import PropertyLinkInput from './components/PropertyLinkInput.vue'
 const elementsStore = useElementsStore()
 const selectedElement = computed(() => elementsStore.selectedElement)
 
+defineProps<{
+  isCollapsed?: boolean
+}>()
+
 // Local state
 const outlineColorValue = ref('#000000')
 const fillColorValue = ref('#transparent')
 const strokeWeightValue = ref(1)
+const xValue = ref(0)
+const yValue = ref(0)
 
 // Update local state when selected shape changes
 watch(
   selectedElement,
   (newElement) => {
+    if (newElement) {
+      xValue.value = newElement.x
+      yValue.value = newElement.y
+    }
     if (newElement && newElement.type === 'shape') {
       const shape = newElement as ShapeElement
       outlineColorValue.value = shape.outline || '#000000'
@@ -70,7 +96,7 @@ watch(
       strokeWeightValue.value = shape.strokeWeight || 0
     }
   },
-  { immediate: true }
+  { immediate: true, deep: true }
 )
 
 const updateOutline = (val: string) => {
@@ -88,6 +114,26 @@ const updateFill = (val: string) => {
 const updateStrokeWeight = (val: number) => {
   if (selectedElement.value && selectedElement.value.type === 'shape') {
     elementsStore.updateShapeStrokeWeight(selectedElement.value.id, val)
+  }
+}
+
+const updateX = (val: number) => {
+  if (selectedElement.value) {
+    elementsStore.setElementPosition(
+      selectedElement.value.id,
+      val,
+      selectedElement.value.y
+    )
+  }
+}
+
+const updateY = (val: number) => {
+  if (selectedElement.value) {
+    elementsStore.setElementPosition(
+      selectedElement.value.id,
+      selectedElement.value.x,
+      val
+    )
   }
 }
 

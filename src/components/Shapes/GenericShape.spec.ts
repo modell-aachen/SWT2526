@@ -14,7 +14,7 @@ describe('GenericShape', () => {
 
     const polygon = wrapper.find('polygon')
     expect(polygon.exists()).toBe(true)
-    expect(polygon.attributes('points')).toBe('5,5 95,5 95,95 5,95')
+    expect(polygon.attributes('points')).toBe('0,0 100,0 100,100 0,100')
   })
 
   it('renders triangle correctly', () => {
@@ -28,7 +28,7 @@ describe('GenericShape', () => {
 
     const polygon = wrapper.find('polygon')
     expect(polygon.exists()).toBe(true)
-    expect(polygon.attributes('points')).toBe('50,5 95,95 5,95')
+    expect(polygon.attributes('points')).toBe('50,0 100,100 0,100')
   })
 
   it('renders trapezoid correctly', () => {
@@ -42,7 +42,7 @@ describe('GenericShape', () => {
 
     const polygon = wrapper.find('polygon')
     expect(polygon.exists()).toBe(true)
-    expect(polygon.attributes('points')).toBe('20,5 80,5 95,95 5,95')
+    expect(polygon.attributes('points')).toBe('20,0 80,0 100,100 0,100')
   })
 
   it('applies props correctly', () => {

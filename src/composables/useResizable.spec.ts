@@ -23,13 +23,13 @@ describe('useResizable', () => {
 
     emit = ((event: string, ...args: any[]) => {
       switch (event) {
-        case 'resizeStart':
+        case 'resize-start':
           resizeStartSpy(...args)
           break
         case 'resize':
           resizeSpy(...args)
           break
-        case 'resizeEnd':
+        case 'resize-end':
           resizeEndSpy()
           break
       }

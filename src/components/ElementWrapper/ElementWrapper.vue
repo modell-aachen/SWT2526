@@ -2,7 +2,7 @@
   <!-- Single rotating wrapper -->
   <div class="absolute" :style="wrapperStyle" @mousedown.stop="handleMouseDown">
     <!-- Content -->
-    <div class="w-full h-full overflow-hidden">
+    <div class="w-full h-full">
       <component
         :is="componentType"
         v-bind="componentProps"
@@ -13,7 +13,7 @@
     <!-- Selection UI (Rotates with element) -->
     <div v-if="selected" class="absolute inset-0 pointer-events-none">
       <div
-        class="absolute -inset-1 border-2 border-ma-primary-500 pointer-events-none"
+        class="absolute -inset-3 border-2 border-ma-primary-500 pointer-events-none"
       ></div>
 
       <!-- Resize Handles -->
@@ -38,6 +38,7 @@ import type { ResizeHandle } from '@/utils/elementTransforms'
 import GenericShape from '../Shapes/GenericShape.vue'
 import TextElementComponent from '../TextElement/TextElement.vue'
 import ElementLink from './ElementLink.vue'
+import { getHandleStyle, resizeHandles as handles } from '@/utils/wrapperUtils'
 import { useDraggable } from '@/composables/useDraggable'
 import { useResizable } from '@/composables/useResizable'
 
@@ -105,29 +106,6 @@ const wrapperStyle = computed(() => ({
   transform: `rotate(${props.element.rotation}deg)`,
   transformOrigin: 'center center',
 }))
-
-const handles: ResizeHandle[] = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w']
-
-const getHandleStyle = (handle: ResizeHandle) => {
-  switch (handle) {
-    case 'nw':
-      return { left: '-2.5px', top: '-2.5px' }
-    case 'n':
-      return { left: '50%', top: '-3.5px' }
-    case 'ne':
-      return { left: 'calc(100% + 2.5px)', top: '-2.5px' }
-    case 'e':
-      return { left: 'calc(100% + 3.5px)', top: '50%' }
-    case 'se':
-      return { left: 'calc(100% + 2.5px)', top: 'calc(100% + 2.5px)' }
-    case 's':
-      return { left: '50%', top: 'calc(100% + 3.5px)' }
-    case 'sw':
-      return { left: '-2.5px', top: 'calc(100% + 2.5px)' }
-    case 'w':
-      return { left: '-3.5px', top: '50%' }
-  }
-}
 
 const handleMouseDown = (e: MouseEvent) => {
   emit('select')

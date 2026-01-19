@@ -176,7 +176,7 @@ const contextBarStyle = computed(() => {
 
   return {
     left: `${sidebarWidth + centerX * zoom}px`,
-    top: `${visualTopY * zoom - 48}px`,
+    top: `${visualTopY * zoom - 64}px`,
     transform: 'translateX(-50%)',
   }
 })

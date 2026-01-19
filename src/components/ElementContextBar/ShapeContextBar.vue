@@ -1,48 +1,53 @@
 <template>
   <div
     data-testid="shape-context-bar"
-    class="flex gap-1 p-1.5 bg-ma-white border border-ma-grey-300 rounded-lg shadow-lg"
+    class="flex gap-1 p-1 bg-ma-grey-200 border border-ma-grey-300 rounded-lg shadow-lg items-center"
     @mousedown.stop
   >
-    <button
+    <Button
       data-testid="context-copy-button"
-      class="p-1.5 border border-ma-grey-400 bg-ma-white text-ma-grey-700 rounded cursor-pointer transition-all hover:bg-ma-grey-200 hover:border-ma-grey-500"
+      variant="ghost"
+      size="icon-sm"
       title="Copy"
       @click="$emit('copy')"
     >
       <Copy class="w-4 h-4" />
-    </button>
-    <button
+    </Button>
+    <Button
       data-testid="context-duplicate-button"
-      class="p-1.5 border border-ma-grey-400 bg-ma-white text-ma-grey-700 rounded cursor-pointer transition-all hover:bg-ma-grey-200 hover:border-ma-grey-500"
+      variant="ghost"
+      size="icon-sm"
       title="Duplicate"
       @click="$emit('duplicate')"
     >
       <CopyPlus class="w-4 h-4" />
-    </button>
-    <div class="w-px bg-ma-grey-300 mx-0.5"></div>
-    <button
+    </Button>
+    <div class="w-px h-4 bg-ma-grey-400 mx-0.5"></div>
+    <Button
       data-testid="context-rotate-button"
-      class="p-1.5 border border-ma-grey-400 bg-ma-white text-ma-grey-700 rounded cursor-pointer transition-all hover:bg-ma-grey-200 hover:border-ma-grey-500"
+      variant="ghost"
+      size="icon-sm"
       title="Rotate 90°"
       @click="$emit('rotate')"
     >
       <RotateCw class="w-4 h-4" />
-    </button>
-    <div class="w-px bg-ma-grey-300 mx-0.5"></div>
-    <button
+    </Button>
+    <div class="w-px h-4 bg-ma-grey-400 mx-0.5"></div>
+    <Button
       data-testid="context-delete-button"
-      class="p-1.5 border border-ma-danger bg-ma-danger text-white rounded cursor-pointer transition-all hover:bg-ma-red-700"
+      variant="destructive"
+      size="icon-sm"
       title="Delete"
       @click="$emit('delete')"
     >
       <Trash2 class="w-4 h-4" />
-    </button>
+    </Button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { Copy, CopyPlus, RotateCw, Trash2 } from 'lucide-vue-next'
+import { Button } from '@/components/ui/button'
 
 defineEmits<{
   copy: []

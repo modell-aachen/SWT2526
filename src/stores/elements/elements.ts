@@ -244,6 +244,26 @@ export const useElementsStore = defineStore('elements', {
       }
     },
 
+    setElementPosition(id: string, x: number, y: number) {
+      const element = this.elements.find((e: CanvasElement) => e.id === id)
+      if (element) {
+        element.x = x
+        element.y = y
+        this.saveSnapshot()
+      }
+    },
+
+    updateTextElement(id: string, updates: Partial<TextElement>) {
+      const element = this.elements.find((e: CanvasElement) => e.id === id)
+      // Create a new object to avoid direct mutation issues and ensure reactivity
+      const updatedElement = { ...element, ...updates }
+      const index = this.elements.findIndex((e: CanvasElement) => e.id === id)
+      if (index !== -1) {
+        this.elements[index] = updatedElement as CanvasElement
+        this.saveSnapshot()
+      }
+    },
+
     endDrag() {
       this.saveSnapshot()
     },

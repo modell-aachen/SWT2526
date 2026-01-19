@@ -7,7 +7,7 @@ export function useResizable(emit: ResizeEvents) {
   let lastMouseX = 0
   let lastMouseY = 0
 
-  const handleResizeMove = (e: any) => {
+  const handleResizeMove = (e: MouseEvent) => {
     if (!isResizing.value) return
 
     const deltaX = e.clientX - lastMouseX

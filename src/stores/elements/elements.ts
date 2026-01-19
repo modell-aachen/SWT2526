@@ -18,7 +18,9 @@ export const useElementsStore = defineStore('elements', {
     selectedElement: (state) => {
       if (!state.selectedElementId) return null
       return (
-        state.elements.find((e) => e.id === state.selectedElementId) || null
+        state.elements.find(
+          (e: CanvasElement) => e.id === state.selectedElementId
+        ) || null
       )
     },
 
@@ -59,7 +61,9 @@ export const useElementsStore = defineStore('elements', {
 
       if (
         this.selectedElementId &&
-        !this.elements.find((e) => e.id === this.selectedElementId)
+        !this.elements.find(
+          (e: CanvasElement) => e.id === this.selectedElementId
+        )
       ) {
         this.selectedElementId = null
       }
@@ -75,7 +79,9 @@ export const useElementsStore = defineStore('elements', {
 
       if (
         this.selectedElementId &&
-        !this.elements.find((e) => e.id === this.selectedElementId)
+        !this.elements.find(
+          (e: CanvasElement) => e.id === this.selectedElementId
+        )
       ) {
         this.selectedElementId = null
       }
@@ -106,7 +112,7 @@ export const useElementsStore = defineStore('elements', {
     },
 
     updateShapeOutlineColor(id: string, color: string) {
-      const element = this.elements.find((e) => e.id === id)
+      const element = this.elements.find((e: CanvasElement) => e.id === id)
       if (element && element.type === 'shape') {
         element.outline = color
         this.saveSnapshot()
@@ -114,7 +120,7 @@ export const useElementsStore = defineStore('elements', {
     },
 
     updateShapeFillColor(id: string, color: string) {
-      const element = this.elements.find((e) => e.id === id)
+      const element = this.elements.find((e: CanvasElement) => e.id === id)
       if (element && element.type === 'shape') {
         element.fill = color
         this.saveSnapshot()
@@ -122,7 +128,7 @@ export const useElementsStore = defineStore('elements', {
     },
 
     updateShapeStrokeWeight(id: string, weight: number) {
-      const element = this.elements.find((e) => e.id === id)
+      const element = this.elements.find((e: CanvasElement) => e.id === id)
       if (element && element.type === 'shape' && weight >= 0) {
         element.strokeWeight = weight
         this.saveSnapshot()
@@ -148,7 +154,7 @@ export const useElementsStore = defineStore('elements', {
     },
 
     updateElement(id: string, updates: Partial<CanvasElement>) {
-      const index = this.elements.findIndex((e) => e.id === id)
+      const index = this.elements.findIndex((e: CanvasElement) => e.id === id)
       if (index !== -1) {
         this.elements[index] = {
           ...this.elements[index],
@@ -158,7 +164,7 @@ export const useElementsStore = defineStore('elements', {
     },
 
     deleteElement(id: string) {
-      const index = this.elements.findIndex((e) => e.id === id)
+      const index = this.elements.findIndex((e: CanvasElement) => e.id === id)
       if (index !== -1) {
         this.elements.splice(index, 1)
         if (this.selectedElementId === id) {
@@ -180,7 +186,9 @@ export const useElementsStore = defineStore('elements', {
 
     copySelectedElement() {
       if (!this.selectedElementId) return
-      const element = this.elements.find((e) => e.id === this.selectedElementId)
+      const element = this.elements.find(
+        (e: CanvasElement) => e.id === this.selectedElementId
+      )
       if (element) {
         this.clipboard = JSON.parse(JSON.stringify(element)) as CanvasElement
       }
@@ -207,7 +215,9 @@ export const useElementsStore = defineStore('elements', {
 
     duplicateSelectedElement() {
       if (!this.selectedElementId) return
-      const element = this.elements.find((e) => e.id === this.selectedElementId)
+      const element = this.elements.find(
+        (e: CanvasElement) => e.id === this.selectedElementId
+      )
       if (!element) return
 
       const duplicatedElement: CanvasElement = {
@@ -227,7 +237,7 @@ export const useElementsStore = defineStore('elements', {
     // which will calculate the new x, y, width, height and call updateElement.
     // For simple dragging (translation), we can keep a dedicated action.
     updateElementPosition(id: string, deltaX: number, deltaY: number) {
-      const element = this.elements.find((e) => e.id === id)
+      const element = this.elements.find((e: CanvasElement) => e.id === id)
       if (element) {
         element.x += deltaX
         element.y += deltaY
@@ -249,17 +259,17 @@ export const useElementsStore = defineStore('elements', {
     },
 
     updateElementLink(id: string, link: string | undefined) {
-      const element = this.elements.find((e) => e.id === id)
+      const element = this.elements.find((e: CanvasElement) => e.id === id)
       if (element) {
-        ;(element as any).link = link
+        element.link = link
         this.saveSnapshot()
       }
     },
 
     removeElementLink(id: string) {
-      const element = this.elements.find((e) => e.id === id)
+      const element = this.elements.find((e: CanvasElement) => e.id === id)
       if (element) {
-        ;(element as any).link = undefined
+        element.link = undefined
         this.saveSnapshot()
       }
     },

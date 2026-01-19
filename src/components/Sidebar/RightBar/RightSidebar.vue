@@ -35,7 +35,7 @@
       <PropertyLinkInput
         id="shape-link"
         label="Link"
-        :model-value="(selectedElement as any).link"
+        :model-value="selectedElement.link"
         @save="updateLink"
         @remove="removeLink"
       />
@@ -46,6 +46,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { useElementsStore } from '@/stores/elements/elements'
+import type { ShapeElement } from '@/types/Element'
 import PropertyColorInput from './components/PropertyColorInput.vue'
 import PropertyNumericInput from './components/PropertyNumericInput.vue'
 import PropertyLinkInput from './components/PropertyLinkInput.vue'
@@ -63,16 +64,10 @@ watch(
   selectedElement,
   (newElement) => {
     if (newElement && newElement.type === 'shape') {
-      // Update colors
-      if ('outline' in newElement) {
-        outlineColorValue.value = (newElement as any).outline || '#000000'
-      }
-      if ('fill' in newElement) {
-        fillColorValue.value = (newElement as any).fill || 'transparent'
-      }
-      if ('strokeWeight' in newElement) {
-        strokeWeightValue.value = (newElement as any).strokeWeight || 0
-      }
+      const shape = newElement as ShapeElement
+      outlineColorValue.value = shape.outline || '#000000'
+      fillColorValue.value = shape.fill || 'transparent'
+      strokeWeightValue.value = shape.strokeWeight || 0
     }
   },
   { immediate: true }

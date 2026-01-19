@@ -123,7 +123,7 @@ export const useElementsStore = defineStore('elements', {
 
     updateShapeStrokeWeight(id: string, weight: number) {
       const element = this.elements.find((e) => e.id === id)
-      if (element && element.type === 'shape') {
+      if (element && element.type === 'shape' && weight >= 0) {
         element.strokeWeight = weight
         this.saveSnapshot()
       }

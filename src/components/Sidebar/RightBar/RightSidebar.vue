@@ -71,7 +71,7 @@ watch(
         fillColorValue.value = (newElement as any).fill || 'transparent'
       }
       if ('strokeWeight' in newElement) {
-        strokeWeightValue.value = (newElement as any).strokeWeight || 1
+        strokeWeightValue.value = (newElement as any).strokeWeight || 0
       }
     }
   },

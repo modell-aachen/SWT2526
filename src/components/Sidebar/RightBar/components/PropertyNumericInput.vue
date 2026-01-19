@@ -14,6 +14,7 @@
           type="number"
           class="flex-1 h-full px-2 text-xs outline-none min-w-0 bg-ma-grey-200 text-ma-text-01 placeholder:text-muted-foreground"
           :value="modelValue"
+          min="0"
           @input="
             $emit(
               'update:modelValue',

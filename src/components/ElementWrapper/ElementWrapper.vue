@@ -13,7 +13,7 @@
     <!-- Selection UI (Rotates with element) -->
     <div v-if="selected" class="absolute inset-0 pointer-events-none">
       <div
-        class="absolute -inset-0.5 border-2 border-ma-primary-500 pointer-events-none"
+        class="absolute -inset-1 border-2 border-ma-primary-500 pointer-events-none"
       ></div>
 
       <!-- Resize Handles -->
@@ -111,21 +111,21 @@ const handles: ResizeHandle[] = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w']
 const getHandleStyle = (handle: ResizeHandle) => {
   switch (handle) {
     case 'nw':
-      return { left: '0px', top: '0px' }
+      return { left: '-2.5px', top: '-2.5px' }
     case 'n':
-      return { left: '50%', top: '0px' }
+      return { left: '50%', top: '-3.5px' }
     case 'ne':
-      return { left: '100%', top: '0px' }
+      return { left: 'calc(100% + 2.5px)', top: '-2.5px' }
     case 'e':
-      return { left: '100%', top: '50%' }
+      return { left: 'calc(100% + 3.5px)', top: '50%' }
     case 'se':
-      return { left: '100%', top: '100%' }
+      return { left: 'calc(100% + 2.5px)', top: 'calc(100% + 2.5px)' }
     case 's':
-      return { left: '50%', top: '100%' }
+      return { left: '50%', top: 'calc(100% + 3.5px)' }
     case 'sw':
-      return { left: '0px', top: '100%' }
+      return { left: '-2.5px', top: 'calc(100% + 2.5px)' }
     case 'w':
-      return { left: '0px', top: '50%' }
+      return { left: '-3.5px', top: '50%' }
   }
 }
 

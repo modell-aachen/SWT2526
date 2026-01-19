@@ -13,8 +13,8 @@
       :data-testid="`${shapeType}-ellipse`"
       cx="50"
       cy="50"
-      rx="45"
-      ry="45"
+      rx="50"
+      ry="50"
       :stroke="outline"
       :fill="fill"
       :stroke-width="strokeWeight"
@@ -48,21 +48,21 @@ const props = defineProps({
 const points = computed(() => {
   switch (props.shapeType) {
     case 'rectangle':
-      return '5,5 95,5 95,95 5,95'
+      return '0,0 100,0 100,100 0,100'
     case 'triangle':
-      return '50,5 95,95 5,95'
+      return '50,0 100,100 0,100'
     case 'trapezoid':
-      return '20,5 80,5 95,95 5,95'
+      return '20,0 80,0 100,100 0,100'
     case 'chevron':
-      return '5,5 70,5 95,50 70,95 5,95 30,50'
+      return '0,0 60,0 100,50 60,100 0,100 40,50'
     case 'hexagon':
-      return '25,5 75,5 95,50 75,95 25,95 5,50'
+      return '25,0 75,0 100,50 75,100 25,100 0,50'
     case 'diamond':
-      return '50,5 95,50 50,95 5,50'
+      return '50,0 100,50 50,100 0,50'
     case 'parallelogram':
-      return '20,5 95,5 80,95 5,95'
+      return '20,0 100,0 80,100 0,100'
     case 'pentagon':
-      return '5,20 5,80 70,80 95,50 70,20'
+      return '50,0 100,38 82,100 18,100 0,38'
     default:
       return ''
   }

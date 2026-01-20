@@ -22,11 +22,7 @@ export const useDragStore = defineStore('drag', {
   }),
 
   actions: {
-    startDrag(
-      type: ShapeType,
-      event: MouseEvent,
-      customPoints?: string
-    ) {
+    startDrag(type: ShapeType, event: MouseEvent, customPoints?: string) {
       this.isDragging = true
       this.draggedShapeType = type
       this.draggedCustomPoints = customPoints

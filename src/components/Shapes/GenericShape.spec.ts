@@ -45,6 +45,21 @@ describe('GenericShape', () => {
     expect(polygon.attributes('points')).toBe('20,0 80,0 100,100 0,100')
   })
 
+  it('renders custom shop correctly', () => {
+    const wrapper = mount(GenericShape, {
+      props: {
+        width: 100,
+        height: 100,
+        shapeType: 'custom',
+        customPoints: '0,0 100,0 100,100 0,100',
+      },
+    })
+
+    const polygon = wrapper.find('polygon')
+    expect(polygon.exists()).toBe(true)
+    expect(polygon.attributes('points')).toBe('0,0 100,0 100,100 0,100')
+  })
+
   it('applies props correctly', () => {
     const wrapper = mount(GenericShape, {
       props: {

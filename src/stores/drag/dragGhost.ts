@@ -4,18 +4,28 @@ import { useElementsStore } from '@/stores/elements/elements'
 
 const SHAPE_SIZE = 100
 
+interface DragState {
+  isDragging: boolean
+  draggedShapeType: ShapeType | null
+  draggedCustomPoints: string | undefined
+  ghostPosition: { x: number; y: number }
+  canvasElement: HTMLElement | null
+}
+
 export const useDragStore = defineStore('drag', {
-  state: () => ({
+  state: (): DragState => ({
     isDragging: false,
-    draggedShapeType: null as ShapeType | null,
+    draggedShapeType: null,
+    draggedCustomPoints: undefined,
     ghostPosition: { x: 0, y: 0 },
-    canvasElement: null as HTMLElement | null,
+    canvasElement: null,
   }),
 
   actions: {
-    startDrag(type: ShapeType, event: MouseEvent) {
+    startDrag(type: ShapeType, event: MouseEvent, customPoints?: string) {
       this.isDragging = true
       this.draggedShapeType = type
+      this.draggedCustomPoints = customPoints
 
       // Center ghost on initial cursor position
       this.ghostPosition = {
@@ -77,7 +87,12 @@ export const useDragStore = defineStore('drag', {
             this.canvasElement.scrollTop
 
           const elementsStore = useElementsStore()
-          elementsStore.addShape(this.draggedShapeType, x, y)
+          elementsStore.addShape(
+            this.draggedShapeType,
+            x,
+            y,
+            this.draggedCustomPoints
+          )
         }
       }
 
@@ -93,6 +108,7 @@ export const useDragStore = defineStore('drag', {
     _cleanup() {
       this.isDragging = false
       this.draggedShapeType = null
+      this.draggedCustomPoints = undefined
       document.removeEventListener('mousemove', this._handleMouseMove)
       document.removeEventListener('mouseup', this._handleMouseUp)
       document.removeEventListener('keydown', this._handleKeyDown)

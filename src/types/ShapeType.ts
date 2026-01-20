@@ -8,3 +8,4 @@ export type ShapeType =
   | 'diamond'
   | 'parallelogram'
   | 'pentagon'
+  | 'custom'

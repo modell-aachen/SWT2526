@@ -20,6 +20,7 @@ export interface ShapeElement extends BaseElement {
   fill: string
   outline: string
   strokeWeight: number
+  customPoints?: string
 }
 
 export interface TextElement extends BaseElement {

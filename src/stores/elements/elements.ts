@@ -4,14 +4,25 @@ import type { ShapeType } from '@/types/ShapeType'
 
 const MAX_HISTORY_SIZE = 50
 
+interface ElementsState {
+  elements: CanvasElement[]
+  selectedElementId: string | null
+  nextId: number
+  history: CanvasElement[][]
+  historyIndex: number
+  clipboard: CanvasElement | null
+  customShapes: { name: string; points: string }[]
+}
+
 export const useElementsStore = defineStore('elements', {
-  state: () => ({
-    elements: [] as CanvasElement[],
-    selectedElementId: null as string | null,
+  state: (): ElementsState => ({
+    elements: [],
+    selectedElementId: null,
     nextId: 1,
-    history: [[]] as CanvasElement[][],
+    history: [[]],
     historyIndex: 0,
-    clipboard: null as CanvasElement | null,
+    clipboard: null,
+    customShapes: [],
   }),
 
   getters: {
@@ -34,6 +45,10 @@ export const useElementsStore = defineStore('elements', {
   },
 
   actions: {
+    saveCustomShape(name: string, points: string) {
+      this.customShapes.push({ name, points })
+    },
+
     saveSnapshot() {
       if (this.canRedo) {
         this.history = this.history.slice(0, this.historyIndex + 1)
@@ -93,7 +108,12 @@ export const useElementsStore = defineStore('elements', {
       this.saveSnapshot()
     },
 
-    addShape(shapeType: ShapeType, x: number = 100, y: number = 100) {
+    addShape(
+      shapeType: ShapeType,
+      x: number = 100,
+      y: number = 100,
+      customPoints?: string
+    ) {
       const newShape: ShapeElement = {
         id: `shape-${this.nextId++}`,
         type: 'shape',
@@ -107,6 +127,7 @@ export const useElementsStore = defineStore('elements', {
         strokeWeight: 3,
         zIndex: this.elements.length,
         rotation: 0,
+        customPoints: shapeType === 'custom' ? customPoints : undefined,
       }
       this.addElement(newShape)
     },

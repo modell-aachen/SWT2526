@@ -12,6 +12,7 @@
       :width="24"
       :height="24"
       :shape-type="shapeType"
+      :custom-points="customPoints"
       :stroke-weight="1"
       outline="currentColor"
       fill="none"
@@ -30,11 +31,12 @@ import GenericShape from '@/components/Shapes/GenericShape.vue'
 const props = defineProps<{
   shapeType: ShapeType
   collapsed?: boolean
+  customPoints?: string
 }>()
 
 const dragStore = useDragStore()
 
 const handleMouseDown = (event: MouseEvent) => {
-  dragStore.startDrag(props.shapeType, event)
+  dragStore.startDrag(props.shapeType, event, props.customPoints)
 }
 </script>

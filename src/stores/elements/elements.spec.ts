@@ -34,6 +34,14 @@ describe('Elements Store', () => {
     expect(element.content).toBe('Double click to edit')
   })
 
+  it('saves custom shape', () => {
+    const store = useElementsStore()
+    store.saveCustomShape('test', '0,0 100,100')
+    expect(store.customShapes).toHaveLength(1)
+    expect(store.customShapes[0]!.name).toBe('test')
+    expect(store.customShapes[0]!.points).toBe('0,0 100,100')
+  })
+
   it('updates an element', () => {
     const store = useElementsStore()
     store.addShape('triangle')

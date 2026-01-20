@@ -43,10 +43,13 @@ const props = defineProps({
   strokeWeight: { type: Number, default: 3 },
   outline: { type: String, default: '#000' },
   fill: { type: String, default: 'transparent' },
+  customPoints: { type: String, default: '' },
 })
 
 const points = computed(() => {
   switch (props.shapeType) {
+    case 'custom':
+      return props.customPoints
     case 'rectangle':
       return '0,0 100,0 100,100 0,100'
     case 'triangle':

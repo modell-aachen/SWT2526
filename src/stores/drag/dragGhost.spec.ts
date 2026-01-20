@@ -8,96 +8,81 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import type { ShapeElement } from '@/types/Element'
 
 describe('Drag Store', () => {
-  beforeEach(() => {
-    setActivePinia(createPinia())
-  })
+    let store: ReturnType<typeof useDragStore>
+    let elementsStore: ReturnType<typeof useElementsStore>
 
-  it('starts drag with shape type', () => {
-    const store = useDragStore()
-    const event = new MouseEvent('mousedown', { clientX: 100, clientY: 100 })
+    function createMockEvent(type: 'mousedown' | 'mouseup', x: number, y: number) {
+        return new MouseEvent(type, { clientX: x, clientY: y })
+    }
 
-    store.startDrag('rectangle', event)
+    function setupMockCanvas() {
+        const canvas = document.createElement('div')
+        canvas.getBoundingClientRect = () => ({
+            left: 0,
+            top: 0,
+            right: 500,
+            bottom: 500,
+            width: 500,
+            height: 500,
+            x: 0,
+            y: 0,
+            toJSON: () => { },
+        })
+        store.setCanvasElement(canvas)
+    }
 
-    expect(store.isDragging).toBe(true)
-    expect(store.draggedShapeType).toBe('rectangle')
-    expect(store.ghostPosition).toEqual({ x: 50, y: 50 })
-  })
-
-  it('starts drag with custom points', () => {
-    const store = useDragStore()
-    const event = new MouseEvent('mousedown', { clientX: 150, clientY: 150 })
-    const customPoints = '0,0 100,0 50,100'
-
-    store.startDrag('custom', event, customPoints)
-
-    expect(store.isDragging).toBe(true)
-    expect(store.draggedShapeType).toBe('custom')
-    expect(store.draggedCustomPoints).toBe(customPoints)
-    expect(store.ghostPosition).toEqual({ x: 100, y: 100 })
-  })
-
-  it('adds shape to elements store on drop over canvas', () => {
-    const dragStore = useDragStore()
-    const elementsStore = useElementsStore()
-    const event = new MouseEvent('mousedown', { clientX: 100, clientY: 100 })
-
-    const canvas = document.createElement('div')
-    canvas.getBoundingClientRect = () => ({
-      left: 0,
-      top: 0,
-      right: 500,
-      bottom: 500,
-      width: 500,
-      height: 500,
-      x: 0,
-      y: 0,
-      toJSON: () => {},
+    beforeEach(() => {
+        setActivePinia(createPinia())
+        store = useDragStore()
+        elementsStore = useElementsStore()
     })
-    dragStore.setCanvasElement(canvas)
 
-    dragStore.startDrag('rectangle', event)
+    it('starts drag with shape type', () => {
+        const event = createMockEvent('mousedown', 100, 100)
+        store.startDrag('rectangle', event)
 
-    const mouseUpEvent = new MouseEvent('mouseup', {
-      clientX: 200,
-      clientY: 200,
+        expect(store.isDragging).toBe(true)
+        expect(store.draggedShapeType).toBe('rectangle')
+        expect(store.ghostPosition).toEqual({ x: 50, y: 50 })
     })
-    dragStore._handleMouseUp(mouseUpEvent)
 
-    expect(elementsStore.elements).toHaveLength(1)
-    expect(elementsStore.elements[0]!.type).toBe('shape')
-  })
+    it('starts drag with custom points', () => {
+        const event = createMockEvent('mousedown', 150, 150)
+        const customPoints = '0,0 100,0 50,100'
 
-  it('adds custom shape to elements store on drop', () => {
-    const dragStore = useDragStore()
-    const elementsStore = useElementsStore()
-    const event = new MouseEvent('mousedown', { clientX: 100, clientY: 100 })
-    const customPoints = '0,0 100,0 50,100'
+        store.startDrag('custom', event, customPoints)
 
-    const canvas = document.createElement('div')
-    canvas.getBoundingClientRect = () => ({
-      left: 0,
-      top: 0,
-      right: 500,
-      bottom: 500,
-      width: 500,
-      height: 500,
-      x: 0,
-      y: 0,
-      toJSON: () => {},
+        expect(store.isDragging).toBe(true)
+        expect(store.draggedShapeType).toBe('custom')
+        expect(store.draggedCustomPoints).toBe(customPoints)
+        expect(store.ghostPosition).toEqual({ x: 100, y: 100 })
     })
-    dragStore.setCanvasElement(canvas)
 
-    dragStore.startDrag('custom', event, customPoints)
+    it('adds shape to elements store on drop over canvas', () => {
+        setupMockCanvas()
+        const event = createMockEvent('mousedown', 100, 100)
+        store.startDrag('rectangle', event)
 
-    const mouseUpEvent = new MouseEvent('mouseup', {
-      clientX: 200,
-      clientY: 200,
+        const mouseUpEvent = createMockEvent('mouseup', 200, 200)
+        store._handleMouseUp(mouseUpEvent)
+
+        expect(elementsStore.elements).toHaveLength(1)
+        expect(elementsStore.elements[0]!.type).toBe('shape')
     })
-    dragStore._handleMouseUp(mouseUpEvent)
 
-    expect(elementsStore.elements).toHaveLength(1)
-    const element = elementsStore.elements[0] as ShapeElement
-    expect(element.shapeType).toBe('custom')
-    expect(element.customPoints).toBe(customPoints)
-  })
+    it('adds custom shape to elements store on drop', () => {
+        setupMockCanvas()
+        const event = createMockEvent('mousedown', 100, 100)
+        const customPoints = '0,0 100,0 50,100'
+
+        store.startDrag('custom', event, customPoints)
+
+        const mouseUpEvent = createMockEvent('mouseup', 200, 200)
+        store._handleMouseUp(mouseUpEvent)
+
+        expect(elementsStore.elements).toHaveLength(1)
+        const element = elementsStore.elements[0] as ShapeElement
+        expect(element.shapeType).toBe('custom')
+        expect(element.customPoints).toBe(customPoints)
+    })
 })

@@ -12,6 +12,7 @@ export const useElementsStore = defineStore('elements', {
     history: [[]] as CanvasElement[][],
     historyIndex: 0,
     clipboard: null as CanvasElement | null,
+    customShapes: [] as { name: string; points: string }[],
   }),
 
   getters: {
@@ -34,6 +35,10 @@ export const useElementsStore = defineStore('elements', {
   },
 
   actions: {
+    saveCustomShape(name: string, points: string) {
+      this.customShapes.push({ name, points })
+    },
+
     saveSnapshot() {
       if (this.canRedo) {
         this.history = this.history.slice(0, this.historyIndex + 1)
@@ -93,7 +98,12 @@ export const useElementsStore = defineStore('elements', {
       this.saveSnapshot()
     },
 
-    addShape(shapeType: ShapeType, x: number = 100, y: number = 100) {
+    addShape(
+      shapeType: ShapeType,
+      x: number = 100,
+      y: number = 100,
+      customPoints?: string
+    ) {
       const newShape: ShapeElement = {
         id: `shape-${this.nextId++}`,
         type: 'shape',
@@ -107,6 +117,7 @@ export const useElementsStore = defineStore('elements', {
         strokeWeight: 3,
         zIndex: this.elements.length,
         rotation: 0,
+        customPoints: shapeType === 'custom' ? customPoints : undefined,
       }
       this.addElement(newShape)
     },

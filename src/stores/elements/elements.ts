@@ -4,15 +4,25 @@ import type { ShapeType } from '@/types/ShapeType'
 
 const MAX_HISTORY_SIZE = 50
 
+interface ElementsState {
+  elements: CanvasElement[]
+  selectedElementId: string | null
+  nextId: number
+  history: CanvasElement[][]
+  historyIndex: number
+  clipboard: CanvasElement | null
+  customShapes: { name: string; points: string }[]
+}
+
 export const useElementsStore = defineStore('elements', {
-  state: () => ({
-    elements: [] as CanvasElement[],
-    selectedElementId: null as string | null,
+  state: (): ElementsState => ({
+    elements: [],
+    selectedElementId: null,
     nextId: 1,
-    history: [[]] as CanvasElement[][],
+    history: [[]],
     historyIndex: 0,
-    clipboard: null as CanvasElement | null,
-    customShapes: [] as { name: string; points: string }[],
+    clipboard: null,
+    customShapes: [],
   }),
 
   getters: {

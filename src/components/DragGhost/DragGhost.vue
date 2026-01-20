@@ -10,6 +10,7 @@
         :width="SHAPE_SIZE"
         :height="SHAPE_SIZE"
         :shape-type="draggedShapeType"
+        :custom-points="draggedCustomPoints"
         outline="var(--ma-primary-600)"
         fill="var(--ma-primary-100)"
       />
@@ -26,7 +27,8 @@ import GenericShape from '../Shapes/GenericShape.vue'
 const SHAPE_SIZE = 100
 
 const dragStore = useDragStore()
-const { isDragging, draggedShapeType, ghostPosition } = storeToRefs(dragStore)
+const { isDragging, draggedShapeType, ghostPosition, draggedCustomPoints } =
+  storeToRefs(dragStore)
 
 const ghostStyle = computed(() => ({
   left: `${ghostPosition.value.x}px`,

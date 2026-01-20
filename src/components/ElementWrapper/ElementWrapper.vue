@@ -84,6 +84,7 @@ const componentProps = computed(() => {
       strokeWeight: shape.strokeWeight,
       rotation: 0,
       shapeType: shape.shapeType,
+      customPoints: shape.customPoints,
     }
   } else if (props.element.type === 'text') {
     const text = props.element as TextElement

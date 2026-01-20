@@ -18,7 +18,7 @@
       fill="none"
       class="pointer-events-none shrink-0"
     />
-    <span v-if="!collapsed" class="capitalize">{{ shapeType }}</span>
+    <span v-if="!collapsed" class="capitalize">{{ label || shapeType }}</span>
   </Button>
 </template>
 
@@ -32,6 +32,7 @@ const props = defineProps<{
   shapeType: ShapeType
   collapsed?: boolean
   customPoints?: string
+  label?: string
 }>()
 
 const dragStore = useDragStore()

@@ -10,29 +10,15 @@
     </div>
 
     <div class="p-4 flex flex-col gap-4">
-      <PropertyLinkInput
-        id="shape-link"
-        label="Link"
-        :model-value="selectedElement.link"
-        @save="updateLink"
-        @remove="removeLink"
-      />
-
-      <PropertyNumericInput
-        id="element-x"
-        label="X-Coordinate"
-        v-model="xValue"
-        @change="updateX"
-        class="flex-1"
-      />
-      <PropertyNumericInput
-        id="element-y"
-        label="Y-Coordinate"
-        v-model="yValue"
-        @change="updateY"
-        class="flex-1"
-      />
       <template v-if="selectedElement?.type === 'shape'">
+        <PropertyLinkInput
+          id="shape-link"
+          label="Link"
+          :model-value="selectedElement.link"
+          @save="updateLink"
+          @remove="removeLink"
+        />
+
         <PropertyColorInput
           id="shape-outline"
           label="Outline"
@@ -84,6 +70,20 @@
           @change="updateTextColor"
         />
       </template>
+      <PropertyNumericInput
+        id="element-x"
+        label="X-Coordinate"
+        v-model="xValue"
+        @change="updateX"
+        class="flex-1"
+      />
+      <PropertyNumericInput
+        id="element-y"
+        label="Y-Coordinate"
+        v-model="yValue"
+        @change="updateY"
+        class="flex-1"
+      />
     </div>
   </aside>
 </template>

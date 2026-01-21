@@ -112,6 +112,17 @@ describe('GridCanvas', () => {
       expect(wrapper.find('.item-2').exists()).toBe(true)
       expect(wrapper.find('.item-3').exists()).toBe(true)
     })
+
+    it('renders overlay slot content', () => {
+      const wrapper = mount(GridCanvas, {
+        slots: {
+          overlay: '<div class="overlay-content">Overlay</div>',
+        },
+      })
+
+      expect(wrapper.find('.overlay-content').exists()).toBe(true)
+      expect(wrapper.text()).toContain('Overlay')
+    })
   })
 
   describe('canvas click event', () => {

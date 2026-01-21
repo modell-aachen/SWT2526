@@ -41,6 +41,11 @@
     >
       <slot />
     </div>
+
+    <!-- Overlay slot for elements that should move with the canvas but not scale with zoom -->
+    <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
+      <slot name="overlay" />
+    </div>
   </div>
 </template>
 

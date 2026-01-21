@@ -47,29 +47,31 @@
           @copy="elementsStore.copySelectedElement()"
           @duplicate="elementsStore.duplicateSelectedElement()"
         />
+
+        <template #overlay>
+          <!-- Context Bar (always upright, positioned based on selected element) -->
+          <ElementContextBar
+            v-if="elementsStore.selectedElement"
+            :element="elementsStore.selectedElement"
+            :style="contextBarStyle"
+            class="absolute z-50 pointer-events-auto"
+            @copy="elementsStore.copySelectedElement()"
+            @duplicate="elementsStore.duplicateSelectedElement()"
+            @rotate="
+              handleElementRotate(
+                elementsStore.selectedElement.id,
+                elementsStore.selectedElement.rotation
+              )
+            "
+            @delete="elementsStore.deleteSelectedElement()"
+          />
+        </template>
       </GridCanvas>
     </div>
 
     <RightSidebar :is-collapsed="rightSidebarCollapsed" />
 
     <DragGhost />
-
-    <!-- Context Bar (always upright, positioned based on selected element) -->
-    <ElementContextBar
-      v-if="elementsStore.selectedElement"
-      :element="elementsStore.selectedElement"
-      :style="contextBarStyle"
-      class="absolute z-50"
-      @copy="elementsStore.copySelectedElement()"
-      @duplicate="elementsStore.duplicateSelectedElement()"
-      @rotate="
-        handleElementRotate(
-          elementsStore.selectedElement.id,
-          elementsStore.selectedElement.rotation
-        )
-      "
-      @delete="elementsStore.deleteSelectedElement()"
-    />
   </div>
 </template>
 
@@ -151,10 +153,7 @@ const handleRedo = () => {
   if (elementsStore.canRedo) elementsStore.redo()
 }
 
-// Position context bar above the selected element (in screen space)
-// Account for left sidebar width (~224px for expanded, ~56px for collapsed)
-// Position context bar above the selected element (in screen space)
-// Account for left sidebar width (~224px for expanded, ~56px for collapsed)
+// Position context bar above/below the selected element
 const contextBarStyle = computed(() => {
   const el = elementsStore.selectedElement
   const zoom = zoomStore.zoom
@@ -179,13 +178,21 @@ const contextBarStyle = computed(() => {
 
   // Visual top is center - half-height
   const visualTopY = centerY - boundingBoxHalfHeight
+  const visualBottomY = centerY + boundingBoxHalfHeight
 
-  // Offset for sidebar (approximate, could be refined)
-  const sidebarWidth = sidebarCollapsed.value ? 56 : 224
+  // Position relative to the canvas content (0,0 is start of content)
+  const leftPos = centerX * zoom
+  let topPos = visualTopY * zoom - 64 // Default: 64px above
+
+  // Flip Logic: Check if it goes off the top edge (with 10px buffer)
+  if (topPos < 10) {
+    // Flip to bottom
+    topPos = visualBottomY * zoom + 20 // 20px padding below
+  }
 
   return {
-    left: `${sidebarWidth + centerX * zoom}px`,
-    top: `${visualTopY * zoom - 64}px`,
+    left: `${leftPos}px`,
+    top: `${topPos}px`,
     transform: 'translateX(-50%)',
   }
 })

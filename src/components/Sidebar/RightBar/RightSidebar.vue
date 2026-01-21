@@ -45,14 +45,6 @@
           v-model="strokeWeightValue"
           @change="updateStrokeWeight"
         />
-
-        <PropertyLinkInput
-          id="shape-link"
-          label="Link"
-          :model-value="selectedElement.link"
-          @save="updateLink"
-          @remove="removeLink"
-        />
       </template>
 
       <template v-if="selectedElement?.type === 'text'">

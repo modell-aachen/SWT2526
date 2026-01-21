@@ -1,9 +1,11 @@
 import type { DraggableEvents } from '@/types/DraggableEvents'
 import { ref, onUnmounted } from 'vue'
+import { useZoomStore } from '@/stores/zoom/zoom'
 
 const DRAG_THRESHOLD = 3 // pixels before drag is considered started
 
 export function useDraggable(emit: DraggableEvents) {
+  const zoomStore = useZoomStore()
   const isDragging = ref(false)
   let hasDragStarted = false
   let initialMouseX = 0
@@ -34,7 +36,7 @@ export function useDraggable(emit: DraggableEvents) {
     lastMouseX = e.clientX
     lastMouseY = e.clientY
 
-    emit('drag', deltaX, deltaY)
+    emit('drag', deltaX / zoomStore.zoom, deltaY / zoomStore.zoom)
   }
 
   const handleMouseUp = () => {

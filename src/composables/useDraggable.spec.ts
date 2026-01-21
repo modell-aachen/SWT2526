@@ -9,6 +9,7 @@ import {
 } from 'vitest'
 import { useDraggable } from './useDraggable'
 import type { DraggableEvents } from '@/types/DraggableEvents'
+import { setActivePinia, createPinia } from 'pinia'
 
 const DRAG_THRESHOLD = 3 // Must match the threshold in useDraggable.ts
 
@@ -20,6 +21,8 @@ describe('useDraggable', () => {
   let clickSpy: Mock
 
   beforeEach(() => {
+    setActivePinia(createPinia())
+    // Initialize mocks
     dragStartSpy = vi.fn()
     dragSpy = vi.fn()
     dragEndSpy = vi.fn()

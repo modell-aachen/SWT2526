@@ -29,20 +29,30 @@
     <Button
       variant="ghost"
       size="icon-sm"
-      data-testid="auto-fit-button"
-      title="Fit automatically"
+      data-testid="reset-zoom-button"
+      title="Reset zoom"
       @click="zoomStore.resetZoom()"
     >
       <Minimize2 class="w-4 h-4 text-ma-text-01" />
+    </Button>
+    <Button
+      variant="ghost"
+      size="icon-sm"
+      data-testid="auto-fit-button"
+      title="Fit automatically"
+      @click="autoFit"
+    >
+      <Crosshair class="w-4 h-4 text-ma-text-01" />
     </Button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Plus, Minus, Minimize2 } from 'lucide-vue-next'
+import { Plus, Minus, Minimize2, Crosshair } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useZoomStore } from '@/stores/zoom/zoom'
+import { useElementsStore } from '@/stores/elements/elements'
 
 const props = defineProps<{
   collapsed?: boolean
@@ -59,4 +69,16 @@ const containerClass = computed(() =>
 const controlsClass = computed(() =>
   props.collapsed ? 'flex flex-col gap-1 items-center' : 'flex gap-1'
 )
+
+const autoFit = () => {
+  const elementsStore = useElementsStore()
+  const container = document.querySelector('[data-testid="canvas-container"]')
+  if (container) {
+    zoomStore.autoFit(
+      elementsStore.elements,
+      container.clientWidth,
+      container.clientHeight
+    )
+  }
+}
 </script>

@@ -10,6 +10,14 @@
     </div>
 
     <div class="p-4 flex flex-col gap-4">
+      <PropertyLinkInput
+        id="shape-link"
+        label="Link"
+        :model-value="selectedElement.link"
+        @save="updateLink"
+        @remove="removeLink"
+      />
+
       <PropertyNumericInput
         id="element-x"
         label="X-Coordinate"
@@ -76,14 +84,6 @@
           @change="updateTextColor"
         />
       </template>
-
-      <PropertyLinkInput
-        id="shape-link"
-        label="Link"
-        :model-value="selectedElement.link"
-        @save="updateLink"
-        @remove="removeLink"
-      />
     </div>
   </aside>
 </template>
@@ -163,6 +163,7 @@ const updateFill = (val: string) => {
 const updateStrokeWeight = (val: number) => {
   if (selectedElement.value && selectedElement.value.type === 'shape') {
     elementsStore.updateShapeStrokeWeight(selectedElement.value.id, val)
+    strokeWeightValue.value = selectedElement.value.strokeWeight
   }
 }
 
@@ -181,6 +182,7 @@ const updateX = (val: number) => {
       val,
       selectedElement.value.y
     )
+    xValue.value = selectedElement.value.x
   }
 }
 
@@ -191,6 +193,7 @@ const updateY = (val: number) => {
       selectedElement.value.x,
       val
     )
+    yValue.value = selectedElement.value.y
   }
 }
 
@@ -221,6 +224,7 @@ const updateTextColor = (val: string) => {
 const updateFontSize = (val: number) => {
   if (selectedElement.value && selectedElement.value.type === 'text') {
     elementsStore.updateTextElement(selectedElement.value.id, { fontSize: val })
+    fontSizeValue.value = selectedElement.value.fontSize
   }
 }
 </script>

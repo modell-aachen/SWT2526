@@ -41,9 +41,9 @@ describe('useResizable', () => {
     vi.clearAllMocks()
   })
 
-  describe('startResize', () => {
+  describe('startReshape', () => {
     it('should work with different handle positions', () => {
-      const { startResize } = useResizable(emit)
+      const { startReshape } = useResizable(emit)
       const handles = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w']
 
       handles.forEach((handle) => {
@@ -51,7 +51,7 @@ describe('useResizable', () => {
           clientX: 100,
           clientY: 100,
         })
-        startResize(handle, mockEvent)
+        startReshape(handle, mockEvent)
       })
 
       expect(resizeStartSpy).toHaveBeenCalledTimes(handles.length)
@@ -60,13 +60,13 @@ describe('useResizable', () => {
 
   describe('resize movement', () => {
     it('should emit multiple resize events with correct deltas', () => {
-      const { startResize } = useResizable(emit)
+      const { startReshape } = useResizable(emit)
       const startEvent = new MouseEvent('mousedown', {
         clientX: 200,
         clientY: 200,
       })
 
-      startResize('se', startEvent)
+      startReshape('se', startEvent)
 
       document.dispatchEvent(
         new MouseEvent('mousemove', { clientX: 210, clientY: 215 })
@@ -82,13 +82,13 @@ describe('useResizable', () => {
     })
 
     it('should handle negative deltas', () => {
-      const { startResize } = useResizable(emit)
+      const { startReshape } = useResizable(emit)
       const startEvent = new MouseEvent('mousedown', {
         clientX: 200,
         clientY: 200,
       })
 
-      startResize('se', startEvent)
+      startReshape('se', startEvent)
 
       const moveEvent = new MouseEvent('mousemove', {
         clientX: 180,
@@ -102,13 +102,13 @@ describe('useResizable', () => {
 
   describe('resize end', () => {
     it('should emit resizeEnd when mouse is released', () => {
-      const { startResize } = useResizable(emit)
+      const { startReshape } = useResizable(emit)
       const startEvent = new MouseEvent('mousedown', {
         clientX: 200,
         clientY: 200,
       })
 
-      startResize('se', startEvent)
+      startReshape('se', startEvent)
 
       const upEvent = new MouseEvent('mouseup')
       document.dispatchEvent(upEvent)
@@ -117,13 +117,13 @@ describe('useResizable', () => {
     })
 
     it('should set isResizing to false on mouse release', () => {
-      const { isResizing, startResize } = useResizable(emit)
+      const { isResizing, startReshape } = useResizable(emit)
       const startEvent = new MouseEvent('mousedown', {
         clientX: 200,
         clientY: 200,
       })
 
-      startResize('se', startEvent)
+      startReshape('se', startEvent)
       expect(isResizing.value).toBe(true)
 
       document.dispatchEvent(new MouseEvent('mouseup'))
@@ -131,13 +131,13 @@ describe('useResizable', () => {
     })
 
     it('should stop tracking mouse movement after resize ends', () => {
-      const { startResize } = useResizable(emit)
+      const { startReshape } = useResizable(emit)
       const startEvent = new MouseEvent('mousedown', {
         clientX: 200,
         clientY: 200,
       })
 
-      startResize('se', startEvent)
+      startReshape('se', startEvent)
       document.dispatchEvent(new MouseEvent('mouseup'))
 
       resizeSpy.mockClear()
@@ -153,13 +153,13 @@ describe('useResizable', () => {
   describe('event listener cleanup', () => {
     it('should add event listeners when resize starts', () => {
       const addEventListenerSpy = vi.spyOn(document, 'addEventListener')
-      const { startResize } = useResizable(emit)
+      const { startReshape } = useResizable(emit)
 
       const startEvent = new MouseEvent('mousedown', {
         clientX: 200,
         clientY: 200,
       })
-      startResize('se', startEvent)
+      startReshape('se', startEvent)
 
       expect(addEventListenerSpy).toHaveBeenCalledWith(
         'mousemove',
@@ -173,13 +173,13 @@ describe('useResizable', () => {
 
     it('should remove listeners when resize ends', () => {
       const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener')
-      const { startResize } = useResizable(emit)
+      const { startReshape } = useResizable(emit)
 
       const startEvent = new MouseEvent('mousedown', {
         clientX: 200,
         clientY: 200,
       })
-      startResize('se', startEvent)
+      startReshape('se', startEvent)
 
       removeEventListenerSpy.mockClear()
 
@@ -198,9 +198,9 @@ describe('useResizable', () => {
 
   describe('edge cases', () => {
     it('should handle switching between different handles', () => {
-      const { startResize } = useResizable(emit)
+      const { startReshape } = useResizable(emit)
 
-      startResize(
+      startReshape(
         'se',
         new MouseEvent('mousedown', { clientX: 200, clientY: 200 })
       )
@@ -213,7 +213,7 @@ describe('useResizable', () => {
 
       resizeSpy.mockClear()
 
-      startResize(
+      startReshape(
         'nw',
         new MouseEvent('mousedown', { clientX: 100, clientY: 100 })
       )
@@ -224,9 +224,9 @@ describe('useResizable', () => {
     })
 
     it('should handle zero delta movements', () => {
-      const { startResize } = useResizable(emit)
+      const { startReshape } = useResizable(emit)
 
-      startResize(
+      startReshape(
         'se',
         new MouseEvent('mousedown', { clientX: 200, clientY: 200 })
       )

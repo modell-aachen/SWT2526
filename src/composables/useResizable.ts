@@ -19,7 +19,7 @@ export function useResizable(emit: ResizeEvents) {
     emit('resize', resizeHandle, deltaX, deltaY)
   }
 
-  const handleScaleLeftDiagonalMove = (e: MouseEvent) => {
+  const handleScaleNorthWestDiagonalMove = (e: MouseEvent) => {
     if (!isResizing.value) return
 
     const deltaY = e.clientY - lastMouseY
@@ -31,7 +31,7 @@ export function useResizable(emit: ResizeEvents) {
     emit('resize', resizeHandle, deltaX, deltaY)
   }
 
-  const handleScaleRightDiagonalMove = (e: MouseEvent) => {
+  const handleScaleNorthEastDiagonalMove = (e: MouseEvent) => {
     if (!isResizing.value) return
 
     const deltaX = e.clientX - lastMouseX
@@ -49,8 +49,8 @@ export function useResizable(emit: ResizeEvents) {
       emit('resize-end')
     }
     document.removeEventListener('mousemove', handleResizeMove)
-    document.removeEventListener('mousemove', handleScaleLeftDiagonalMove)
-    document.removeEventListener('mousemove', handleScaleRightDiagonalMove)
+    document.removeEventListener('mousemove', handleScaleNorthWestDiagonalMove)
+    document.removeEventListener('mousemove', handleScaleNorthEastDiagonalMove)
     document.removeEventListener('mouseup', handleResizeEnd)
   }
 
@@ -75,9 +75,9 @@ export function useResizable(emit: ResizeEvents) {
     emit('resize-start', position, event)
 
     if (position == 'nw' || position == 'se') {
-      document.addEventListener('mousemove', handleScaleLeftDiagonalMove)
+      document.addEventListener('mousemove', handleScaleNorthWestDiagonalMove)
     } else {
-      document.addEventListener('mousemove', handleScaleRightDiagonalMove)
+      document.addEventListener('mousemove', handleScaleNorthEastDiagonalMove)
     }
 
     document.addEventListener('mouseup', handleResizeEnd)
@@ -85,8 +85,8 @@ export function useResizable(emit: ResizeEvents) {
 
   onUnmounted(() => {
     document.removeEventListener('mousemove', handleResizeMove)
-    document.removeEventListener('mousemove', handleScaleLeftDiagonalMove)
-    document.removeEventListener('mousemove', handleScaleRightDiagonalMove)
+    document.removeEventListener('mousemove', handleScaleNorthWestDiagonalMove)
+    document.removeEventListener('mousemove', handleScaleNorthEastDiagonalMove)
     document.removeEventListener('mouseup', handleResizeEnd)
   })
 

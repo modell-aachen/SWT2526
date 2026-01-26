@@ -4,7 +4,7 @@
 import { setActivePinia, createPinia } from 'pinia'
 import { useElementsStore } from './elements'
 import { describe, it, expect, beforeEach } from 'vitest'
-import type { TextElement } from '@/types/Element'
+import type { TextElement, IconElement } from '@/types/Element'
 
 describe('Elements Store', () => {
   beforeEach(() => {
@@ -127,6 +127,41 @@ describe('Elements Store', () => {
 
     expect(store.elements[0]!.x).toBe(200)
     expect(store.elements[0]!.y).toBe(300)
+    expect(store.canUndo).toBe(true)
+  })
+
+  it('adds an icon element', () => {
+    const store = useElementsStore()
+    store.addIcon('star')
+    const element = store.elements[0] as IconElement
+    expect(element).toBeDefined()
+    expect(element.type).toBe('icon')
+    expect(element.iconType).toBe('star')
+  })
+
+  it('updates icon color', () => {
+    const store = useElementsStore()
+    store.addIcon('star')
+    const id = store.elements[0]!.id
+
+    store.updateIconColor(id, '#0000FF')
+    // @ts-ignore
+    expect(store.elements[0]!.color).toBe('#0000FF')
+
+    // Should trigger snapshot
+    expect(store.canUndo).toBe(true)
+  })
+
+  it('updates icon stroke weight', () => {
+    const store = useElementsStore()
+    store.addIcon('star')
+    const id = store.elements[0]!.id
+
+    store.updateIconStrokeWeight(id, 4)
+    // @ts-ignore
+    expect(store.elements[0]!.strokeWeight).toBe(4)
+
+    // Should trigger snapshot
     expect(store.canUndo).toBe(true)
   })
 })

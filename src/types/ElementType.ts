@@ -1,1 +1,1 @@
-export type ElementType = 'shape' | 'text'
+export type ElementType = 'shape' | 'text' | 'icon'

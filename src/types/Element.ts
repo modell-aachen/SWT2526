@@ -1,6 +1,6 @@
 import type { ShapeType } from './ShapeType'
 
-export type ElementType = 'shape' | 'text'
+export type ElementType = 'shape' | 'text' | 'icon'
 
 export interface BaseElement {
   id: string
@@ -31,4 +31,11 @@ export interface TextElement extends BaseElement {
   color: string
 }
 
-export type CanvasElement = ShapeElement | TextElement
+export interface IconElement extends BaseElement {
+  type: 'icon'
+  iconType: string
+  color: string
+  strokeWeight: number
+}
+
+export type CanvasElement = ShapeElement | TextElement | IconElement

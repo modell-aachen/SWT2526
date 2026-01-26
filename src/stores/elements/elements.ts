@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia'
-import type { CanvasElement, ShapeElement, TextElement } from '@/types/Element'
+import type {
+  CanvasElement,
+  ShapeElement,
+  TextElement,
+  IconElement,
+} from '@/types/Element'
 import type { ShapeType } from '@/types/ShapeType'
 
 const MAX_HISTORY_SIZE = 50
@@ -172,6 +177,39 @@ export const useElementsStore = defineStore('elements', {
         rotation: 0,
       }
       this.addElement(newText)
+    },
+
+    addIcon(iconType: string, x: number = 100, y: number = 100) {
+      const newIcon: IconElement = {
+        id: `icon-${this.nextId++}`,
+        type: 'icon',
+        iconType,
+        x,
+        y,
+        width: 50,
+        height: 50,
+        color: '#000',
+        strokeWeight: 2,
+        zIndex: this.elements.length,
+        rotation: 0,
+      }
+      this.addElement(newIcon)
+    },
+
+    updateIconColor(id: string, color: string) {
+      const element = this.elements.find((e: CanvasElement) => e.id === id)
+      if (element && element.type === 'icon') {
+        element.color = color
+        this.saveSnapshot()
+      }
+    },
+
+    updateIconStrokeWeight(id: string, weight: number) {
+      const element = this.elements.find((e: CanvasElement) => e.id === id)
+      if (element && element.type === 'icon' && weight >= 0) {
+        element.strokeWeight = weight
+        this.saveSnapshot()
+      }
     },
 
     updateElement(id: string, updates: Partial<CanvasElement>) {

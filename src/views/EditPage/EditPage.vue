@@ -121,7 +121,6 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown)
 })
 
-
 watch(canvasRef, (newRef) => {
   if (newRef?.$el) {
     dragStore.setCanvasElement(newRef.$el)

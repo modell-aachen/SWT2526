@@ -85,6 +85,7 @@ import SidebarToggle from './components/SidebarToggle.vue'
 import { calculateNewElementState } from '@/utils/elementTransforms'
 import type { ResizeHandle } from '@/utils/elementTransforms'
 import { useZoomStore } from '@/stores/zoom/zoom'
+import { useCanvasIO } from '@/composables/useCanvasIO'
 
 import LeftSidebar from '@/components/Sidebar/LeftBar/LeftSidebar.vue'
 import RightSidebar from '@/components/Sidebar/RightBar/RightSidebar.vue'
@@ -96,12 +97,28 @@ const dragStore = useDragStore()
 const sidebarCollapsed = ref(false)
 const rightSidebarCollapsed = ref(false)
 const zoomStore = useZoomStore()
+const { saveToFile } = useCanvasIO()
 
 const canvasRef = ref<InstanceType<typeof GridCanvas> | null>(null)
+
+const handleKeyDown = (e: KeyboardEvent) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault()
+    saveToFile(elementsStore.exportSnapshot())
+  }
+}
+
 onMounted(() => {
   if (canvasRef.value?.$el) {
     dragStore.setCanvasElement(canvasRef.value.$el)
   }
+  window.addEventListener('keydown', handleKeyDown)
+})
+
+import { onUnmounted } from 'vue'
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown)
 })
 
 watch(canvasRef, (newRef) => {

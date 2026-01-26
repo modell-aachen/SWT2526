@@ -24,6 +24,17 @@
         >
           <Type class="w-4 h-4 text-ma-text-01" />
         </Button>
+        <div class="w-full h-px bg-ma-grey-300 my-1" />
+        <Button
+          v-for="(iconComponent, iconName) in ICONS"
+          :key="iconName"
+          variant="ghost"
+          class="w-10 h-10 p-0 ml-1"
+          @click="elementsStore.addIcon(iconName as string)"
+          :title="iconName"
+        >
+          <component :is="iconComponent" class="w-4 h-4 text-ma-text-01" />
+        </Button>
       </div>
     </div>
 
@@ -35,6 +46,7 @@
 <script setup lang="ts">
 import { Wrench, Type } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
+import { ICONS } from '@/components/Icons'
 import ShapeButton from './ShapeButton.vue'
 import ZoomControls from './ZoomControls.vue'
 import SidebarActions from './SidebarActions.vue'

@@ -18,7 +18,7 @@
 
       <!-- Resize Handles -->
       <div
-        v-for="handle in handles"
+        v-for="handle in visibleHandles"
         :key="handle"
         class="absolute w-2 h-2 bg-ma-primary-500 border border-white rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer"
         :style="getHandleStyle(handle)"
@@ -33,12 +33,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { CanvasElement, ShapeElement, TextElement } from '@/types/Element'
+import type { CanvasElement, ShapeElement, TextElement, IconElement } from '@/types/Element'
 import type { ResizeHandle } from '@/utils/elementTransforms'
 import GenericShape from '../Shapes/GenericShape.vue'
 import TextElementComponent from '../TextElement/TextElement.vue'
+import IconElementComponent from '../IconElement/IconElement.vue'
 import ElementLink from './ElementLink.vue'
-import { getHandleStyle, resizeHandles as handles } from '@/utils/wrapperUtils'
+import { getHandleStyle, resizeHandles as allHandles } from '@/utils/wrapperUtils'
 import { useDraggable } from '@/composables/useDraggable'
 import { useResizable } from '@/composables/useResizable'
 
@@ -61,6 +62,13 @@ const emit = defineEmits<{
   delete: []
 }>()
 
+const visibleHandles = computed(() => {
+  if (props.element.type === 'icon') {
+    return allHandles.filter((h) => ['nw', 'ne', 'sw', 'se'].includes(h))
+  }
+  return allHandles
+})
+
 const { startDrag } = useDraggable(emit)
 const { startResize } = useResizable(emit as any)
 
@@ -69,6 +77,8 @@ const componentType = computed(() => {
     return GenericShape
   } else if (props.element.type === 'text') {
     return TextElementComponent
+  } else if (props.element.type === 'icon') {
+    return IconElementComponent
   }
   return 'div'
 })
@@ -93,6 +103,13 @@ const componentProps = computed(() => {
       color: text.color,
       fontSize: text.fontSize,
       fontFamily: text.fontFamily,
+    }
+  } else if (props.element.type === 'icon') {
+    const icon = props.element as IconElement
+    return {
+      iconType: icon.iconType,
+      color: icon.color,
+      strokeWeight: icon.strokeWeight,
     }
   }
   return {}

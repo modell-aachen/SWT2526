@@ -70,6 +70,22 @@
           @change="updateTextColor"
         />
       </template>
+      <template v-if="selectedElement?.type === 'icon'">
+        <PropertyColorInput
+          id="icon-color"
+          label="Color"
+          v-model="iconColorValue"
+          @change="updateIconColor"
+        />
+
+        <PropertyNumericInput
+          id="icon-stroke-width"
+          label="Stroke Width"
+          v-model="iconStrokeWeightValue"
+          @change="updateIconStrokeWeight"
+        />
+      </template>
+
       <PropertyNumericInput
         id="element-x"
         label="X-Coordinate"
@@ -97,6 +113,7 @@ import PropertyNumericInput from './components/PropertyNumericInput.vue'
 import PropertyLinkInput from './components/PropertyLinkInput.vue'
 import PropertyTextInput from './components/PropertyTextInput.vue'
 import PropertySelectInput from './components/PropertySelectInput.vue'
+import type { IconElement } from '@/types/Element'
 
 const elementsStore = useElementsStore()
 const selectedElement = computed(() => elementsStore.selectedElement)
@@ -115,6 +132,8 @@ const textContentValue = ref('')
 const fontFamilyValue = ref('Arial')
 const textColorValue = ref('#000000')
 const fontSizeValue = ref(16)
+const iconColorValue = ref('#000000')
+const iconStrokeWeightValue = ref(2)
 
 const fontFamilyOptions = [
   { label: 'Arial', value: 'Arial' },
@@ -143,6 +162,10 @@ watch(
       fontFamilyValue.value = text.fontFamily
       textColorValue.value = text.color
       fontSizeValue.value = text.fontSize
+    } else if (newElement && newElement.type === 'icon') {
+      const icon = newElement as IconElement
+      iconColorValue.value = icon.color
+      iconStrokeWeightValue.value = icon.strokeWeight
     }
   },
   { immediate: true, deep: true }
@@ -225,6 +248,19 @@ const updateFontSize = (val: number) => {
   if (selectedElement.value && selectedElement.value.type === 'text') {
     elementsStore.updateTextElement(selectedElement.value.id, { fontSize: val })
     fontSizeValue.value = selectedElement.value.fontSize
+  }
+}
+
+const updateIconColor = (val: string) => {
+  if (selectedElement.value && selectedElement.value.type === 'icon') {
+    elementsStore.updateIconColor(selectedElement.value.id, val)
+  }
+}
+
+const updateIconStrokeWeight = (val: number) => {
+  if (selectedElement.value && selectedElement.value.type === 'icon') {
+    elementsStore.updateIconStrokeWeight(selectedElement.value.id, val)
+    iconStrokeWeightValue.value = selectedElement.value.strokeWeight
   }
 }
 </script>

@@ -47,6 +47,9 @@ export function useDraggable(emit: DraggableEvents) {
       }
     }
     hasDragStarted = false
+    // Reset cursor and user-select (Firefox fix)
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
   }
@@ -60,6 +63,9 @@ export function useDraggable(emit: DraggableEvents) {
     initialMouseY = event.clientY
     lastMouseX = event.clientX
     lastMouseY = event.clientY
+
+    // Prevent text selection during drag (Firefox fix)
+    document.body.style.userSelect = 'none'
 
     document.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseup', handleMouseUp)

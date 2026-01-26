@@ -101,11 +101,44 @@
         class="flex-1"
       />
     </div>
+    <!-- Spacer to push buttons to bottom -->
+    <div class="flex-1"></div>
+    <!-- Save/Upload -->
+    <div class="p-4 border-t border-ma-grey-300 flex gap-2">
+      <Button
+        variant="outline"
+        class="flex-1 gap-2"
+        data-testid="save-button"
+        title="Save to JSON"
+        @click="handleSave"
+      >
+        <Save class="w-4 h-4" />
+        <span>Save</span>
+      </Button>
+      <Button
+        variant="outline"
+        class="flex-1 gap-2"
+        data-testid="upload-button"
+        title="Upload JSON"
+        @click="handleUploadClick"
+      >
+        <Upload class="w-4 h-4" />
+        <span>Load</span>
+      </Button>
+      <input
+        ref="fileInputRef"
+        type="file"
+        accept=".json"
+        class="hidden"
+        @change="handleFileChange"
+      />
+    </div>
   </aside>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import { Save, Upload } from 'lucide-vue-next'
 import { useElementsStore } from '@/stores/elements/elements'
 import type { ShapeElement, TextElement } from '@/types/Element'
 import PropertyColorInput from './components/PropertyColorInput.vue'
@@ -114,9 +147,12 @@ import PropertyLinkInput from './components/PropertyLinkInput.vue'
 import PropertyTextInput from './components/PropertyTextInput.vue'
 import PropertySelectInput from './components/PropertySelectInput.vue'
 import type { IconElement } from '@/types/Element'
+import { Button } from '@/components/ui/button'
+import { useCanvasIO } from '@/composables/useCanvasIO'
 
 const elementsStore = useElementsStore()
 const selectedElement = computed(() => elementsStore.selectedElement)
+const { saveToFile, loadFromFile } = useCanvasIO()
 
 defineProps<{
   isCollapsed?: boolean
@@ -261,6 +297,34 @@ const updateIconStrokeWeight = (val: number) => {
   if (selectedElement.value && selectedElement.value.type === 'icon') {
     elementsStore.updateIconStrokeWeight(selectedElement.value.id, val)
     iconStrokeWeightValue.value = selectedElement.value.strokeWeight
+  }
+}
+
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
+const handleSave = () => {
+  saveToFile(elementsStore.exportSnapshot())
+}
+
+const handleUploadClick = () => {
+  fileInputRef.value?.click()
+}
+
+const handleFileChange = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (target.files && target.files.length > 0) {
+    const file = target.files[0]
+    if (file) {
+      try {
+        const data = await loadFromFile(file)
+        elementsStore.importSnapshot(data)
+      } catch (error) {
+        console.error('Failed to load file:', error)
+        alert('Failed to load file. Please ensure it is a valid JSON file.')
+      } finally {
+        target.value = ''
+      }
+    }
   }
 }
 </script>

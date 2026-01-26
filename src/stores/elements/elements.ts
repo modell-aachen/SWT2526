@@ -9,6 +9,13 @@ import type { ShapeType } from '@/types/ShapeType'
 
 const MAX_HISTORY_SIZE = 50
 
+export interface Snapshot {
+  version: number
+  timestamp: number
+  elements: CanvasElement[]
+  nextId: number
+}
+
 interface ElementsState {
   elements: CanvasElement[]
   selectedElementId: string | null
@@ -351,6 +358,36 @@ export const useElementsStore = defineStore('elements', {
         element.link = undefined
         this.saveSnapshot()
       }
+    },
+    exportSnapshot(): Snapshot {
+      return {
+        version: 1,
+        timestamp: Date.now(),
+        elements: JSON.parse(JSON.stringify(this.elements)),
+        nextId: this.nextId,
+      }
+    },
+
+    importSnapshot(data: unknown) {
+      if (
+        !data ||
+        typeof data !== 'object' ||
+        !('elements' in data) ||
+        !Array.isArray((data as Snapshot).elements)
+      ) {
+        console.error('Invalid snapshot data')
+        return
+      }
+
+      const snapshot = data as Snapshot
+
+      this.elements = JSON.parse(JSON.stringify(snapshot.elements))
+      this.nextId = snapshot.nextId || this.nextId
+      this.selectedElementId = null
+
+      // Reset history
+      this.history = [JSON.parse(JSON.stringify(this.elements))]
+      this.historyIndex = 0
     },
   },
 })

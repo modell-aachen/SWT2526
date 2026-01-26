@@ -42,7 +42,7 @@
               handleResize(element.id, handle, deltaX, deltaY)
           "
           @resize-end="elementsStore.endResize()"
-          @rotate="handleElementRotate(element.id, element.rotation)"
+          @rotate="handleElementRotate(element.id)"
           @delete="elementsStore.deleteSelectedElement()"
           @copy="elementsStore.copySelectedElement()"
           @duplicate="elementsStore.duplicateSelectedElement()"
@@ -57,12 +57,7 @@
             class="absolute z-50 pointer-events-auto"
             @copy="elementsStore.copySelectedElement()"
             @duplicate="elementsStore.duplicateSelectedElement()"
-            @rotate="
-              handleElementRotate(
-                elementsStore.selectedElement.id,
-                elementsStore.selectedElement.rotation
-              )
-            "
+            @rotate="handleElementRotate(elementsStore.selectedElement.id)"
             @delete="elementsStore.deleteSelectedElement()"
           />
         </template>
@@ -157,8 +152,26 @@ const handleResize = (
   elementsStore.updateElement(id, newState)
 }
 
-const handleElementRotate = async (id: string, currentRotation: number) => {
-  elementsStore.updateElement(id, { rotation: (currentRotation + 90) % 360 })
+const handleElementRotate = async (id: string) => {
+  const element = elementsStore.elements.find((e) => e.id === id)
+  if (!element) return
+
+  // Swap width and height to simulate rotation
+  const newWidth = element.height
+  const newHeight = element.width
+
+  // Adjust position to keep center in same place
+  const centerX = element.x + element.width / 2
+  const centerY = element.y + element.height / 2
+  const newX = centerX - newWidth / 2
+  const newY = centerY - newHeight / 2
+
+  elementsStore.updateElement(id, {
+    width: newWidth,
+    height: newHeight,
+    x: newX,
+    y: newY,
+  })
   elementsStore.saveSnapshot()
 }
 
@@ -176,35 +189,17 @@ const contextBarStyle = computed(() => {
   const zoom = zoomStore.zoom
   if (!el) return {}
 
-  const w = el.width
-  const h = el.height
-  const rotation = el.rotation
-
   // Calculate center of element in canvas coordinates
-  const centerX = el.x + w / 2
-  const centerY = el.y + h / 2
-
-  // Calculate the y-distance from center to the top-most corner of the rotated box
-  // Convert angle to radians
-  const rad = (rotation * Math.PI) / 180
-  const absSin = Math.abs(Math.sin(rad))
-  const absCos = Math.abs(Math.cos(rad))
-
-  // The bounding box half-height is determined by projecting width and height onto the vertical axis
-  const boundingBoxHalfHeight = (w * absSin + h * absCos) / 2
-
-  // Visual top is center - half-height
-  const visualTopY = centerY - boundingBoxHalfHeight
-  const visualBottomY = centerY + boundingBoxHalfHeight
+  const centerX = el.x + el.width / 2
 
   // Position relative to the canvas content (0,0 is start of content)
   const leftPos = centerX * zoom
-  let topPos = visualTopY * zoom - 64 // Default: 64px above
+  let topPos = el.y * zoom - 64 // Default: 64px above
 
   // Flip Logic: Check if it goes off the top edge (with 10px buffer)
   if (topPos < 10) {
     // Flip to bottom
-    topPos = visualBottomY * zoom + 20 // 20px padding below
+    topPos = (el.y + el.height) * zoom + 20 // 20px padding below
   }
 
   return {

@@ -33,13 +33,21 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { CanvasElement, ShapeElement, TextElement, IconElement } from '@/types/Element'
+import type {
+  CanvasElement,
+  ShapeElement,
+  TextElement,
+  IconElement,
+} from '@/types/Element'
 import type { ResizeHandle } from '@/utils/elementTransforms'
 import GenericShape from '../Shapes/GenericShape.vue'
 import TextElementComponent from '../TextElement/TextElement.vue'
 import IconElementComponent from '../IconElement/IconElement.vue'
 import ElementLink from './ElementLink.vue'
-import { getHandleStyle, resizeHandles as allHandles } from '@/utils/wrapperUtils'
+import {
+  getHandleStyle,
+  resizeHandles as allHandles,
+} from '@/utils/wrapperUtils'
 import { useDraggable } from '@/composables/useDraggable'
 import { useResizable } from '@/composables/useResizable'
 

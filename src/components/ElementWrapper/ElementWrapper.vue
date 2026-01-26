@@ -62,7 +62,7 @@ const emit = defineEmits<{
 }>()
 
 const { startDrag } = useDraggable(emit)
-const { startResize } = useResizable(emit as any)
+const { startReshape, startScale } = useResizable(emit as any)
 
 const componentType = computed(() => {
   if (props.element.type === 'shape') {
@@ -114,6 +114,8 @@ const handleMouseDown = (e: MouseEvent) => {
 }
 
 const handleResizeStart = (handle: ResizeHandle, e: MouseEvent) => {
-  startResize(handle, e)
+  const diagonal: string[] = ['ne', 'nw', 'se', 'sw']
+  if (diagonal.includes(handle)) startScale(handle, e)
+  else startReshape(handle, e)
 }
 </script>

@@ -123,12 +123,14 @@ const componentProps = computed(() => {
   return {}
 })
 
-// Single wrapper with position
+// Single wrapper with position AND rotation
 const wrapperStyle = computed(() => ({
   left: `${props.element.x}px`,
   top: `${props.element.y}px`,
   width: `${props.element.width}px`,
   height: `${props.element.height}px`,
+  transform: `rotate(${props.element.rotation}deg)`,
+  transformOrigin: 'center center',
 }))
 
 const handleMouseDown = (e: MouseEvent) => {

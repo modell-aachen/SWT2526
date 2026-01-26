@@ -24,6 +24,9 @@ export function useResizable(emit: ResizeEvents) {
       isResizing.value = false
       emit('resize-end')
     }
+    // Reset cursor and user-select (Firefox fix)
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
     document.removeEventListener('mousemove', handleResizeMove)
     document.removeEventListener('mouseup', handleResizeEnd)
   }
@@ -34,10 +37,28 @@ export function useResizable(emit: ResizeEvents) {
     lastMouseX = event.clientX
     lastMouseY = event.clientY
 
+    // Prevent text selection and set cursor during resize (Firefox fix)
+    document.body.style.cursor = getCursorForHandle(position)
+    document.body.style.userSelect = 'none'
+
     emit('resize-start', position, event)
 
     document.addEventListener('mousemove', handleResizeMove)
     document.addEventListener('mouseup', handleResizeEnd)
+  }
+
+  const getCursorForHandle = (handle: string): string => {
+    const cursors: Record<string, string> = {
+      nw: 'nwse-resize',
+      se: 'nwse-resize',
+      ne: 'nesw-resize',
+      sw: 'nesw-resize',
+      n: 'ns-resize',
+      s: 'ns-resize',
+      e: 'ew-resize',
+      w: 'ew-resize',
+    }
+    return cursors[handle] || 'pointer'
   }
 
   onUnmounted(() => {

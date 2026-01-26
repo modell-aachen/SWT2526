@@ -15,6 +15,7 @@ export function useDraggable(emit: DraggableEvents) {
 
   const handleMouseMove = (e: MouseEvent) => {
     if (!isDragging.value) return
+    e.preventDefault() // Prevent default drag behavior (Firefox fix)
 
     // Check if we've exceeded the drag threshold
     if (!hasDragStarted) {
@@ -48,13 +49,13 @@ export function useDraggable(emit: DraggableEvents) {
     }
     hasDragStarted = false
     // Reset cursor and user-select (Firefox fix)
-    document.body.style.cursor = ''
-    document.body.style.userSelect = ''
+    document.body.classList.remove('cursor-grabbing')
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
   }
 
   const startDrag = (event: MouseEvent) => {
+    event.preventDefault() // Prevent default (Firefox fix)
     emit('click', event)
 
     isDragging.value = true
@@ -65,7 +66,7 @@ export function useDraggable(emit: DraggableEvents) {
     lastMouseY = event.clientY
 
     // Prevent text selection during drag (Firefox fix)
-    document.body.style.userSelect = 'none'
+    document.body.classList.add('cursor-grabbing')
 
     document.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseup', handleMouseUp)

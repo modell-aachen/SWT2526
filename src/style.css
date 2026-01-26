@@ -277,10 +277,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-/* Firefox cursor fix - use class to force cursor with higher specificity */
-body.cursor-grabbing,
-body.cursor-grabbing * {
-  cursor: grabbing !important;
-  user-select: none !important;
-}

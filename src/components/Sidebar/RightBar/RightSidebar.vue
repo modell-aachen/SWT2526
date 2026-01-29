@@ -101,9 +101,7 @@
         class="flex-1"
       />
     </div>
-    <!-- Spacer to push buttons to bottom -->
     <div class="flex-1"></div>
-    <!-- Save/Upload -->
     <div class="p-4 border-t border-ma-grey-300 flex gap-2">
       <Button
         variant="outline"

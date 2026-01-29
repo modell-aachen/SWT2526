@@ -17,6 +17,7 @@
           :shape-type="shape"
           collapsed
         />
+        <div class="w-full h-px bg-ma-grey-300 my-1" />
         <Button
           variant="ghost"
           class="w-full justify-start gap-2 h-10 ml-1"
@@ -25,16 +26,7 @@
           <Type class="w-4 h-4 text-ma-text-01" />
         </Button>
         <div class="w-full h-px bg-ma-grey-300 my-1" />
-        <Button
-          v-for="(iconComponent, iconName) in ICONS"
-          :key="iconName"
-          variant="ghost"
-          class="w-10 h-10 p-0 ml-1"
-          @click="elementsStore.addIcon(iconName as string)"
-          :title="iconName"
-        >
-          <component :is="iconComponent" class="w-4 h-4 text-ma-text-01" />
-        </Button>
+        <IconPicker collapsed />
       </div>
     </div>
 
@@ -46,7 +38,7 @@
 <script setup lang="ts">
 import { Wrench, Type } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
-import { ICONS } from '@/components/Icons'
+import IconPicker from './IconPicker.vue'
 import ShapeButton from './ShapeButton.vue'
 import ZoomControls from './ZoomControls.vue'
 import SidebarActions from './SidebarActions.vue'

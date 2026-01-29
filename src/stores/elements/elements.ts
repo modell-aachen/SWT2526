@@ -6,6 +6,7 @@ import type {
   IconElement,
 } from '@/types/Element'
 import type { ShapeType } from '@/types/ShapeType'
+import { normalizePoints } from '@/utils/shapeUtils'
 
 const MAX_HISTORY_SIZE = 50
 
@@ -58,7 +59,7 @@ export const useElementsStore = defineStore('elements', {
 
   actions: {
     saveCustomShape(name: string, points: string) {
-      this.customShapes.push({ name, points })
+      this.customShapes.push({ name, points: normalizePoints(points) })
     },
 
     saveSnapshot() {

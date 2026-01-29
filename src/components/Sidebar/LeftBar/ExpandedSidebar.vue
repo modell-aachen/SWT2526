@@ -28,18 +28,7 @@
         </Button>
       </SidebarGroup>
       <SidebarGroup title="Icons" :sidebar-collapsed="false">
-        <div class="grid grid-cols-4 gap-1">
-          <Button
-            v-for="(iconComponent, iconName) in ICONS"
-            :key="iconName"
-            variant="ghost"
-            class="h-9 w-9 p-0"
-            @click="elementsStore.addIcon(iconName as string)"
-            :title="iconName"
-          >
-            <component :is="iconComponent" class="w-5 h-5 text-ma-text-01" />
-          </Button>
-        </div>
+        <IconPicker :collapsed="false" class="w-full" />
       </SidebarGroup>
       <SidebarGroup title="Custom Shapes" :sidebar-collapsed="false">
         <ShapeButton
@@ -73,11 +62,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { Type, Plus } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import SidebarGroup from '@/components/Sidebar/SidebarGroup.vue'
-import { ICONS } from '@/components/Icons'
+import IconPicker from './IconPicker.vue'
 import ShapeButton from './ShapeButton.vue'
 import ZoomControls from './ZoomControls.vue'
 import SidebarActions from './SidebarActions.vue'
@@ -103,9 +92,4 @@ const shapes: ShapeType[] = [
   'parallelogram',
   'pentagon',
 ]
-
-onMounted(() => {
-  // Load custom shapes from local storage (handled by store init if exists, or simple persistence)
-  // elementsStore.init() // Assuming init exists or is handled
-})
 </script>

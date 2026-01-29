@@ -133,6 +133,7 @@ const name = ref('')
 const points = ref([
   { x: 0, y: 0 },
   { x: 100, y: 0 },
+  { x: 100, y: 100 },
 ])
 
 const isInvalid = (val: number) => {
@@ -150,7 +151,7 @@ const previewPointsString = computed(() => {
   return points.value
     .map((p) => {
       const x = Math.min(Math.max(p.x, 0), 100)
-      const y = Math.min(Math.max(p.y, 0), 100)
+      const y = 100 - Math.min(Math.max(p.y, 0), 100)
       return `${x},${y}`
     })
     .join(' ')
@@ -158,7 +159,7 @@ const previewPointsString = computed(() => {
 
 // Exact values for saving, but invalid ones block saving
 const savePointsString = computed(() => {
-  return points.value.map((p) => `${p.x},${p.y}`).join(' ')
+  return points.value.map((p) => `${p.x},${100 - p.y}`).join(' ')
 })
 
 const isValid = computed(() => {
@@ -183,6 +184,7 @@ const saveShape = () => {
     points.value = [
       { x: 0, y: 0 },
       { x: 100, y: 0 },
+      { x: 100, y: 100 },
     ]
     emit('update:open', false)
   }

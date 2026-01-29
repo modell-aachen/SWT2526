@@ -1,38 +1,24 @@
 <template>
-  <ShapeContextBar
-    v-if="isShape"
-    @copy="$emit('copy')"
-    @duplicate="$emit('duplicate')"
-    @rotate="$emit('rotate')"
-    @delete="$emit('delete')"
-    @up="$emit('up')"
-    @down="$emit('down')"
-  />
-  <TextContextBar
-    v-else-if="isText"
-    @copy="$emit('copy')"
-    @duplicate="$emit('duplicate')"
-    @rotate="$emit('rotate')"
-    @delete="$emit('delete')"
-  />
-  <IconContextBar
-    v-else-if="isIcon"
-    @copy="$emit('copy')"
-    @duplicate="$emit('duplicate')"
-    @delete="$emit('delete')"
-  />
+  <div
+    data-testid="element-context-bar"
+    class="flex gap-1 p-1 bg-ma-grey-200 border border-ma-grey-300 rounded-lg shadow-lg items-center"
+    @mousedown.stop
+  >
+    <CopyButtons @copy="$emit('copy')" @duplicate="$emit('duplicate')" />
+    <div class="w-px h-4 bg-ma-grey-700 mx-0.5"></div>
+    <RotateButton @rotate="$emit('rotate')" />
+    <div class="w-px h-4 bg-ma-grey-700 mx-0.5"></div>
+    <LayeringButtons @up="$emit('up')" @down="$emit('down')" />
+    <div class="w-px h-4 bg-ma-grey-700 mx-0.5"></div>
+    <DeleteButton @delete="$emit('delete')" />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { CanvasElement } from '@/types/Element'
-import ShapeContextBar from './ShapeContextBar.vue'
-import TextContextBar from './TextContextBar.vue'
-import IconContextBar from './IconContextBar.vue'
-
-const props = defineProps<{
-  element: CanvasElement
-}>()
+import CopyButtons from './components/CopyButtons.vue'
+import RotateButton from './components/RotateButton.vue'
+import LayeringButtons from './components/LayeringButtons.vue'
+import DeleteButton from './components/DeleteButton.vue'
 
 defineEmits<{
   copy: []
@@ -42,8 +28,4 @@ defineEmits<{
   up: []
   down: []
 }>()
-
-const isShape = computed(() => props.element.type === 'shape')
-const isText = computed(() => props.element.type === 'text')
-const isIcon = computed(() => props.element.type === 'icon')
 </script>

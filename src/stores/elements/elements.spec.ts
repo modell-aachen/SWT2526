@@ -168,65 +168,58 @@ describe('Elements Store', () => {
   describe('z-index management', () => {
     it('bringToFront moves element to highest zIndex', () => {
       const store = useElementsStore()
-      store.addShape('rectangle') // zIndex 0
-      store.addShape('triangle')  // zIndex 1
-      store.addShape('ellipse')   // zIndex 2
+      store.addShape('rectangle')
+      store.addShape('triangle')
+      store.addShape('ellipse')
 
       const firstId = store.elements[0]!.id
 
       store.bringToFront(firstId)
 
-      // First element should now have the highest zIndex (above all others)
-      const allZIndexes = store.elements.map(e => e.zIndex)
+      const allZIndexes = store.elements.map((e) => e.zIndex)
       expect(store.elements[0]!.zIndex).toBe(Math.max(...allZIndexes))
     })
 
     it('bringToBack moves element to zIndex 0 and shifts others up', () => {
       const store = useElementsStore()
-      store.addShape('rectangle') // zIndex 0
-      store.addShape('triangle')  // zIndex 1
-      store.addShape('ellipse')   // zIndex 2
+      store.addShape('rectangle')
+      store.addShape('triangle')
+      store.addShape('ellipse')
 
       const lastId = store.elements[2]!.id
 
       store.bringToBack(lastId)
 
-      // Last element should now have zIndex 0
       expect(store.elements[2]!.zIndex).toBe(0)
-      // Other elements should have shifted up
       expect(store.elements[0]!.zIndex).toBe(1)
       expect(store.elements[1]!.zIndex).toBe(2)
     })
 
     it('bringToFront does nothing if already at front', () => {
       const store = useElementsStore()
-      store.addShape('rectangle') // zIndex 0
-      store.addShape('triangle')  // zIndex 1
+      store.addShape('rectangle')
+      store.addShape('triangle')
 
       const lastId = store.elements[1]!.id
       const historyLengthBefore = store.history.length
 
       store.bringToFront(lastId)
 
-      // zIndex should remain unchanged
       expect(store.elements[1]!.zIndex).toBe(1)
-      // No snapshot should be saved
       expect(store.history.length).toBe(historyLengthBefore)
     })
 
     it('bringToBack does nothing if already at back', () => {
       const store = useElementsStore()
-      store.addShape('rectangle') // zIndex 0
-      store.addShape('triangle')  // zIndex 1
+      store.addShape('rectangle')
+      store.addShape('triangle')
 
       const firstId = store.elements[0]!.id
       const historyLengthBefore = store.history.length
 
       store.bringToBack(firstId)
 
-      // zIndex should remain unchanged
       expect(store.elements[0]!.zIndex).toBe(0)
-      // No snapshot should be saved
       expect(store.history.length).toBe(historyLengthBefore)
     })
   })

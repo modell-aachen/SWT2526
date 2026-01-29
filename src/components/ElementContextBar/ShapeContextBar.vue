@@ -67,7 +67,14 @@
 </template>
 
 <script setup lang="ts">
-import { Copy, CopyPlus, RotateCw, Trash2, ArrowUp, ArrowDown } from 'lucide-vue-next'
+import {
+  Copy,
+  CopyPlus,
+  RotateCw,
+  Trash2,
+  ArrowUp,
+  ArrowDown,
+} from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 
 defineEmits<{

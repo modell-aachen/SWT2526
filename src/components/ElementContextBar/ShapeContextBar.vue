@@ -22,7 +22,7 @@
     >
       <CopyPlus class="w-4 h-4" />
     </Button>
-    <div class="w-px h-4 bg-ma-grey-400 mx-0.5"></div>
+    <div class="w-px h-4 bg-ma-grey-700 mx-0.5"></div>
     <Button
       data-testid="context-rotate-button"
       variant="ghost"
@@ -32,7 +32,28 @@
     >
       <RotateCw class="w-4 h-4" />
     </Button>
-    <div class="w-px h-4 bg-ma-grey-400 mx-0.5"></div>
+    <div class="w-px h-4 bg-ma-grey-700 mx-0.5"></div>
+    <Button
+      data-testid="context-bring-to-front-button"
+      variant="ghost"
+      size="icon-sm"
+      title="Bring to front"
+      tooltip="Bring to front"
+      @click="$emit('up')"
+    >
+      <ArrowUp class="w-4 h-4" />
+    </Button>
+    <Button
+      data-testid="context-bring-to-back-button"
+      variant="ghost"
+      size="icon-sm"
+      title="Bring to back"
+      tooltip="Bring to back"
+      @click="$emit('down')"
+    >
+      <ArrowDown class="w-4 h-4" />
+    </Button>
+    <div class="w-px h-4 bg-ma-grey-700 mx-0.5"></div>
     <Button
       data-testid="context-delete-button"
       variant="destructive"
@@ -46,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { Copy, CopyPlus, RotateCw, Trash2 } from 'lucide-vue-next'
+import { Copy, CopyPlus, RotateCw, Trash2, ArrowUp, ArrowDown } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 
 defineEmits<{
@@ -54,5 +75,7 @@ defineEmits<{
   duplicate: []
   rotate: []
   delete: []
+  up: []
+  down: []
 }>()
 </script>

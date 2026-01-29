@@ -310,8 +310,11 @@ export const useElementsStore = defineStore('elements', {
       }
     },
 
-    bringToFront(id: string) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
+    bringToFront() {
+      if (!this.selectedElementId) return
+      const element = this.elements.find(
+        (e: CanvasElement) => e.id === this.selectedElementId
+      )
       if (!element) return
 
       const maxZIndex = Math.max(...this.elements.map((e) => e.zIndex))
@@ -321,8 +324,11 @@ export const useElementsStore = defineStore('elements', {
       this.saveSnapshot()
     },
 
-    bringToBack(id: string) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
+    bringToBack() {
+      if (!this.selectedElementId) return
+      const element = this.elements.find(
+        (e: CanvasElement) => e.id === this.selectedElementId
+      )
       if (!element) return
 
       const minZIndex = Math.min(...this.elements.map((e) => e.zIndex))
@@ -330,7 +336,7 @@ export const useElementsStore = defineStore('elements', {
 
       // Shift all other elements up by 1
       this.elements.forEach((e: CanvasElement) => {
-        if (e.id !== id) {
+        if (e.id !== this.selectedElementId) {
           e.zIndex += 1
         }
       })

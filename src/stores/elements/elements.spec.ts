@@ -165,16 +165,22 @@ describe('Elements Store', () => {
     expect(store.canUndo).toBe(true)
   })
 
+  const addShapes = () => {
+    const store = useElementsStore()
+    store.addShape('rectangle')
+    store.addShape('triangle')
+    store.addShape('ellipse')
+  }
+
   describe('z-index management', () => {
     it('bringToFront moves element to highest zIndex', () => {
       const store = useElementsStore()
-      store.addShape('rectangle')
-      store.addShape('triangle')
-      store.addShape('ellipse')
+      addShapes()
 
       const firstId = store.elements[0]!.id
+      store.selectElement(firstId)
 
-      store.bringToFront(firstId)
+      store.bringToFront()
 
       const allZIndexes = store.elements.map((e) => e.zIndex)
       expect(store.elements[0]!.zIndex).toBe(Math.max(...allZIndexes))
@@ -182,13 +188,12 @@ describe('Elements Store', () => {
 
     it('bringToBack moves element to zIndex 0 and shifts others up', () => {
       const store = useElementsStore()
-      store.addShape('rectangle')
-      store.addShape('triangle')
-      store.addShape('ellipse')
+      addShapes()
 
       const lastId = store.elements[2]!.id
+      store.selectElement(lastId)
 
-      store.bringToBack(lastId)
+      store.bringToBack()
 
       expect(store.elements[2]!.zIndex).toBe(0)
       expect(store.elements[0]!.zIndex).toBe(1)
@@ -200,10 +205,9 @@ describe('Elements Store', () => {
       store.addShape('rectangle')
       store.addShape('triangle')
 
-      const lastId = store.elements[1]!.id
       const historyLengthBefore = store.history.length
 
-      store.bringToFront(lastId)
+      store.bringToFront()
 
       expect(store.elements[1]!.zIndex).toBe(1)
       expect(store.history.length).toBe(historyLengthBefore)
@@ -211,13 +215,13 @@ describe('Elements Store', () => {
 
     it('bringToBack does nothing if already at back', () => {
       const store = useElementsStore()
-      store.addShape('rectangle')
-      store.addShape('triangle')
+      addShapes()
 
       const firstId = store.elements[0]!.id
+      store.selectElement(firstId)
       const historyLengthBefore = store.history.length
 
-      store.bringToBack(firstId)
+      store.bringToBack()
 
       expect(store.elements[0]!.zIndex).toBe(0)
       expect(store.history.length).toBe(historyLengthBefore)

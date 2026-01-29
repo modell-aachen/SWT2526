@@ -5,6 +5,8 @@
     @duplicate="$emit('duplicate')"
     @rotate="$emit('rotate')"
     @delete="$emit('delete')"
+    @up="$emit('up')"
+    @down="$emit('down')"
   />
   <TextContextBar
     v-else-if="isText"
@@ -37,6 +39,8 @@ defineEmits<{
   duplicate: []
   rotate: []
   delete: []
+  up: []
+  down: []
 }>()
 
 const isShape = computed(() => props.element.type === 'shape')

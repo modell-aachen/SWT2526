@@ -310,6 +310,40 @@ export const useElementsStore = defineStore('elements', {
       }
     },
 
+    bringToFront() {
+      if (!this.selectedElementId) return
+      const element = this.elements.find(
+        (e: CanvasElement) => e.id === this.selectedElementId
+      )
+      if (!element) return
+
+      const maxZIndex = Math.max(...this.elements.map((e) => e.zIndex))
+      if (element.zIndex === maxZIndex) return // Already at front
+
+      element.zIndex = maxZIndex + 1
+      this.saveSnapshot()
+    },
+
+    bringToBack() {
+      if (!this.selectedElementId) return
+      const element = this.elements.find(
+        (e: CanvasElement) => e.id === this.selectedElementId
+      )
+      if (!element) return
+
+      const minZIndex = Math.min(...this.elements.map((e) => e.zIndex))
+      if (element.zIndex === minZIndex) return // Already at back
+
+      // Shift all other elements up by 1
+      this.elements.forEach((e: CanvasElement) => {
+        if (e.id !== this.selectedElementId) {
+          e.zIndex += 1
+        }
+      })
+      element.zIndex = 0
+      this.saveSnapshot()
+    },
+
     setElementPosition(id: string, x: number, y: number) {
       const element = this.elements.find((e: CanvasElement) => e.id === id)
       if (element) {

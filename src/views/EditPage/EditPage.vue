@@ -64,6 +64,8 @@
               )
             "
             @delete="elementsStore.deleteSelectedElement()"
+            @up="elementsStore.bringToFront()"
+            @down="elementsStore.bringToBack()"
           />
         </template>
       </GridCanvas>

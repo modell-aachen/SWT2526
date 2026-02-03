@@ -30,13 +30,13 @@ describe('useDraggable', () => {
 
     emit = ((event: string, ...args: any[]) => {
       switch (event) {
-        case 'dragStart':
+        case 'drag-start':
           dragStartSpy(...args)
           break
         case 'drag':
           dragSpy(...args)
           break
-        case 'dragEnd':
+        case 'drag-end':
           dragEndSpy()
           break
         case 'click':

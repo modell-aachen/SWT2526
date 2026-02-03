@@ -10,7 +10,9 @@ vi.mock('@/composables/useResizable', () => ({
   useResizable: () => ({ startResize: vi.fn() }),
 }))
 
-const createShapeElement = (overrides?: Partial<ShapeElement>): ShapeElement => ({
+const createShapeElement = (
+  overrides?: Partial<ShapeElement>
+): ShapeElement => ({
   id: '1',
   type: 'shape',
   shapeType: 'rectangle',
@@ -46,7 +48,13 @@ describe('ElementWrapper', () => {
     it('applies correct positioning and rotation', () => {
       const wrapper = mount(ElementWrapper, {
         props: {
-          element: createShapeElement({ x: 100, y: 200, width: 150, height: 75, rotation: 45 }),
+          element: createShapeElement({
+            x: 100,
+            y: 200,
+            width: 150,
+            height: 75,
+            rotation: 45,
+          }),
           selected: false,
         },
       })

@@ -23,7 +23,7 @@ export function useDraggable(emit: DraggableEvents) {
 
       if (distanceX >= DRAG_THRESHOLD || distanceY >= DRAG_THRESHOLD) {
         hasDragStarted = true
-        emit('dragStart', e)
+        emit('drag-start', e)
         lastMouseX = e.clientX
         lastMouseY = e.clientY
       }
@@ -43,7 +43,7 @@ export function useDraggable(emit: DraggableEvents) {
     if (isDragging.value) {
       isDragging.value = false
       if (hasDragStarted) {
-        emit('dragEnd')
+        emit('drag-end')
       }
     }
     hasDragStarted = false

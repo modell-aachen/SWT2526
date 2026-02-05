@@ -1,6 +1,6 @@
 export type DraggableEvents = {
   (event: 'drag', deltaX: number, deltyY: number): void
-  (event: 'dragStart', mouseEvent: MouseEvent): void
-  (event: 'dragEnd'): void
+  (event: 'drag-start', mouseEvent: MouseEvent): void
+  (event: 'drag-end'): void
   (event: 'click', mouseEvent: MouseEvent): void
 }

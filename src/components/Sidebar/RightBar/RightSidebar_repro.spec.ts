@@ -27,7 +27,7 @@ describe('RightSidebar Font Family Selector', () => {
       color: '#000000',
     }
     store.elements = [textElement]
-    store.selectedElementId = 'text-1'
+    store.selectedElementIds = ['text-1']
 
     // Mock the update action
     store.updateTextElement = vi.fn()

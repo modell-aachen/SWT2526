@@ -1,7 +1,7 @@
 import type { ResizeHandle } from '@/utils/elementTransforms'
 
 export type ElementWrapperEvents = {
-  (event: 'select'): void
+  (event: 'select', e: MouseEvent): void
   (event: 'click', e: MouseEvent): void
   (event: 'drag-start', e: MouseEvent): void
   (event: 'drag', deltaX: number, deltaY: number): void

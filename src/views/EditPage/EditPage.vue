@@ -33,8 +33,8 @@
           v-for="element in elementsStore.sortedElements"
           :key="element.id"
           :element="element"
-          :selected="element.id === elementsStore.selectedElementId"
-          @select="selectElement(element.id)"
+          :selected="elementsStore.selectedElementIds.includes(element.id)"
+          @select="selectElement(element.id, $event)"
           @drag="(deltaX, deltaY) => handleDrag(element.id, deltaX, deltaY)"
           @drag-end="elementsStore.endDrag()"
           @resize="
@@ -104,9 +104,23 @@ const { saveToFile } = useCanvasIO()
 const canvasRef = ref<InstanceType<typeof GridCanvas> | null>(null)
 
 const handleKeyDown = (e: KeyboardEvent) => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+  const isMod = e.ctrlKey || e.metaKey
+
+  if (isMod && e.key === 's') {
     e.preventDefault()
     saveToFile(elementsStore.exportSnapshot())
+  }
+
+  // Group: Ctrl+G
+  if (isMod && e.key === 'g' && !e.shiftKey) {
+    e.preventDefault()
+    elementsStore.groupSelectedElements()
+  }
+
+  // Ungroup: Ctrl+Shift+G
+  if (isMod && e.key === 'g' && e.shiftKey) {
+    e.preventDefault()
+    elementsStore.ungroupSelectedElements()
   }
 }
 
@@ -130,11 +144,21 @@ watch(canvasRef, (newRef) => {
 })
 
 const deleteSelected = () => {
-  if (elementsStore.selectedElementId) elementsStore.deleteSelectedElement()
+  if (elementsStore.selectedElementIds.length > 0)
+    elementsStore.deleteSelectedElement()
 }
 
-const selectElement = (id: string) => {
-  elementsStore.selectElement(id)
+const selectElement = (id: string, event?: MouseEvent) => {
+  // Shift+Click for multi-selection
+  if (event?.shiftKey) {
+    elementsStore.toggleElementSelection(id)
+  } else if (elementsStore.selectedElementIds.includes(id)) {
+    // If clicking on an already-selected element, don't reset selection
+    // This allows dragging multiple selected elements
+    return
+  } else {
+    elementsStore.selectElement(id)
+  }
 }
 
 const handleCanvasClick = () => {
@@ -142,7 +166,15 @@ const handleCanvasClick = () => {
 }
 
 const handleDrag = (id: string, deltaX: number, deltaY: number) => {
-  elementsStore.updateElementPosition(id, deltaX, deltaY)
+  // Move all selected elements together
+  if (elementsStore.selectedElementIds.includes(id)) {
+    elementsStore.selectedElementIds.forEach((selectedId) => {
+      elementsStore.updateElementPosition(selectedId, deltaX, deltaY)
+    })
+  } else {
+    // If dragging an unselected element, just move that one
+    elementsStore.updateElementPosition(id, deltaX, deltaY)
+  }
 }
 
 const handleResize = (
@@ -151,12 +183,72 @@ const handleResize = (
   deltaX: number,
   deltaY: number
 ) => {
-  const element = elementsStore.elements.find((e) => e.id === id)
-  if (!element) return
+  const selectedIds = elementsStore.selectedElementIds
 
-  const newState = calculateNewElementState(element, handle, deltaX, deltaY)
+  // If multiple elements are selected, scale them all proportionally
+  if (selectedIds.length > 1 && selectedIds.includes(id)) {
+    // Calculate bounding box of all selected elements
+    const selectedElements = elementsStore.elements.filter((e) =>
+      selectedIds.includes(e.id)
+    )
 
-  elementsStore.updateElement(id, newState)
+    let minX = Infinity,
+      minY = Infinity,
+      maxX = -Infinity,
+      maxY = -Infinity
+    selectedElements.forEach((e) => {
+      minX = Math.min(minX, e.x)
+      minY = Math.min(minY, e.y)
+      maxX = Math.max(maxX, e.x + e.width)
+      maxY = Math.max(maxY, e.y + e.height)
+    })
+
+    const groupWidth = maxX - minX
+    const groupHeight = maxY - minY
+
+    // Calculate scale factor based on handle direction
+    let scaleX = 1,
+      scaleY = 1
+    let anchorX = minX,
+      anchorY = minY
+
+    if (handle.includes('e')) {
+      scaleX = groupWidth > 0 ? (groupWidth + deltaX) / groupWidth : 1
+    }
+    if (handle.includes('w')) {
+      scaleX = groupWidth > 0 ? (groupWidth - deltaX) / groupWidth : 1
+      anchorX = maxX
+    }
+    if (handle.includes('s')) {
+      scaleY = groupHeight > 0 ? (groupHeight + deltaY) / groupHeight : 1
+    }
+    if (handle.includes('n')) {
+      scaleY = groupHeight > 0 ? (groupHeight - deltaY) / groupHeight : 1
+      anchorY = maxY
+    }
+
+    // Apply scale to all selected elements
+    selectedElements.forEach((element) => {
+      const newX = anchorX + (element.x - anchorX) * scaleX
+      const newY = anchorY + (element.y - anchorY) * scaleY
+      const newWidth = element.width * scaleX
+      const newHeight = element.height * scaleY
+
+      elementsStore.updateElement(element.id, {
+        x: newX,
+        y: newY,
+        width: Math.max(10, newWidth),
+        height: Math.max(10, newHeight),
+      })
+    })
+  } else {
+    // Single element resize
+    const element = elementsStore.elements.find((e) => e.id === id)
+    if (!element) return
+
+    const newState = calculateNewElementState(element, handle, deltaX, deltaY)
+    elementsStore.updateElement(id, newState)
+  }
 }
 
 const handleElementRotate = async (id: string, currentRotation: number) => {

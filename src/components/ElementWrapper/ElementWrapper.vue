@@ -74,7 +74,7 @@ const wrapperStyle = computed(() => ({
 }))
 
 const handleMouseDown = (e: MouseEvent) => {
-  emit('select')
+  emit('select', e)
   startDrag(e)
 }
 

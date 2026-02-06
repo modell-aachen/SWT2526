@@ -1,6 +1,7 @@
 import type { ShapeType } from './ShapeType'
+import type { GroupElement } from './GroupElement'
 
-export type ElementType = 'shape' | 'text' | 'icon'
+export type ElementType = 'shape' | 'text' | 'icon' | 'group'
 
 export interface BaseElement {
   id: string
@@ -12,6 +13,7 @@ export interface BaseElement {
   rotation: number
   zIndex: number
   link?: string
+  groupId?: string // ID of parent group, if this element is grouped
 }
 
 export interface ShapeElement extends BaseElement {
@@ -38,4 +40,8 @@ export interface IconElement extends BaseElement {
   strokeWeight: number
 }
 
-export type CanvasElement = ShapeElement | TextElement | IconElement
+export type CanvasElement =
+  | ShapeElement
+  | TextElement
+  | IconElement
+  | GroupElement

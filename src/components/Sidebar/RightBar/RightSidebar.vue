@@ -21,22 +21,22 @@
 
         <PropertyColorInput
           id="shape-outline"
-          label="Outline"
           v-model="outlineColorValue"
+          label="Outline"
           @change="updateOutline"
         />
 
         <PropertyColorInput
           id="shape-fill"
-          label="Fill"
           v-model="fillColorValue"
+          label="Fill"
           @change="updateFill"
         />
 
         <PropertyNumericInput
           id="shape-stroke-width"
-          label="Stroke Width"
           v-model="strokeWeightValue"
+          label="Stroke Width"
           @change="updateStrokeWeight"
         />
       </template>
@@ -44,61 +44,61 @@
       <template v-if="selectedElement?.type === 'text'">
         <PropertyTextInput
           id="text-content"
-          label="Content"
           v-model="textContentValue"
-          @update:modelValue="updateTextContent"
+          label="Content"
+          @update:model-value="updateTextContent"
         />
 
         <PropertySelectInput
           id="text-font-family"
-          label="Font Family"
           v-model="fontFamilyValue"
+          label="Font Family"
           :options="fontFamilyOptions"
         />
 
         <PropertyNumericInput
           id="text-font-size"
-          label="Font Size"
           v-model="fontSizeValue"
+          label="Font Size"
           @change="updateFontSize"
         />
 
         <PropertyColorInput
           id="text-color"
-          label="Color"
           v-model="textColorValue"
+          label="Color"
           @change="updateTextColor"
         />
       </template>
       <template v-if="selectedElement?.type === 'icon'">
         <PropertyColorInput
           id="icon-color"
-          label="Color"
           v-model="iconColorValue"
+          label="Color"
           @change="updateIconColor"
         />
 
         <PropertyNumericInput
           id="icon-stroke-width"
-          label="Stroke Width"
           v-model="iconStrokeWeightValue"
+          label="Stroke Width"
           @change="updateIconStrokeWeight"
         />
       </template>
 
       <PropertyNumericInput
         id="element-x"
-        label="X-Coordinate"
         v-model="xValue"
-        @change="updateX"
+        label="X-Coordinate"
         class="flex-1"
+        @change="updateX"
       />
       <PropertyNumericInput
         id="element-y"
-        label="Y-Coordinate"
         v-model="yValue"
-        @change="updateY"
+        label="Y-Coordinate"
         class="flex-1"
+        @change="updateY"
       />
     </div>
     <div class="flex-1"></div>
@@ -148,13 +148,13 @@ import type { IconElement } from '@/types/Element'
 import { Button } from '@/components/ui/button'
 import { useCanvasIO } from '@/composables/useCanvasIO'
 
-const elementsStore = useElementsStore()
-const selectedElement = computed(() => elementsStore.selectedElement)
-const { saveToFile, loadFromFile } = useCanvasIO()
-
 defineProps<{
   isCollapsed?: boolean
 }>()
+const elementsStore = useElementsStore()
+const selectedElement = computed(() => elementsStore.selectedElement)
+const selectedElements = computed(() => elementsStore.selectedElements)
+const { saveToFile, loadFromFile } = useCanvasIO()
 
 // Local state
 const outlineColorValue = ref('#000000')
@@ -206,20 +206,25 @@ watch(
 )
 
 const updateOutline = (val: string) => {
-  if (selectedElement.value && selectedElement.value.type === 'shape') {
-    elementsStore.updateShapeOutlineColor(selectedElement.value.id, val)
-  }
+  // Apply to all selected shape elements
+  selectedElements.value
+    .filter((el) => el.type === 'shape')
+    .forEach((el) => elementsStore.updateShapeOutlineColor(el.id, val))
 }
 
 const updateFill = (val: string) => {
-  if (selectedElement.value && selectedElement.value.type === 'shape') {
-    elementsStore.updateShapeFillColor(selectedElement.value.id, val)
-  }
+  // Apply to all selected shape elements
+  selectedElements.value
+    .filter((el) => el.type === 'shape')
+    .forEach((el) => elementsStore.updateShapeFillColor(el.id, val))
 }
 
 const updateStrokeWeight = (val: number) => {
+  // Apply to all selected shape elements
+  selectedElements.value
+    .filter((el) => el.type === 'shape')
+    .forEach((el) => elementsStore.updateShapeStrokeWeight(el.id, val))
   if (selectedElement.value && selectedElement.value.type === 'shape') {
-    elementsStore.updateShapeStrokeWeight(selectedElement.value.id, val)
     strokeWeightValue.value = selectedElement.value.strokeWeight
   }
 }
@@ -273,9 +278,10 @@ const updateTextContent = (val: string) => {
 }
 
 const updateTextColor = (val: string) => {
-  if (selectedElement.value && selectedElement.value.type === 'text') {
-    elementsStore.updateTextElement(selectedElement.value.id, { color: val })
-  }
+  // Apply to all selected text elements
+  selectedElements.value
+    .filter((el) => el.type === 'text')
+    .forEach((el) => elementsStore.updateTextElement(el.id, { color: val }))
 }
 
 const updateFontSize = (val: number) => {
@@ -286,9 +292,10 @@ const updateFontSize = (val: number) => {
 }
 
 const updateIconColor = (val: string) => {
-  if (selectedElement.value && selectedElement.value.type === 'icon') {
-    elementsStore.updateIconColor(selectedElement.value.id, val)
-  }
+  // Apply to all selected icon elements
+  selectedElements.value
+    .filter((el) => el.type === 'icon')
+    .forEach((el) => elementsStore.updateIconColor(el.id, val))
 }
 
 const updateIconStrokeWeight = (val: number) => {

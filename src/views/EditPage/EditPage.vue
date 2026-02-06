@@ -110,18 +110,6 @@ const handleKeyDown = (e: KeyboardEvent) => {
     e.preventDefault()
     saveToFile(elementsStore.exportSnapshot())
   }
-
-  // Group: Ctrl+G
-  if (isMod && e.key === 'g' && !e.shiftKey) {
-    e.preventDefault()
-    elementsStore.groupSelectedElements()
-  }
-
-  // Ungroup: Ctrl+Shift+G
-  if (isMod && e.key === 'g' && e.shiftKey) {
-    e.preventDefault()
-    elementsStore.ungroupSelectedElements()
-  }
 }
 
 onMounted(() => {

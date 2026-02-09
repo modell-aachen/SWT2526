@@ -29,8 +29,8 @@
           :key="iconName"
           variant="ghost"
           class="h-9 w-9 p-0 text-ma-text-01"
-          @click="handleIconClick(iconName as string)"
           :title="iconName"
+          @click="handleIconClick(iconName as string)"
         >
           <component :is="iconComponent" class="w-5 h-5 text-ma-text-01" />
         </Button>

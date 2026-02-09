@@ -24,6 +24,7 @@
         <input
           :id="id"
           :value="modelValue"
+          class="flex-1 h-full px-2 text-xs outline-none min-w-0 bg-transparent text-ma-text-01 placeholder:text-muted-foreground uppercase"
           @input="
             $emit(
               'update:modelValue',
@@ -31,7 +32,6 @@
             )
           "
           @change="$emit('change', ($event.target as HTMLInputElement).value)"
-          class="flex-1 h-full px-2 text-xs outline-none min-w-0 bg-transparent text-ma-text-01 placeholder:text-muted-foreground uppercase"
         />
       </div>
     </div>

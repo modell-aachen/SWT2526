@@ -9,7 +9,9 @@
 
       <div class="grid gap-4 py-4">
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="name" class="text-left text-ma-text-01">Name: </Label>
+          <Label html-for="name" class="text-left text-ma-text-01"
+            >Name:
+          </Label>
           <Input
             id="name"
             v-model="name"
@@ -26,8 +28,8 @@
           >
             <div class="col-span-2 space-y-1">
               <Input
-                type="number"
                 v-model.number="point.x"
+                type="number"
                 placeholder="X"
                 class="bg-ma-grey-100 text-ma-text-01 border-ma-grey-300"
                 :class="{ 'border-red-500': isInvalid(point.x) }"
@@ -38,8 +40,8 @@
             </div>
             <div class="col-span-2 space-y-1">
               <Input
-                type="number"
                 v-model.number="point.y"
+                type="number"
                 placeholder="Y"
                 class="bg-ma-grey-100 text-ma-text-01 border-ma-grey-300"
                 :class="{ 'border-red-500': isInvalid(point.y) }"
@@ -55,9 +57,9 @@
             type="button"
             variant="default"
             size="sm"
-            @click="addPoint"
             :disabled="points.length >= 6"
             data-testid="add-point-button"
+            @click="addPoint"
           >
             <Plus class="w-4 h-4 text-ma-text-01" />
           </Button>
@@ -67,9 +69,9 @@
             type="button"
             variant="destructive"
             size="sm"
-            @click="removePoint"
             :disabled="points.length <= 2"
             data-testid="remove-point-button"
+            @click="removePoint"
           >
             <Minus class="w-4 h-4 text-ma-text-01" />
           </Button>
@@ -95,7 +97,7 @@
       </div>
 
       <DialogFooter>
-        <Button @click="saveShape" type="submit" :disabled="!isValid"
+        <Button type="submit" :disabled="!isValid" @click="saveShape"
           >Add Shape</Button
         >
       </DialogFooter>

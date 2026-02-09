@@ -240,7 +240,19 @@ const handleResize = (
 }
 
 const handleElementRotate = async (id: string, currentRotation: number) => {
-  elementsStore.updateElement(id, { rotation: (currentRotation + 90) % 360 })
+  // Rotate all selected elements if multiple are selected
+  if (
+    elementsStore.selectedElementIds.length > 1 &&
+    elementsStore.selectedElementIds.includes(id)
+  ) {
+    elementsStore.selectedElements.forEach((element) => {
+      elementsStore.updateElement(element.id, {
+        rotation: (element.rotation + 90) % 360,
+      })
+    })
+  } else {
+    elementsStore.updateElement(id, { rotation: (currentRotation + 90) % 360 })
+  }
   elementsStore.saveSnapshot()
 }
 

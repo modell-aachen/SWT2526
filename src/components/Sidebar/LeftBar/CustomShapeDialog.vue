@@ -88,8 +88,8 @@
               :height="100"
               shape-type="custom"
               :custom-points="previewPointsString"
-              outline="currentColor"
-              fill="transparent"
+              outline="#002f55"
+              fill="#5ac9e7"
               class="text-ma-text-01"
             />
           </div>

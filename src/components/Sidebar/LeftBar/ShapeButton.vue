@@ -14,8 +14,8 @@
       :shape-type="shapeType"
       :custom-points="customPoints"
       :stroke-weight="1"
-      outline="currentColor"
-      fill="none"
+      outline="#002f55"
+      fill="#5ac9e7"
       class="pointer-events-none shrink-0"
     />
     <span v-if="!collapsed" class="capitalize">{{ label || shapeType }}</span>

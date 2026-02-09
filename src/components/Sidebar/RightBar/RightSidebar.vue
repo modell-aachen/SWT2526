@@ -157,16 +157,16 @@ const selectedElements = computed(() => elementsStore.selectedElements)
 const { saveToFile, loadFromFile } = useCanvasIO()
 
 // Local state
-const outlineColorValue = ref('#000000')
-const fillColorValue = ref('#transparent')
+const outlineColorValue = ref('#002f55')
+const fillColorValue = ref('#5ac9e7')
 const strokeWeightValue = ref(1)
 const xValue = ref(0)
 const yValue = ref(0)
 const textContentValue = ref('')
 const fontFamilyValue = ref('Arial')
-const textColorValue = ref('#000000')
+const textColorValue = ref('#5ac9e7')
 const fontSizeValue = ref(16)
-const iconColorValue = ref('#000000')
+const iconColorValue = ref('#5ac9e7')
 const iconStrokeWeightValue = ref(2)
 
 const fontFamilyOptions = [

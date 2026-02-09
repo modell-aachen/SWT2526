@@ -10,7 +10,7 @@
     </div>
 
     <div class="p-4 flex flex-col gap-4">
-      <template v-if="selectedElement?.type === 'shape'">
+      <template v-if="hasShapeElements || selectedElement?.type === 'shape'">
         <PropertyLinkInput
           id="shape-link"
           label="Link"
@@ -41,7 +41,7 @@
         />
       </template>
 
-      <template v-if="selectedElement?.type === 'text'">
+      <template v-if="hasTextElements || selectedElement?.type === 'text'">
         <PropertyTextInput
           id="text-content"
           v-model="textContentValue"
@@ -70,7 +70,7 @@
           @change="updateTextColor"
         />
       </template>
-      <template v-if="selectedElement?.type === 'icon'">
+      <template v-if="hasIconElements || selectedElement?.type === 'icon'">
         <PropertyColorInput
           id="icon-color"
           v-model="iconColorValue"
@@ -156,6 +156,39 @@ const selectedElement = computed(() => elementsStore.selectedElement)
 const selectedElements = computed(() => elementsStore.selectedElements)
 const { saveToFile, loadFromFile } = useCanvasIO()
 
+// Get all elements that can have properties changed (including group children)
+const editableElements = computed(() => {
+  const elements: typeof elementsStore.elements = []
+  elementsStore.selectedElements.forEach((el) => {
+    if (el.type === 'group') {
+      // Include group children for property editing
+      const groupElement = el as import('@/types/GroupElement').GroupElement
+      groupElement.childIds.forEach((childId) => {
+        const child = elementsStore.elements.find((e) => e.id === childId)
+        if (child) elements.push(child)
+      })
+    } else {
+      elements.push(el)
+    }
+  })
+  return elements
+})
+
+// Check if any editable elements are shapes
+const hasShapeElements = computed(() =>
+  editableElements.value.some((el) => el.type === 'shape')
+)
+
+// Check if any editable elements are text
+const hasTextElements = computed(() =>
+  editableElements.value.some((el) => el.type === 'text')
+)
+
+// Check if any editable elements are icons
+const hasIconElements = computed(() =>
+  editableElements.value.some((el) => el.type === 'icon')
+)
+
 // Local state
 const outlineColorValue = ref('#000000')
 const fillColorValue = ref('#transparent')
@@ -206,22 +239,22 @@ watch(
 )
 
 const updateOutline = (val: string) => {
-  // Apply to all selected shape elements
-  selectedElements.value
+  // Apply to all editable shape elements (including group children)
+  editableElements.value
     .filter((el) => el.type === 'shape')
     .forEach((el) => elementsStore.updateShapeOutlineColor(el.id, val))
 }
 
 const updateFill = (val: string) => {
-  // Apply to all selected shape elements
-  selectedElements.value
+  // Apply to all editable shape elements (including group children)
+  editableElements.value
     .filter((el) => el.type === 'shape')
     .forEach((el) => elementsStore.updateShapeFillColor(el.id, val))
 }
 
 const updateStrokeWeight = (val: number) => {
-  // Apply to all selected shape elements
-  selectedElements.value
+  // Apply to all editable shape elements (including group children)
+  editableElements.value
     .filter((el) => el.type === 'shape')
     .forEach((el) => elementsStore.updateShapeStrokeWeight(el.id, val))
   if (selectedElement.value && selectedElement.value.type === 'shape') {
@@ -278,8 +311,8 @@ const updateTextContent = (val: string) => {
 }
 
 const updateTextColor = (val: string) => {
-  // Apply to all selected text elements
-  selectedElements.value
+  // Apply to all editable text elements (including group children)
+  editableElements.value
     .filter((el) => el.type === 'text')
     .forEach((el) => elementsStore.updateTextElement(el.id, { color: val }))
 }
@@ -292,8 +325,8 @@ const updateFontSize = (val: number) => {
 }
 
 const updateIconColor = (val: string) => {
-  // Apply to all selected icon elements
-  selectedElements.value
+  // Apply to all editable icon elements (including group children)
+  editableElements.value
     .filter((el) => el.type === 'icon')
     .forEach((el) => elementsStore.updateIconColor(el.id, val))
 }

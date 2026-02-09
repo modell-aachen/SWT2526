@@ -20,8 +20,8 @@
         <Button
           variant="ghost"
           class="w-full justify-start gap-2 h-9 px-2 text-ma-text-01"
-          @click="elementsStore.addText()"
           title="Add Text"
+          @click="elementsStore.addText()"
         >
           <Type class="w-4 h-4 text-ma-text-01" />
           <span class="text-sm text-ma-text-01">Text</span>
@@ -42,8 +42,8 @@
         <Button
           variant="ghost"
           class="w-full justify-start gap-2 h-9 px-2 text-ma-text-01"
-          @click="isCustomShapeDialogOpen = true"
           title="Add Custom Shape"
+          @click="isCustomShapeDialogOpen = true"
         >
           <Plus class="w-6 h-6" />
           <span class="text-xs">Add</span>

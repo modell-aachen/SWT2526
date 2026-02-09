@@ -24,7 +24,7 @@ interface ElementsState {
   nextId: number
   history: CanvasElement[][]
   historyIndex: number
-  clipboard: CanvasElement | null
+  clipboard: CanvasElement[] | null
   customShapes: { name: string; points: string }[]
 }
 
@@ -35,7 +35,7 @@ export const useElementsStore = defineStore('elements', {
     nextId: 1,
     history: [[]],
     historyIndex: 0,
-    clipboard: null,
+    clipboard: [],
     customShapes: [],
   }),
 
@@ -80,7 +80,8 @@ export const useElementsStore = defineStore('elements', {
 
     canUndo: (state) => state.historyIndex > 0,
     canRedo: (state) => state.historyIndex < state.history.length - 1,
-    hasCopiedElement: (state) => state.clipboard !== null,
+    hasCopiedElement: (state) =>
+      state.clipboard !== null && state.clipboard.length > 0,
   },
 
   actions: {
@@ -423,50 +424,84 @@ export const useElementsStore = defineStore('elements', {
 
     copySelectedElement() {
       if (this.selectedElementIds.length === 0) return
-      const element = this.elements.find(
-        (e: CanvasElement) => e.id === this.selectedElementIds[0]
+      // Copy all selected elements
+      const elementsToCopy = this.elements.filter((e: CanvasElement) =>
+        this.selectedElementIds.includes(e.id)
       )
-      if (element) {
-        this.clipboard = JSON.parse(JSON.stringify(element)) as CanvasElement
+      if (elementsToCopy.length > 0) {
+        this.clipboard = JSON.parse(
+          JSON.stringify(elementsToCopy)
+        ) as CanvasElement[]
       }
     },
 
     pasteElement() {
-      if (!this.clipboard) return
+      if (!this.clipboard || this.clipboard.length === 0) return
 
-      const pastedElement: CanvasElement = {
-        ...JSON.parse(JSON.stringify(this.clipboard)),
-        id: `${this.clipboard.type}-${this.nextId++}`,
-        x: this.clipboard.x + 20,
-        y: this.clipboard.y + 20,
-        zIndex: this.elements.length,
-      }
+      const pastedElementIds: string[] = []
+      const baseZIndex = this.elements.length
 
-      this.elements.push(pastedElement)
-      this.selectedElementIds = [pastedElement.id]
+      // Sort clipboard elements by zIndex to preserve relative order
+      const sortedClipboard = [...this.clipboard].sort(
+        (a, b) => a.zIndex - b.zIndex
+      )
+
+      // Paste all copied elements, preserving relative z-order
+      sortedClipboard.forEach((clipboardElement, index) => {
+        const pastedElement: CanvasElement = {
+          ...JSON.parse(JSON.stringify(clipboardElement)),
+          id: `${clipboardElement.type}-${this.nextId++}`,
+          x: clipboardElement.x + 20,
+          y: clipboardElement.y + 20,
+          zIndex: baseZIndex + index, // Preserve relative z-order
+        }
+
+        this.elements.push(pastedElement)
+        pastedElementIds.push(pastedElement.id)
+      })
+
+      // Update positions in clipboard for next paste
+      this.clipboard.forEach((clipboardElement) => {
+        clipboardElement.x += 20
+        clipboardElement.y += 20
+      })
+
+      this.selectedElementIds = pastedElementIds
       this.saveSnapshot()
-
-      this.clipboard.x += 20
-      this.clipboard.y += 20
     },
 
     duplicateSelectedElement() {
       if (this.selectedElementIds.length === 0) return
-      const element = this.elements.find(
-        (e: CanvasElement) => e.id === this.selectedElementIds[0]
+
+      // Get all selected elements
+      const elementsToDuplicate = this.elements.filter((e: CanvasElement) =>
+        this.selectedElementIds.includes(e.id)
       )
-      if (!element) return
+      if (elementsToDuplicate.length === 0) return
 
-      const duplicatedElement: CanvasElement = {
-        ...JSON.parse(JSON.stringify(element)),
-        id: `${element.type}-${this.nextId++}`,
-        x: element.x + 20,
-        y: element.y + 20,
-        zIndex: this.elements.length,
-      }
+      const duplicatedElementIds: string[] = []
+      const baseZIndex = this.elements.length
 
-      this.elements.push(duplicatedElement)
-      this.selectedElementIds = [duplicatedElement.id]
+      // Sort by zIndex to preserve relative order
+      const sortedElements = [...elementsToDuplicate].sort(
+        (a, b) => a.zIndex - b.zIndex
+      )
+
+      // Duplicate all selected elements
+      sortedElements.forEach((element, index) => {
+        const duplicatedElement: CanvasElement = {
+          ...JSON.parse(JSON.stringify(element)),
+          id: `${element.type}-${this.nextId++}`,
+          x: element.x + 20,
+          y: element.y + 20,
+          zIndex: baseZIndex + index, // Preserve relative z-order
+        }
+
+        this.elements.push(duplicatedElement)
+        duplicatedElementIds.push(duplicatedElement.id)
+      })
+
+      this.selectedElementIds = duplicatedElementIds
       this.saveSnapshot()
     },
 
@@ -483,35 +518,63 @@ export const useElementsStore = defineStore('elements', {
 
     bringToFront() {
       if (this.selectedElementIds.length === 0) return
-      const element = this.elements.find(
-        (e: CanvasElement) => e.id === this.selectedElementIds[0]
+
+      // Get all selected elements
+      const selectedElements = this.elements.filter((e: CanvasElement) =>
+        this.selectedElementIds.includes(e.id)
       )
-      if (!element) return
+      if (selectedElements.length === 0) return
 
       const maxZIndex = Math.max(...this.elements.map((e) => e.zIndex))
-      if (element.zIndex === maxZIndex) return // Already at front
 
-      element.zIndex = maxZIndex + 1
+      // Check if all selected elements are already at front (have the highest zIndexes)
+      const selectedMaxZIndex = Math.max(
+        ...selectedElements.map((e) => e.zIndex)
+      )
+      if (selectedMaxZIndex === maxZIndex) return // Already at front
+
+      // Sort selected elements by their current zIndex to maintain relative order
+      selectedElements.sort((a, b) => a.zIndex - b.zIndex)
+
+      // Bring all selected elements to front, maintaining their relative order
+      selectedElements.forEach((element, index) => {
+        element.zIndex = maxZIndex + 1 + index
+      })
+
       this.saveSnapshot()
     },
 
     bringToBack() {
       if (this.selectedElementIds.length === 0) return
-      const element = this.elements.find(
-        (e: CanvasElement) => e.id === this.selectedElementIds[0]
+
+      // Get all selected elements
+      const selectedElements = this.elements.filter((e: CanvasElement) =>
+        this.selectedElementIds.includes(e.id)
       )
-      if (!element) return
+      if (selectedElements.length === 0) return
 
+      // Check if all selected elements are already at back (have zIndex 0, 1, 2...)
       const minZIndex = Math.min(...this.elements.map((e) => e.zIndex))
-      if (element.zIndex === minZIndex) return // Already at back
+      const selectedMinZIndex = Math.min(
+        ...selectedElements.map((e) => e.zIndex)
+      )
+      if (selectedMinZIndex === minZIndex) return // Already at back
 
-      // Shift all other elements up by 1
+      // Sort selected elements by their current zIndex to maintain relative order
+      selectedElements.sort((a, b) => a.zIndex - b.zIndex)
+
+      // Shift all non-selected elements up by the number of selected elements
       this.elements.forEach((e: CanvasElement) => {
         if (!this.selectedElementIds.includes(e.id)) {
-          e.zIndex += 1
+          e.zIndex += selectedElements.length
         }
       })
-      element.zIndex = 0
+
+      // Send all selected elements to back, maintaining their relative order
+      selectedElements.forEach((element, index) => {
+        element.zIndex = index
+      })
+
       this.saveSnapshot()
     },
 

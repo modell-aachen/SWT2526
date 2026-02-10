@@ -2,9 +2,6 @@ import { describe, it, expect } from 'vitest'
 import { ref } from 'vue'
 import { useElementComponent } from './useElementComponent'
 import type { ShapeElement, TextElement, IconElement } from '@/types/Element'
-import GenericShape from '@/components/Shapes/GenericShape.vue'
-import TextElementComponent from '@/components/TextElement/TextElement.vue'
-import IconElementComponent from '@/components/IconElement/IconElement.vue'
 
 const createShapeElement = (
   overrides?: Partial<ShapeElement>
@@ -58,20 +55,6 @@ const createIconElement = (overrides?: Partial<IconElement>): IconElement => ({
 })
 
 describe('useElementComponent', () => {
-  describe('componentType', () => {
-    it.each([
-      ['shape', createShapeElement(), GenericShape],
-      ['text', createTextElement(), TextElementComponent],
-      ['icon', createIconElement(), IconElementComponent],
-    ] as const)(
-      'returns correct component for %s elements',
-      (_, element, expectedComponent) => {
-        const { componentType } = useElementComponent(ref(element))
-        expect(componentType.value).toBe(expectedComponent)
-      }
-    )
-  })
-
   describe('componentProps', () => {
     it('generates correct props for shape elements', () => {
       const element = ref(
@@ -85,9 +68,9 @@ describe('useElementComponent', () => {
         })
       )
 
-      const { componentProps } = useElementComponent(element)
+      const { shapeProps } = useElementComponent(element)
 
-      expect(componentProps.value).toEqual({
+      expect(shapeProps.value).toEqual({
         width: 100,
         height: 50,
         fill: '#ff0000',
@@ -109,9 +92,9 @@ describe('useElementComponent', () => {
         })
       )
 
-      const { componentProps } = useElementComponent(element)
+      const { textProps } = useElementComponent(element)
 
-      expect(componentProps.value).toEqual({
+      expect(textProps.value).toEqual({
         content: 'Test Content',
         color: '#0000ff',
         fontSize: 24,
@@ -128,9 +111,9 @@ describe('useElementComponent', () => {
         })
       )
 
-      const { componentProps } = useElementComponent(element)
+      const { iconProps } = useElementComponent(element)
 
-      expect(componentProps.value).toEqual({
+      expect(iconProps.value).toEqual({
         iconType: 'heart',
         color: '#ff00ff',
         strokeWeight: 3,

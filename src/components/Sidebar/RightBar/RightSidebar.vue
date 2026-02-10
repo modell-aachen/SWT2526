@@ -85,21 +85,6 @@
           @change="updateIconStrokeWeight"
         />
       </template>
-
-      <PropertyNumericInput
-        id="element-x"
-        v-model="xValue"
-        label="X-Coordinate"
-        class="flex-1"
-        @change="updateX"
-      />
-      <PropertyNumericInput
-        id="element-y"
-        v-model="yValue"
-        label="Y-Coordinate"
-        class="flex-1"
-        @change="updateY"
-      />
     </div>
     <div class="flex-1"></div>
     <div class="p-4 border-t border-ma-grey-300 flex gap-2">
@@ -236,28 +221,6 @@ watch(fontFamilyValue, (val) => {
     })
   }
 })
-
-const updateX = (val: number) => {
-  if (selectedElement.value) {
-    elementsStore.setElementPosition(
-      selectedElement.value.id,
-      val,
-      selectedElement.value.y
-    )
-    xValue.value = selectedElement.value.x
-  }
-}
-
-const updateY = (val: number) => {
-  if (selectedElement.value) {
-    elementsStore.setElementPosition(
-      selectedElement.value.id,
-      selectedElement.value.x,
-      val
-    )
-    yValue.value = selectedElement.value.y
-  }
-}
 
 const updateLink = (link: string | undefined) => {
   if (selectedElement.value) {

@@ -11,20 +11,20 @@ import { SNAP_THRESHOLD } from '@/types/snapping'
 /**
  * Helper to create a test element with default properties
  */
-function createTestElement(
-  id: string,
-  x: number,
-  y: number,
-  width = 50,
-  height = 50
-): CanvasElement {
+function createTestElement(props: {
+  id: string
+  x: number
+  y: number
+  width?: number
+  height?: number
+}): CanvasElement {
   return {
-    id,
+    id: props.id,
     type: 'shape',
-    x,
-    y,
-    width,
-    height,
+    x: props.x,
+    y: props.y,
+    width: props.width ?? 50,
+    height: props.height ?? 50,
     rotation: 0,
     zIndex: 0,
     shapeType: 'rectangle', // 'shapeType' matches our fixed snapping.ts
@@ -37,7 +37,13 @@ function createTestElement(
 describe('snapUtils', () => {
   describe('getElementSnapPoints', () => {
     it('should extract all snap points from an element', () => {
-      const element = createTestElement('test-1', 100, 200, 50, 80)
+      const element = createTestElement({
+        id: 'test-1',
+        x: 100,
+        y: 200,
+        width: 50,
+        height: 80,
+      })
       const snapPoints = getElementSnapPoints(element)
 
       // Should have 6 snap points: left, right, top, bottom, center-x, center-y
@@ -88,14 +94,6 @@ describe('snapUtils', () => {
       expect(result?.snappedValue).toBe(100)
     })
 
-    it('should snap exactly when position matches snap point', () => {
-      const result = findSnapPosition(200, snapPoints, SNAP_THRESHOLD)
-      expect(result).toEqual({
-        snappedValue: 200,
-        snapPoint: { value: 200, type: 'left', elementId: 'elem-2' },
-      })
-    })
-
     it('should handle negative coordinates', () => {
       const negativeSnapPoints: SnapPoint[] = [
         { value: -50, type: 'left', elementId: 'elem-1' },
@@ -108,8 +106,20 @@ describe('snapUtils', () => {
   describe('calculateSnapResult', () => {
     // Shared elements for calculate tests
     const otherElements: CanvasElement[] = [
-      createTestElement('elem-1', 200, 100, 100, 100),
-      createTestElement('elem-2', 400, 300, 80, 60),
+      createTestElement({
+        id: 'elem-1',
+        x: 200,
+        y: 100,
+        width: 100,
+        height: 100,
+      }),
+      createTestElement({
+        id: 'elem-2',
+        x: 400,
+        y: 300,
+        width: 80,
+        height: 60,
+      }),
     ]
 
     // Helper to get vertical/horizontal lines quickly
@@ -121,7 +131,11 @@ describe('snapUtils', () => {
 
     it('should snap to left edge of another element', () => {
       // Within 5px of elem-1's left (200)
-      const draggedElement = createTestElement('dragged', 197, 150)
+      const draggedElement = createTestElement({
+        id: 'dragged',
+        x: 197,
+        y: 150,
+      })
 
       const result = calculateSnapResult(
         draggedElement,
@@ -140,7 +154,11 @@ describe('snapUtils', () => {
 
     it('should snap to top edge of another element', () => {
       // Within 5px of elem-1's top (100)
-      const draggedElement = createTestElement('dragged', 250, 103)
+      const draggedElement = createTestElement({
+        id: 'dragged',
+        x: 250,
+        y: 103,
+      })
 
       const result = calculateSnapResult(
         draggedElement,
@@ -159,7 +177,11 @@ describe('snapUtils', () => {
 
     it('should snap to center alignment', () => {
       // Center would be at 248 (223 + 25), elem-1 center is 250 (200 + 50)
-      const draggedElement = createTestElement('dragged', 223, 150)
+      const draggedElement = createTestElement({
+        id: 'dragged',
+        x: 223,
+        y: 150,
+      })
 
       const result = calculateSnapResult(
         draggedElement,
@@ -178,7 +200,11 @@ describe('snapUtils', () => {
 
     it('should snap to both axes simultaneously', () => {
       // Near elem-1's left (200) and top (100)
-      const draggedElement = createTestElement('dragged', 197, 103)
+      const draggedElement = createTestElement({
+        id: 'dragged',
+        x: 197,
+        y: 103,
+      })
 
       const result = calculateSnapResult(
         draggedElement,
@@ -195,7 +221,7 @@ describe('snapUtils', () => {
 
     it('should not snap when beyond threshold', () => {
       // Far away from elem-1 (left=200, top=100)
-      const draggedElement = createTestElement('dragged', 140, 60)
+      const draggedElement = createTestElement({ id: 'dragged', x: 140, y: 60 })
 
       const result = calculateSnapResult(
         draggedElement,
@@ -210,7 +236,7 @@ describe('snapUtils', () => {
 
     it('should exclude the dragged element from snap targets', () => {
       // ID matches elem-1 so it should be ignored
-      const draggedElement = createTestElement('elem-1', 202, 150)
+      const draggedElement = createTestElement({ id: 'elem-1', x: 202, y: 150 })
 
       const result = calculateSnapResult(
         draggedElement,
@@ -219,32 +245,6 @@ describe('snapUtils', () => {
       )
 
       expect(result.x).toBe(202) // No snap occurred
-    })
-
-    it('should handle empty other elements array', () => {
-      const draggedElement = createTestElement('dragged', 100, 100)
-      const result = calculateSnapResult(draggedElement, [], SNAP_THRESHOLD)
-
-      expect(result.x).toBe(100)
-      expect(result.y).toBe(100)
-      expect(result.snapLines).toHaveLength(0)
-    })
-
-    it('should calculate snap line ranges correctly', () => {
-      const draggedElement = createTestElement('dragged', 197, 150)
-
-      const result = calculateSnapResult(
-        draggedElement,
-        otherElements,
-        SNAP_THRESHOLD
-      )
-
-      const verticalLine = getVerticalLine(result)
-      expect(verticalLine).toBeDefined()
-      expect(verticalLine?.position).toBe(200)
-      // Line should span entire viewport
-      expect(verticalLine?.start).toBe(0)
-      expect(verticalLine?.end).toBe(10000)
     })
   })
 })

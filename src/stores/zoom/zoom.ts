@@ -37,7 +37,7 @@ export const useZoomStore = defineStore('zoom', {
       elements: CanvasElement[],
       viewportWidth: number,
       viewportHeight: number,
-      padding = 50
+      padding: number = 100
     ) {
       if (elements.length === 0) {
         this.resetZoom()
@@ -54,8 +54,8 @@ export const useZoomStore = defineStore('zoom', {
       const contentHeight = maxY - minY
 
       // Calculate zoom to fit with padding
-      const zoomX = (viewportWidth - padding * 2) / contentWidth
-      const zoomY = (viewportHeight - padding * 2) / contentHeight
+      const zoomX = (viewportWidth - padding) / contentWidth
+      const zoomY = (viewportHeight - padding) / contentHeight
       const optimalZoom = Math.min(zoomX, zoomY, 3.0) // Don't exceed max zoom
 
       this.setZoom(Math.max(0.1, optimalZoom))

@@ -17,6 +17,23 @@ describe('GenericShape', () => {
     expect(polygon.attributes('points')).toBe('0,0 100,0 100,100 0,100')
   })
 
+  it('renders ellipse correctly', () => {
+    const wrapper = mount(GenericShape, {
+      props: {
+        width: 100,
+        height: 100,
+        shapeType: 'ellipse',
+      },
+    })
+
+    const ellipse = wrapper.find('ellipse')
+    expect(ellipse.exists()).toBe(true)
+    expect(ellipse.attributes('cx')).toBe('50')
+    expect(ellipse.attributes('cy')).toBe('50')
+    expect(ellipse.attributes('rx')).toBe('50')
+    expect(ellipse.attributes('ry')).toBe('50')
+  })
+
   it('renders triangle correctly', () => {
     const wrapper = mount(GenericShape, {
       props: {
@@ -45,7 +62,7 @@ describe('GenericShape', () => {
     expect(polygon.attributes('points')).toBe('20,0 80,0 100,100 0,100')
   })
 
-  it('renders custom shop correctly', () => {
+  it('renders custom shape correctly', () => {
     const wrapper = mount(GenericShape, {
       props: {
         width: 100,

@@ -34,11 +34,11 @@ const textBoundsStyle = computed(() => {
 
   // Calculate center offset to keep it centered
   // When rotated, the top-left corner shifts. We use a transform translation to re-center.
-  // The logic: 
+  // The logic:
   // 1. Start at center of parent (50% 50%)
   // 2. Translate back by half of TEXT container size
   // 3. Counter-rotate
-  
+
   return {
     position: 'absolute',
     top: '50%',

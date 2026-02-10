@@ -48,7 +48,7 @@
             id="shape-text-content"
             v-model="textContentValue"
             label="Text"
-            @update:model-value="updateShapeTextContent"
+            @update:model-value="updateTextContent"
           />
 
           <PropertySelectInput
@@ -62,14 +62,14 @@
             id="shape-font-size"
             v-model="fontSizeValue"
             label="Font Size"
-            @change="updateShapeFontSize"
+            @change="updateFontSize"
           />
 
           <PropertyColorInput
             id="shape-text-color"
             v-model="textColorValue"
             label="Text Color"
-            @change="updateShapeTextColor"
+            @change="updateTextColor"
           />
         </div>
       </template>
@@ -208,7 +208,7 @@ watch(
       outlineColorValue.value = shape.outline || '#000000'
       fillColorValue.value = shape.fill || 'transparent'
       strokeWeightValue.value = shape.strokeWeight || 0
-      // Populate text properties for shape
+      // Initialize shape text values or defaults
       textContentValue.value = shape.text || ''
       fontFamilyValue.value = shape.fontFamily || 'Arial'
       textColorValue.value = shape.textColor || '#000000'
@@ -259,36 +259,12 @@ watch(fontFamilyValue, (val) => {
         fontFamily: val,
       })
     } else if (selectedElement.value.type === 'shape') {
-      elementsStore.updateShapeTextProperties(selectedElement.value.id, {
+      elementsStore.updateElement(selectedElement.value.id, {
         fontFamily: val,
       })
     }
   }
 })
-
-const updateShapeTextContent = (val: string) => {
-  if (selectedElement.value && selectedElement.value.type === 'shape') {
-    elementsStore.updateShapeTextProperties(selectedElement.value.id, {
-      text: val,
-    })
-  }
-}
-
-const updateShapeTextColor = (val: string) => {
-  if (selectedElement.value && selectedElement.value.type === 'shape') {
-    elementsStore.updateShapeTextProperties(selectedElement.value.id, {
-      textColor: val,
-    })
-  }
-}
-
-const updateShapeFontSize = (val: number) => {
-  if (selectedElement.value && selectedElement.value.type === 'shape') {
-    elementsStore.updateShapeTextProperties(selectedElement.value.id, {
-      fontSize: val,
-    })
-  }
-}
 
 const updateLink = (link: string | undefined) => {
   if (selectedElement.value) {
@@ -305,20 +281,31 @@ const removeLink = () => {
 const updateTextContent = (val: string) => {
   if (selectedElement.value && selectedElement.value.type === 'text') {
     elementsStore.updateTextElement(selectedElement.value.id, { content: val })
+  } else if (selectedElement.value && selectedElement.value.type === 'shape') {
+    elementsStore.updateElement(selectedElement.value.id, { text: val })
   }
 }
 
 const updateTextColor = (val: string) => {
   // Apply to all selected text elements
   selectedElements.value
-    .filter((el) => el.type === 'text')
-    .forEach((el) => elementsStore.updateTextElement(el.id, { color: val }))
+    .filter((el) => el.type === 'text' || el.type === 'shape')
+    .forEach((el) => {
+      if (el.type === 'text') {
+        elementsStore.updateTextElement(el.id, { color: val })
+      } else if (el.type === 'shape') {
+        elementsStore.updateElement(el.id, { textColor: val })
+      }
+    })
 }
 
 const updateFontSize = (val: number) => {
   if (selectedElement.value && selectedElement.value.type === 'text') {
     elementsStore.updateTextElement(selectedElement.value.id, { fontSize: val })
     fontSizeValue.value = selectedElement.value.fontSize
+  } else if (selectedElement.value && selectedElement.value.type === 'shape') {
+    elementsStore.updateElement(selectedElement.value.id, { fontSize: val })
+    fontSizeValue.value = selectedElement.value.fontSize || 16
   }
 }
 

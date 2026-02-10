@@ -19,19 +19,38 @@ const props = defineProps<{
 
 const textBoundsStyle = computed(() => {
   const el = props.element
+  const rot = el.rotation || 0
+  const isRotated90 = Math.abs(rot % 180) === 90
 
+  // Standard (no rotation or 180): match shape w/h
+  let w = el.width
+  let h = el.height
+
+  // Rotated 90 or 270: swap w/h because the container is counter-rotated
+  if (isRotated90) {
+    w = el.height
+    h = el.width
+  }
+
+  // Calculate center offset to keep it centered
+  // When rotated, the top-left corner shifts. We use a transform translation to re-center.
+  // The logic: 
+  // 1. Start at center of parent (50% 50%)
+  // 2. Translate back by half of TEXT container size
+  // 3. Counter-rotate
+  
   return {
     position: 'absolute',
-    top: '0',
-    left: '0',
-    width: `${el.width}px`,
-    height: `${el.height}px`,
-    transform: `rotate(-${el.rotation}deg)`,
+    top: '50%',
+    left: '50%',
+    width: `${w}px`,
+    height: `${h}px`,
+    transform: `translate(-50%, -50%) rotate(${-rot}deg)`,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     pointerEvents: 'none',
-  }
+  } as const
 })
 
 const textStyle = computed(() => {

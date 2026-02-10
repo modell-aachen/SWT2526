@@ -36,7 +36,7 @@
           :selected="elementsStore.selectedElementIds.includes(element.id)"
           @select="selectElement(element.id, $event)"
           @drag="(deltaX, deltaY) => handleDrag(element.id, deltaX, deltaY)"
-          @drag-end="elementsStore.endDrag()"
+          @drag-end="handleDragEnd"
           @resize="
             (handle, deltaX, deltaY) =>
               handleResize(element.id, handle, deltaX, deltaY)
@@ -49,6 +49,9 @@
         />
 
         <template #overlay>
+          <!-- Snap Lines (show alignment guides during drag) -->
+          <SnapLines :snap-lines="activeSnapLines" :zoom="zoomStore.zoom" />
+
           <!-- Context Bar (always upright, positioned based on selected element) -->
           <ElementContextBar
             v-if="elementsStore.selectedElement"
@@ -88,11 +91,15 @@ import { calculateNewElementState } from '@/utils/elementTransforms'
 import type { ResizeHandle } from '@/utils/elementTransforms'
 import { useZoomStore } from '@/stores/zoom/zoom'
 import { useCanvasIO } from '@/composables/useCanvasIO'
+import { calculateSnapResult } from '@/utils/snapUtils'
+import { SNAP_THRESHOLD } from '@/types/snapping'
+import type { SnapLine } from '@/types/snapping'
 
 import LeftSidebar from '@/components/Sidebar/LeftBar/LeftSidebar.vue'
 import RightSidebar from '@/components/Sidebar/RightBar/RightSidebar.vue'
 import DragGhost from '@/components/DragGhost/DragGhost.vue'
 import ElementContextBar from '@/components/ElementContextBar/ElementContextBar.vue'
+import SnapLines from '@/components/SnapLines/SnapLines.vue'
 
 const elementsStore = useElementsStore()
 const dragStore = useDragStore()
@@ -100,6 +107,7 @@ const sidebarCollapsed = ref(false)
 const rightSidebarCollapsed = ref(false)
 const zoomStore = useZoomStore()
 const { saveToFile } = useCanvasIO()
+const activeSnapLines = ref<SnapLine[]>([])
 
 const canvasRef = ref<InstanceType<typeof GridCanvas> | null>(null)
 
@@ -154,15 +162,47 @@ const handleCanvasClick = () => {
 }
 
 const handleDrag = (id: string, deltaX: number, deltaY: number) => {
-  // Move all selected elements together
-  if (elementsStore.selectedElementIds.includes(id)) {
-    elementsStore.selectedElementIds.forEach((selectedId) => {
-      elementsStore.updateElementPosition(selectedId, deltaX, deltaY)
-    })
+  // Get the element being dragged
+  const draggedElement = elementsStore.elements.find((e) => e.id === id)
+  if (!draggedElement) return
+
+  // Calculate hypothetical new position
+  const newX = draggedElement.x + deltaX
+  const newY = draggedElement.y + deltaY
+  const hypotheticalElement = { ...draggedElement, x: newX, y: newY }
+
+  // Calculate snapping if only one element is being dragged
+  if (elementsStore.selectedElementIds.length === 1) {
+    const snapResult = calculateSnapResult(
+      hypotheticalElement,
+      elementsStore.elements,
+      SNAP_THRESHOLD
+    )
+
+    // Update snap lines for visualization
+    activeSnapLines.value = snapResult.snapLines
+
+    // Apply snapped position
+    const adjustedDeltaX = snapResult.x - draggedElement.x
+    const adjustedDeltaY = snapResult.y - draggedElement.y
+    elementsStore.updateElementPosition(id, adjustedDeltaX, adjustedDeltaY)
   } else {
-    // If dragging an unselected element, just move that one
-    elementsStore.updateElementPosition(id, deltaX, deltaY)
+    // Move all selected elements together (no snapping for multi-select)
+    activeSnapLines.value = []
+    if (elementsStore.selectedElementIds.includes(id)) {
+      elementsStore.selectedElementIds.forEach((selectedId) => {
+        elementsStore.updateElementPosition(selectedId, deltaX, deltaY)
+      })
+    } else {
+      // If dragging an unselected element, just move that one
+      elementsStore.updateElementPosition(id, deltaX, deltaY)
+    }
   }
+}
+
+const handleDragEnd = () => {
+  activeSnapLines.value = []
+  elementsStore.endDrag()
 }
 
 const handleResize = (

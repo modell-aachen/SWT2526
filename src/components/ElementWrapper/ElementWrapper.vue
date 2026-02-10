@@ -2,11 +2,9 @@
   <div class="absolute" :style="wrapperStyle" @mousedown.stop="handleMouseDown">
     <!-- Content -->
     <div class="w-full h-full">
-      <component
-        :is="componentType"
-        v-bind="componentProps"
-        class="w-full h-full block"
-      />
+      <GenericShape v-if="shapeProps" v-bind="shapeProps" />
+      <TextElement v-else-if="textProps" v-bind="textProps" />
+      <IconElement v-else-if="iconProps" v-bind="iconProps" />
     </div>
 
     <div v-if="selected" class="absolute inset-0 pointer-events-none">
@@ -43,6 +41,9 @@ import {
 import { useDraggable } from '@/composables/useDraggable'
 import { useResizable } from '@/composables/useResizable'
 import { useElementComponent } from '@/composables/useElementComponent'
+import GenericShape from '@/components/Shapes/GenericShape.vue'
+import TextElement from '@/components/TextElement/TextElement.vue'
+import IconElement from '@/components/IconElement/IconElement.vue'
 
 const props = defineProps<{
   element: CanvasElement
@@ -53,7 +54,7 @@ const emit = defineEmits<ElementWrapperEvents>()
 
 const { startDrag } = useDraggable(emit)
 const { startResize } = useResizable(emit as ResizeEvents)
-const { componentType, componentProps } = useElementComponent(
+const { shapeProps, textProps, iconProps } = useElementComponent(
   toRef(props, 'element')
 )
 

@@ -22,6 +22,11 @@
       ></div>
     </div>
 
+    <!-- Text Overlay -->
+    <ElementTextOverlay
+      v-if="element.type === 'shape' && (element as any).text"
+      :element="element as ShapeElement"
+    />
     <!-- Link indicator -->
     <ElementLink v-if="element.link && !selected" :link="element.link" />
   </div>
@@ -34,6 +39,8 @@ import type { ResizeHandle } from '@/utils/elementTransforms'
 import type { ResizeEvents } from '@/types/ResizeEvents'
 import type { ElementWrapperEvents } from '@/types/ElementWrapperEvents'
 import ElementLink from './ElementLink.vue'
+import ElementTextOverlay from './ElementTextOverlay.vue'
+import type { ShapeElement } from '@/types/Element'
 import {
   getHandleStyle,
   resizeHandles as allHandles,

@@ -39,6 +39,39 @@
           label="Stroke Width"
           @change="updateStrokeWeight"
         />
+
+        <div class="border-t border-ma-grey-300 my-2 pt-2">
+          <h3 class="text-sm font-semibold mb-2 text-ma-text-02">
+            Text Overlay
+          </h3>
+          <PropertyTextInput
+            id="shape-text-content"
+            v-model="textContentValue"
+            label="Text"
+            @update:model-value="updateShapeTextContent"
+          />
+
+          <PropertySelectInput
+            id="shape-font-family"
+            v-model="fontFamilyValue"
+            label="Font Family"
+            :options="fontFamilyOptions"
+          />
+
+          <PropertyNumericInput
+            id="shape-font-size"
+            v-model="fontSizeValue"
+            label="Font Size"
+            @change="updateShapeFontSize"
+          />
+
+          <PropertyColorInput
+            id="shape-text-color"
+            v-model="textColorValue"
+            label="Text Color"
+            @change="updateShapeTextColor"
+          />
+        </div>
       </template>
 
       <template v-if="selectedElement?.type === 'text'">
@@ -175,6 +208,11 @@ watch(
       outlineColorValue.value = shape.outline || '#000000'
       fillColorValue.value = shape.fill || 'transparent'
       strokeWeightValue.value = shape.strokeWeight || 0
+      // Populate text properties for shape
+      textContentValue.value = shape.text || ''
+      fontFamilyValue.value = shape.fontFamily || 'Arial'
+      textColorValue.value = shape.textColor || '#000000'
+      fontSizeValue.value = shape.fontSize || 16
     } else if (newElement && newElement.type === 'text') {
       const text = newElement as TextElement
       textContentValue.value = text.content
@@ -215,12 +253,42 @@ const updateStrokeWeight = (val: number) => {
 }
 
 watch(fontFamilyValue, (val) => {
-  if (selectedElement.value && selectedElement.value.type === 'text') {
-    elementsStore.updateTextElement(selectedElement.value.id, {
-      fontFamily: val,
-    })
+  if (selectedElement.value) {
+    if (selectedElement.value.type === 'text') {
+      elementsStore.updateTextElement(selectedElement.value.id, {
+        fontFamily: val,
+      })
+    } else if (selectedElement.value.type === 'shape') {
+      elementsStore.updateShapeTextProperties(selectedElement.value.id, {
+        fontFamily: val,
+      })
+    }
   }
 })
+
+const updateShapeTextContent = (val: string) => {
+  if (selectedElement.value && selectedElement.value.type === 'shape') {
+    elementsStore.updateShapeTextProperties(selectedElement.value.id, {
+      text: val,
+    })
+  }
+}
+
+const updateShapeTextColor = (val: string) => {
+  if (selectedElement.value && selectedElement.value.type === 'shape') {
+    elementsStore.updateShapeTextProperties(selectedElement.value.id, {
+      textColor: val,
+    })
+  }
+}
+
+const updateShapeFontSize = (val: number) => {
+  if (selectedElement.value && selectedElement.value.type === 'shape') {
+    elementsStore.updateShapeTextProperties(selectedElement.value.id, {
+      fontSize: val,
+    })
+  }
+}
 
 const updateLink = (link: string | undefined) => {
   if (selectedElement.value) {

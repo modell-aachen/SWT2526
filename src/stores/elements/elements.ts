@@ -188,6 +188,22 @@ export const useElementsStore = defineStore('elements', {
       }
     },
 
+    updateShapeTextProperties(
+      id: string,
+      updates: {
+        text?: string
+        textColor?: string
+        fontSize?: number
+        fontFamily?: string
+      }
+    ) {
+      const element = this.elements.find((e: CanvasElement) => e.id === id)
+      if (element && element.type === 'shape') {
+        Object.assign(element, updates)
+        this.saveSnapshot()
+      }
+    },
+
     addText(x: number = 100, y: number = 100) {
       const newText: TextElement = {
         id: `text-${this.nextId++}`,

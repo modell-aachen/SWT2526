@@ -55,4 +55,12 @@ describe('useCanvasIO', () => {
     const result = await loadFromFile(file)
     expect(result).toEqual(snapshot)
   })
+
+  it('cannot load file other than json', async () => {
+    const file = new File(['test'], 'test.txt', {
+      type: 'text/plain',
+    })
+
+    await expect(loadFromFile(file)).rejects.toThrow()
+  })
 })

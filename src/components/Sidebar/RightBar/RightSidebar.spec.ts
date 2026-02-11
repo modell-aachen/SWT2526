@@ -4,6 +4,7 @@ import { setActivePinia, createPinia } from 'pinia'
 import RightSidebar from './RightSidebar.vue'
 import { useElementsStore } from '@/stores/elements/elements'
 import flushPromises from 'flush-promises'
+import type { ShapeElement } from '@/types/Element'
 
 const { loadFromFileMock } = vi.hoisted(() => ({
   loadFromFileMock: vi.fn(),
@@ -62,7 +63,9 @@ describe('RightSidebar', () => {
     await input.setValue('new-link.com')
     await button.trigger('click')
 
-    expect((store.elements[0] as any).link).toBe('https://new-link.com')
+    expect((store.elements[0] as ShapeElement).link).toBe(
+      'https://new-link.com'
+    )
   })
 
   it('updates input value when selected shape changes', async () => {
@@ -105,7 +108,7 @@ describe('RightSidebar', () => {
 
     await button.trigger('click')
 
-    expect((store.elements[0] as any).link).toBeUndefined()
+    expect((store.elements[0] as ShapeElement).link).toBeUndefined()
   })
 
   it('strips duplicate protocol from input before saving', async () => {
@@ -137,7 +140,7 @@ describe('RightSidebar', () => {
     await input.trigger('input') // Trigger input to update model
     await input.trigger('change')
 
-    expect((store.elements[0] as any).outline).toBe('#ff0000')
+    expect((store.elements[0] as ShapeElement).outline).toBe('#ff0000')
   })
 
   it('updates shape fill color', async () => {
@@ -152,7 +155,7 @@ describe('RightSidebar', () => {
     await input.trigger('input')
     await input.trigger('change')
 
-    expect((store.elements[0] as any).fill).toBe('#00ff00')
+    expect((store.elements[0] as ShapeElement).fill).toBe('#00ff00')
   })
 
   it('updates shape stroke weight', async () => {
@@ -168,6 +171,37 @@ describe('RightSidebar', () => {
     await input.trigger('change')
 
     expect((store.elements[0] as any).strokeWeight).toBe(5)
+  })
+
+  it('allows updating text within shapes', async () => {
+    const store = useElementsStore()
+    store.addShape('rectangle')
+    store.selectElement(store.elements[0]!.id)
+
+    const wrapper = mount(RightSidebar)
+    const input = wrapper.find('#shape-text-content')
+
+    await input.setValue('test')
+    await input.trigger('input')
+    await input.trigger('change')
+
+    expect((store.elements[0] as ShapeElement).text).toBe('test')
+
+    const fontSizeInput = wrapper.find('#shape-font-size')
+
+    await fontSizeInput.setValue('16')
+    await fontSizeInput.trigger('input')
+    await fontSizeInput.trigger('change')
+
+    expect((store.elements[0] as ShapeElement).fontSize).toBe(16)
+
+    const textColorInput = wrapper.find('#shape-text-color')
+
+    await textColorInput.setValue('#ff0000')
+    await textColorInput.trigger('input')
+    await textColorInput.trigger('change')
+
+    expect((store.elements[0] as ShapeElement).textColor).toBe('#ff0000')
   })
 
   it('shows an alert when loading an invalid file', async () => {

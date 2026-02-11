@@ -267,7 +267,7 @@ const handleResize = (
         y: newY,
         width: Math.max(10, newWidth),
         height: Math.max(10, newHeight),
-      })
+      }, false)
     })
   } else {
     // Single element resize
@@ -275,7 +275,7 @@ const handleResize = (
     if (!element) return
 
     const newState = calculateNewElementState(element, handle, deltaX, deltaY)
-    elementsStore.updateElement(id, newState)
+    elementsStore.updateElement(id, newState, false)
   }
 }
 
@@ -288,10 +288,10 @@ const handleElementRotate = async (id: string, currentRotation: number) => {
     elementsStore.selectedElements.forEach((element) => {
       elementsStore.updateElement(element.id, {
         rotation: (element.rotation + 90) % 360,
-      })
+      }, false)
     })
   } else {
-    elementsStore.updateElement(id, { rotation: (currentRotation + 90) % 360 })
+    elementsStore.updateElement(id, { rotation: (currentRotation + 90) % 360 }, false)
   }
   elementsStore.saveSnapshot()
 }

@@ -23,8 +23,8 @@ export interface ShapeElement extends BaseElement {
   outline: string
   strokeWeight: number
   customPoints?: string
-  text?: string
-  textColor?: string
+  content?: string
+  color?: string
   fontSize?: number
   fontFamily?: string
 }

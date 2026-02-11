@@ -1,13 +1,13 @@
 <template>
   <div :style="textBoundsStyle">
     <span :style="textStyle">
-      {{ element.text }}
+      {{ element.content }}
     </span>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, h } from 'vue'
+import { computed } from 'vue'
 import type { ShapeElement } from '@/types/Element'
 
 const props = defineProps<{
@@ -36,7 +36,7 @@ const textBoundsStyle = computed(() => {
 const textStyle = computed(() => {
   const el = props.element
   return {
-    color: el.textColor || '#000000',
+    color: el.color || '#000000',
     fontSize: `${el.fontSize || 16}px`,
     fontFamily: el.fontFamily || 'Arial',
     textAlign: 'center' as const,

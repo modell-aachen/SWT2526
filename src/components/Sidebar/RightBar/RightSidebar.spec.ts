@@ -40,7 +40,7 @@ describe('RightSidebar', () => {
   it('initializes input with current shape link without protocol', async () => {
     const store = useElementsStore()
     store.addShape('rectangle')
-    store.updateElementLink(store.elements[0]!.id, 'https://test.com')
+    store.updateElement(store.elements[0]!.id, { link: 'https://test.com' })
     store.selectElement(store.elements[0]!.id)
 
     const wrapper = mount(RightSidebar)
@@ -72,11 +72,11 @@ describe('RightSidebar', () => {
     const store = useElementsStore()
     store.addShape('rectangle')
     const id1 = store.elements[0]!.id
-    store.updateElementLink(id1, 'https://link1.com')
+    store.updateElement(id1, { link: 'https://link1.com' })
 
     store.addShape('triangle')
     const id2 = store.elements[1]!.id
-    store.updateElementLink(id2, 'https://link2.com')
+    store.updateElement(id2, { link: 'https://link2.com' })
 
     store.selectElement(id1)
     const wrapper = mount(RightSidebar)
@@ -99,7 +99,7 @@ describe('RightSidebar', () => {
   it('removes shape link when remove button is clicked', async () => {
     const store = useElementsStore()
     store.addShape('rectangle')
-    store.updateElementLink(store.elements[0]!.id, 'https://test.com')
+    store.updateElement(store.elements[0]!.id, { link: 'https://test.com' })
     store.selectElement(store.elements[0]!.id)
 
     const wrapper = mount(RightSidebar)
@@ -185,7 +185,7 @@ describe('RightSidebar', () => {
     await input.trigger('input')
     await input.trigger('change')
 
-    expect((store.elements[0] as ShapeElement).text).toBe('test')
+    expect((store.elements[0] as ShapeElement).content).toBe('test')
 
     const fontSizeInput = wrapper.find('#shape-font-size')
 
@@ -201,7 +201,7 @@ describe('RightSidebar', () => {
     await textColorInput.trigger('input')
     await textColorInput.trigger('change')
 
-    expect((store.elements[0] as ShapeElement).textColor).toBe('#ff0000')
+    expect((store.elements[0] as ShapeElement).color).toBe('#ff0000')
   })
 
   it('shows an alert when loading an invalid file', async () => {
@@ -209,7 +209,7 @@ describe('RightSidebar', () => {
     store.addShape('rectangle')
     store.selectElement(store.elements[0]!.id)
 
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => { })
 
     const wrapper = mount(RightSidebar)
     const fileInput = wrapper.find('input[type="file"]')

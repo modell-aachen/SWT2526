@@ -4,7 +4,7 @@
 import { setActivePinia, createPinia } from 'pinia'
 import { useElementsStore } from './elements'
 import { describe, it, expect, beforeEach } from 'vitest'
-import type { TextElement, IconElement } from '@/types/Element'
+import type { ShapeElement, TextElement, IconElement } from '@/types/Element'
 
 describe('Elements Store', () => {
   beforeEach(() => {
@@ -78,14 +78,39 @@ describe('Elements Store', () => {
     store.redo()
     expect(store.historyIndex).toBe(2)
   })
+
+  it('updateElement saves snapshot by default', () => {
+    const store = useElementsStore()
+    store.addShape('rectangle')
+    const id = store.elements[0]!.id
+    const historyBefore = store.history.length
+
+    store.updateElement(id, { x: 999 })
+
+    expect(store.elements[0]!.x).toBe(999)
+    expect(store.history.length).toBe(historyBefore + 1)
+    expect(store.canUndo).toBe(true)
+  })
+
+  it('updateElement with saveHistory false does not save snapshot', () => {
+    const store = useElementsStore()
+    store.addShape('rectangle')
+    const id = store.elements[0]!.id
+    const historyBefore = store.history.length
+
+    store.updateElement(id, { x: 500 }, false)
+
+    expect(store.elements[0]!.x).toBe(500)
+    expect(store.history.length).toBe(historyBefore)
+  })
+
   it('updates shape outline color', () => {
     const store = useElementsStore()
     store.addShape('rectangle')
     const id = store.elements[0]!.id
 
-    store.updateShapeOutlineColor(id, '#FF0000')
-    // @ts-ignore
-    expect(store.elements[0]!.outline).toBe('#FF0000')
+    store.updateElement(id, { outline: '#FF0000' })
+    expect((store.elements[0] as ShapeElement).outline).toBe('#FF0000')
 
     // Should trigger snapshot
     expect(store.canUndo).toBe(true)
@@ -96,9 +121,8 @@ describe('Elements Store', () => {
     store.addShape('rectangle')
     const id = store.elements[0]!.id
 
-    store.updateShapeFillColor(id, '#00FF00')
-    // @ts-ignore
-    expect(store.elements[0]!.fill).toBe('#00FF00')
+    store.updateElement(id, { fill: '#00FF00' })
+    expect((store.elements[0] as ShapeElement).fill).toBe('#00FF00')
 
     // Should trigger snapshot
     expect(store.canUndo).toBe(true)
@@ -109,9 +133,8 @@ describe('Elements Store', () => {
     store.addShape('rectangle')
     const id = store.elements[0]!.id
 
-    store.updateShapeStrokeWeight(id, 5)
-    // @ts-ignore
-    expect(store.elements[0]!.strokeWeight).toBe(5)
+    store.updateElement(id, { strokeWeight: 5 })
+    expect((store.elements[0] as ShapeElement).strokeWeight).toBe(5)
 
     // Should trigger snapshot
     expect(store.canUndo).toBe(true)
@@ -131,9 +154,8 @@ describe('Elements Store', () => {
     store.addIcon('star')
     const id = store.elements[0]!.id
 
-    store.updateIconColor(id, '#0000FF')
-    // @ts-ignore
-    expect(store.elements[0]!.color).toBe('#0000FF')
+    store.updateElement(id, { color: '#0000FF' })
+    expect((store.elements[0] as IconElement).color).toBe('#0000FF')
 
     // Should trigger snapshot
     expect(store.canUndo).toBe(true)
@@ -144,9 +166,8 @@ describe('Elements Store', () => {
     store.addIcon('star')
     const id = store.elements[0]!.id
 
-    store.updateIconStrokeWeight(id, 4)
-    // @ts-ignore
-    expect(store.elements[0]!.strokeWeight).toBe(4)
+    store.updateElement(id, { strokeWeight: 4 })
+    expect((store.elements[0] as IconElement).strokeWeight).toBe(4)
 
     // Should trigger snapshot
     expect(store.canUndo).toBe(true)

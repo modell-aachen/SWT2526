@@ -164,29 +164,7 @@ export const useElementsStore = defineStore('elements', {
       this.addElement(newShape)
     },
 
-    updateShapeOutlineColor(id: string, color: string) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element && element.type === 'shape') {
-        element.outline = color
-        this.saveSnapshot()
-      }
-    },
 
-    updateShapeFillColor(id: string, color: string) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element && element.type === 'shape') {
-        element.fill = color
-        this.saveSnapshot()
-      }
-    },
-
-    updateShapeStrokeWeight(id: string, weight: number) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element && element.type === 'shape' && weight >= 0) {
-        element.strokeWeight = weight
-        this.saveSnapshot()
-      }
-    },
 
     addText(x: number = 100, y: number = 100) {
       const newText: TextElement = {
@@ -223,29 +201,16 @@ export const useElementsStore = defineStore('elements', {
       this.addElement(newIcon)
     },
 
-    updateIconColor(id: string, color: string) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element && element.type === 'icon') {
-        element.color = color
-        this.saveSnapshot()
-      }
-    },
 
-    updateIconStrokeWeight(id: string, weight: number) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element && element.type === 'icon' && weight >= 0) {
-        element.strokeWeight = weight
-        this.saveSnapshot()
-      }
-    },
 
-    updateElement(id: string, updates: Partial<CanvasElement>) {
+    updateElement(id: string, updates: Partial<CanvasElement>, saveHistory: boolean = true) {
       const index = this.elements.findIndex((e: CanvasElement) => e.id === id)
       if (index !== -1) {
         this.elements[index] = {
           ...this.elements[index],
           ...updates,
         } as CanvasElement
+        if (saveHistory) this.saveSnapshot()
       }
     },
 
@@ -578,25 +543,7 @@ export const useElementsStore = defineStore('elements', {
       this.saveSnapshot()
     },
 
-    setElementPosition(id: string, x: number, y: number) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element) {
-        element.x = x
-        element.y = y
-        this.saveSnapshot()
-      }
-    },
 
-    updateTextElement(id: string, updates: Partial<TextElement>) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      // Create a new object to avoid direct mutation issues and ensure reactivity
-      const updatedElement = { ...element, ...updates }
-      const index = this.elements.findIndex((e: CanvasElement) => e.id === id)
-      if (index !== -1) {
-        this.elements[index] = updatedElement as CanvasElement
-        this.saveSnapshot()
-      }
-    },
 
     endDrag() {
       this.saveSnapshot()
@@ -612,21 +559,7 @@ export const useElementsStore = defineStore('elements', {
       this.saveSnapshot()
     },
 
-    updateElementLink(id: string, link: string | undefined) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element) {
-        element.link = link
-        this.saveSnapshot()
-      }
-    },
 
-    removeElementLink(id: string) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element) {
-        element.link = undefined
-        this.saveSnapshot()
-      }
-    },
     exportSnapshot(): Snapshot {
       return {
         version: 1,

@@ -244,7 +244,9 @@ const updateStrokeWeight = (val: number) => {
     .filter((el) => el.type === 'shape')
     .forEach((el) => elementsStore.updateElement(el.id, { strokeWeight: val }))
   if (selectedElement.value && selectedElement.value.type === 'shape') {
-    strokeWeightValue.value = (selectedElement.value as ShapeElement).strokeWeight
+    strokeWeightValue.value = (
+      selectedElement.value as ShapeElement
+    ).strokeWeight
   }
 }
 

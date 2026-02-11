@@ -164,8 +164,6 @@ export const useElementsStore = defineStore('elements', {
       this.addElement(newShape)
     },
 
-
-
     addText(x: number = 100, y: number = 100) {
       const newText: TextElement = {
         id: `text-${this.nextId++}`,
@@ -201,9 +199,11 @@ export const useElementsStore = defineStore('elements', {
       this.addElement(newIcon)
     },
 
-
-
-    updateElement(id: string, updates: Partial<CanvasElement>, saveHistory: boolean = true) {
+    updateElement(
+      id: string,
+      updates: Partial<CanvasElement>,
+      saveHistory: boolean = true
+    ) {
       const index = this.elements.findIndex((e: CanvasElement) => e.id === id)
       if (index !== -1) {
         this.elements[index] = {
@@ -543,8 +543,6 @@ export const useElementsStore = defineStore('elements', {
       this.saveSnapshot()
     },
 
-
-
     endDrag() {
       this.saveSnapshot()
     },
@@ -558,7 +556,6 @@ export const useElementsStore = defineStore('elements', {
       this.selectedElementIds = []
       this.saveSnapshot()
     },
-
 
     exportSnapshot(): Snapshot {
       return {

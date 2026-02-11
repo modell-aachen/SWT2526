@@ -262,12 +262,16 @@ const handleResize = (
       const newWidth = element.width * scaleX
       const newHeight = element.height * scaleY
 
-      elementsStore.updateElement(element.id, {
-        x: newX,
-        y: newY,
-        width: Math.max(10, newWidth),
-        height: Math.max(10, newHeight),
-      }, false)
+      elementsStore.updateElement(
+        element.id,
+        {
+          x: newX,
+          y: newY,
+          width: Math.max(10, newWidth),
+          height: Math.max(10, newHeight),
+        },
+        false
+      )
     })
   } else {
     // Single element resize
@@ -286,12 +290,20 @@ const handleElementRotate = async (id: string, currentRotation: number) => {
     elementsStore.selectedElementIds.includes(id)
   ) {
     elementsStore.selectedElements.forEach((element) => {
-      elementsStore.updateElement(element.id, {
-        rotation: (element.rotation + 90) % 360,
-      }, false)
+      elementsStore.updateElement(
+        element.id,
+        {
+          rotation: (element.rotation + 90) % 360,
+        },
+        false
+      )
     })
   } else {
-    elementsStore.updateElement(id, { rotation: (currentRotation + 90) % 360 }, false)
+    elementsStore.updateElement(
+      id,
+      { rotation: (currentRotation + 90) % 360 },
+      false
+    )
   }
   elementsStore.saveSnapshot()
 }

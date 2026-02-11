@@ -209,7 +209,7 @@ describe('RightSidebar', () => {
     store.addShape('rectangle')
     store.selectElement(store.elements[0]!.id)
 
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => { })
+    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
 
     const wrapper = mount(RightSidebar)
     const fileInput = wrapper.find('input[type="file"]')

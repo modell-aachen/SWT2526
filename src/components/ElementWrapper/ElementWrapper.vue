@@ -1,6 +1,5 @@
 <template>
   <div class="absolute" :style="wrapperStyle" @mousedown.stop="handleMouseDown">
-    <!-- Content -->
     <div class="w-full h-full">
       <GenericShape v-if="shapeProps" v-bind="shapeProps" />
       <TextElement v-else-if="textProps" v-bind="textProps" />
@@ -12,7 +11,6 @@
         class="absolute -inset-3 border-2 border-ma-primary-500 pointer-events-none"
       ></div>
 
-      <!-- Resize Handles -->
       <div
         v-for="handle in visibleHandles"
         :key="handle"
@@ -22,7 +20,10 @@
       ></div>
     </div>
 
-    <!-- Link indicator -->
+    <ElementTextOverlay
+      v-if="element.type === 'shape'"
+      :element="element as ShapeElement"
+    />
     <ElementLink v-if="element.link && !selected" :link="element.link" />
   </div>
 </template>
@@ -34,6 +35,8 @@ import type { ResizeHandle } from '@/utils/elementTransforms'
 import type { ResizeEvents } from '@/types/ResizeEvents'
 import type { ElementWrapperEvents } from '@/types/ElementWrapperEvents'
 import ElementLink from './ElementLink.vue'
+import ElementTextOverlay from './ElementTextOverlay.vue'
+import type { ShapeElement } from '@/types/Element'
 import {
   getHandleStyle,
   resizeHandles as allHandles,

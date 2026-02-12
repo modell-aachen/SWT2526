@@ -6,11 +6,15 @@ import type {
   SnapPointType,
 } from '@/types/snapping'
 
+import { getVisualBoundingBox } from './elementTransforms'
+
 /**
  * Extract all snap points from an element's bounds
  */
 export function getElementSnapPoints(element: CanvasElement): SnapPoint[] {
-  const { x, y, width, height, id } = element
+  const visualBounds = getVisualBoundingBox(element)
+  const { x, y, width, height } = visualBounds
+  const { id } = element
 
   return [
     { value: x, type: 'left' as SnapPointType, elementId: id },

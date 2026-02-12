@@ -156,13 +156,12 @@
 import { ref, watch, computed } from 'vue'
 import { Save, Upload } from 'lucide-vue-next'
 import { useElementsStore } from '@/stores/elements/elements'
-import type { ShapeElement, TextElement } from '@/types/Element'
+import type { ShapeElement, IconElement } from '@/types/Element'
 import PropertyColorInput from './components/PropertyColorInput.vue'
 import PropertyNumericInput from './components/PropertyNumericInput.vue'
 import PropertyLinkInput from './components/PropertyLinkInput.vue'
 import PropertyTextInput from './components/PropertyTextInput.vue'
 import PropertySelectInput from './components/PropertySelectInput.vue'
-import type { IconElement } from '@/types/Element'
 import { Button } from '@/components/ui/button'
 import { useCanvasIO } from '@/composables/useCanvasIO'
 
@@ -195,7 +194,7 @@ const fontFamilyOptions = [
   { label: 'Verdana', value: 'Verdana' },
 ]
 
-// Update local state when selected shape changes
+// Update local state when selected element changes
 watch(
   selectedElement,
   (newElement) => {
@@ -208,17 +207,17 @@ watch(
       outlineColorValue.value = shape.outline || '#000000'
       fillColorValue.value = shape.fill || 'transparent'
       strokeWeightValue.value = shape.strokeWeight || 0
-      // Initialize shape text values or defaults
-      textContentValue.value = shape.text || ''
+      // Unified text properties: content, color, fontFamily, fontSize
+      textContentValue.value = shape.content || ''
       fontFamilyValue.value = shape.fontFamily || 'Arial'
-      textColorValue.value = shape.textColor || '#000000'
+      textColorValue.value = shape.color || '#000000'
       fontSizeValue.value = shape.fontSize || 16
     } else if (newElement && newElement.type === 'text') {
-      const text = newElement as TextElement
-      textContentValue.value = text.content
-      fontFamilyValue.value = text.fontFamily
-      textColorValue.value = text.color
-      fontSizeValue.value = text.fontSize
+      // Same property names as shape: content, color, fontFamily, fontSize
+      textContentValue.value = newElement.content
+      fontFamilyValue.value = newElement.fontFamily
+      textColorValue.value = newElement.color
+      fontSizeValue.value = newElement.fontSize
     } else if (newElement && newElement.type === 'icon') {
       const icon = newElement as IconElement
       iconColorValue.value = icon.color
@@ -229,97 +228,79 @@ watch(
 )
 
 const updateOutline = (val: string) => {
-  // Apply to all selected shape elements
   selectedElements.value
     .filter((el) => el.type === 'shape')
-    .forEach((el) => elementsStore.updateShapeOutlineColor(el.id, val))
+    .forEach((el) => elementsStore.updateElement(el.id, { outline: val }))
 }
 
 const updateFill = (val: string) => {
-  // Apply to all selected shape elements
   selectedElements.value
     .filter((el) => el.type === 'shape')
-    .forEach((el) => elementsStore.updateShapeFillColor(el.id, val))
+    .forEach((el) => elementsStore.updateElement(el.id, { fill: val }))
 }
 
 const updateStrokeWeight = (val: number) => {
-  // Apply to all selected shape elements
   selectedElements.value
     .filter((el) => el.type === 'shape')
-    .forEach((el) => elementsStore.updateShapeStrokeWeight(el.id, val))
+    .forEach((el) => elementsStore.updateElement(el.id, { strokeWeight: val }))
   if (selectedElement.value && selectedElement.value.type === 'shape') {
-    strokeWeightValue.value = selectedElement.value.strokeWeight
+    strokeWeightValue.value = (
+      selectedElement.value as ShapeElement
+    ).strokeWeight
   }
 }
 
+// Unified: no if/else needed since both shape and text use fontFamily
 watch(fontFamilyValue, (val) => {
   if (selectedElement.value) {
-    if (selectedElement.value.type === 'text') {
-      elementsStore.updateTextElement(selectedElement.value.id, {
-        fontFamily: val,
-      })
-    } else if (selectedElement.value.type === 'shape') {
-      elementsStore.updateElement(selectedElement.value.id, {
-        fontFamily: val,
-      })
-    }
+    elementsStore.updateElement(selectedElement.value.id, { fontFamily: val })
   }
 })
 
 const updateLink = (link: string | undefined) => {
   if (selectedElement.value) {
-    elementsStore.updateElementLink(selectedElement.value.id, link)
+    elementsStore.updateElement(selectedElement.value.id, { link })
   }
 }
 
 const removeLink = () => {
   if (selectedElement.value) {
-    elementsStore.removeElementLink(selectedElement.value.id)
+    elementsStore.updateElement(selectedElement.value.id, { link: undefined })
   }
 }
 
+// Unified: no if/else needed since both shape and text use content
 const updateTextContent = (val: string) => {
-  if (selectedElement.value && selectedElement.value.type === 'text') {
-    elementsStore.updateTextElement(selectedElement.value.id, { content: val })
-  } else if (selectedElement.value && selectedElement.value.type === 'shape') {
-    elementsStore.updateElement(selectedElement.value.id, { text: val })
+  if (selectedElement.value) {
+    elementsStore.updateElement(selectedElement.value.id, { content: val })
   }
 }
 
+// Unified: no if/else needed since both shape and text use color
 const updateTextColor = (val: string) => {
-  // Apply to all selected text elements
   selectedElements.value
     .filter((el) => el.type === 'text' || el.type === 'shape')
-    .forEach((el) => {
-      if (el.type === 'text') {
-        elementsStore.updateTextElement(el.id, { color: val })
-      } else if (el.type === 'shape') {
-        elementsStore.updateElement(el.id, { textColor: val })
-      }
-    })
+    .forEach((el) => elementsStore.updateElement(el.id, { color: val }))
 }
 
+// Unified: no if/else needed since both shape and text use fontSize
 const updateFontSize = (val: number) => {
-  if (selectedElement.value && selectedElement.value.type === 'text') {
-    elementsStore.updateTextElement(selectedElement.value.id, { fontSize: val })
-    fontSizeValue.value = selectedElement.value.fontSize
-  } else if (selectedElement.value && selectedElement.value.type === 'shape') {
+  if (selectedElement.value) {
     elementsStore.updateElement(selectedElement.value.id, { fontSize: val })
-    fontSizeValue.value = selectedElement.value.fontSize || 16
+    fontSizeValue.value = val
   }
 }
 
 const updateIconColor = (val: string) => {
-  // Apply to all selected icon elements
   selectedElements.value
     .filter((el) => el.type === 'icon')
-    .forEach((el) => elementsStore.updateIconColor(el.id, val))
+    .forEach((el) => elementsStore.updateElement(el.id, { color: val }))
 }
 
 const updateIconStrokeWeight = (val: number) => {
   if (selectedElement.value && selectedElement.value.type === 'icon') {
-    elementsStore.updateIconStrokeWeight(selectedElement.value.id, val)
-    iconStrokeWeightValue.value = selectedElement.value.strokeWeight
+    elementsStore.updateElement(selectedElement.value.id, { strokeWeight: val })
+    iconStrokeWeightValue.value = val
   }
 }
 

@@ -146,7 +146,7 @@ const deleteSelected = () => {
 
 const selectElement = (id: string, event?: MouseEvent) => {
   // Shift+Click for multi-selection
-  if (event?.shiftKey) {
+  if (event?.ctrlKey) {
     elementsStore.toggleElementSelection(id)
   } else if (elementsStore.selectedElementIds.includes(id)) {
     // If clicking on an already-selected element, don't reset selection
@@ -211,76 +211,11 @@ const handleResize = (
   deltaX: number,
   deltaY: number
 ) => {
-  const selectedIds = elementsStore.selectedElementIds
+  const element = elementsStore.elements.find((e) => e.id === id)
+  if (!element) return
 
-  // If multiple elements are selected, scale them all proportionally
-  if (selectedIds.length > 1 && selectedIds.includes(id)) {
-    // Calculate bounding box of all selected elements
-    const selectedElements = elementsStore.elements.filter((e) =>
-      selectedIds.includes(e.id)
-    )
-
-    let minX = Infinity,
-      minY = Infinity,
-      maxX = -Infinity,
-      maxY = -Infinity
-    selectedElements.forEach((e) => {
-      minX = Math.min(minX, e.x)
-      minY = Math.min(minY, e.y)
-      maxX = Math.max(maxX, e.x + e.width)
-      maxY = Math.max(maxY, e.y + e.height)
-    })
-
-    const groupWidth = maxX - minX
-    const groupHeight = maxY - minY
-
-    // Calculate scale factor based on handle direction
-    let scaleX = 1,
-      scaleY = 1
-    let anchorX = minX,
-      anchorY = minY
-
-    if (handle.includes('e')) {
-      scaleX = groupWidth > 0 ? (groupWidth + deltaX) / groupWidth : 1
-    }
-    if (handle.includes('w')) {
-      scaleX = groupWidth > 0 ? (groupWidth - deltaX) / groupWidth : 1
-      anchorX = maxX
-    }
-    if (handle.includes('s')) {
-      scaleY = groupHeight > 0 ? (groupHeight + deltaY) / groupHeight : 1
-    }
-    if (handle.includes('n')) {
-      scaleY = groupHeight > 0 ? (groupHeight - deltaY) / groupHeight : 1
-      anchorY = maxY
-    }
-
-    // Apply scale to all selected elements
-    selectedElements.forEach((element) => {
-      const newX = anchorX + (element.x - anchorX) * scaleX
-      const newY = anchorY + (element.y - anchorY) * scaleY
-      const newWidth = element.width * scaleX
-      const newHeight = element.height * scaleY
-
-      elementsStore.updateElement(
-        element.id,
-        {
-          x: newX,
-          y: newY,
-          width: Math.max(10, newWidth),
-          height: Math.max(10, newHeight),
-        },
-        false
-      )
-    })
-  } else {
-    // Single element resize
-    const element = elementsStore.elements.find((e) => e.id === id)
-    if (!element) return
-
-    const newState = calculateNewElementState(element, handle, deltaX, deltaY)
-    elementsStore.updateElement(id, newState, false)
-  }
+  const newState = calculateNewElementState(element, handle, deltaX, deltaY)
+  elementsStore.updateElement(id, newState, false)
 }
 
 const handleElementRotate = async (id: string, currentRotation: number) => {

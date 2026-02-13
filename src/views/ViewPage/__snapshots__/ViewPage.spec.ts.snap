@@ -1,3 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`ViewPage > matches snapshot 1`] = `"<h1>View Page</h1>"`;

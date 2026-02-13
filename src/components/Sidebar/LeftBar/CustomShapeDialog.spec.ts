@@ -32,15 +32,11 @@ describe('CustomShapeDialog', () => {
     config.global.stubs = {}
   })
 
-  it('renders correctly with initial 3 points (6 inputs)', () => {
+  it('renders correctly with initial 3 points (6 inputs) and can maximally add 6 input points', async () => {
     wrapper = mountDialog()
 
     expect(wrapper.text()).toContain('Add Custom Shape')
     expect(getInputs()).toHaveLength(6)
-  })
-
-  it('does not add more than 6 points', async () => {
-    wrapper = mountDialog()
 
     const addButton = getAddPointButton()
 
@@ -75,6 +71,15 @@ describe('CustomShapeDialog', () => {
       name: 'Triangle',
       points: '0,0 100,0 50,100',
     })
+  })
+
+  it('does not allow saving when name is empty', async () => {
+    wrapper = mountDialog()
+
+    await getNameInput().setValue('')
+    await getSubmitButton().trigger('click')
+
+    expect(getSubmitButton().attributes('disabled')).toBeDefined()
   })
 
   it('shows error feedback and disables save for invalid coordinates', async () => {

@@ -1,8 +1,20 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import RightSidebar from './RightSidebar.vue'
 import { useElementsStore } from '@/stores/elements/elements'
+import flushPromises from 'flush-promises'
+import type { ShapeElement } from '@/types/Element'
+
+const { loadFromFileMock } = vi.hoisted(() => ({
+  loadFromFileMock: vi.fn(),
+}))
+
+vi.mock('@/composables/useCanvasIO', () => ({
+  useCanvasIO: () => ({
+    loadFromFile: loadFromFileMock,
+  }),
+}))
 
 describe('RightSidebar', () => {
   beforeEach(() => {
@@ -28,7 +40,7 @@ describe('RightSidebar', () => {
   it('initializes input with current shape link without protocol', async () => {
     const store = useElementsStore()
     store.addShape('rectangle')
-    store.updateElementLink(store.elements[0]!.id, 'https://test.com')
+    store.updateElement(store.elements[0]!.id, { link: 'https://test.com' })
     store.selectElement(store.elements[0]!.id)
 
     const wrapper = mount(RightSidebar)
@@ -51,18 +63,20 @@ describe('RightSidebar', () => {
     await input.setValue('new-link.com')
     await button.trigger('click')
 
-    expect((store.elements[0] as any).link).toBe('https://new-link.com')
+    expect((store.elements[0] as ShapeElement).link).toBe(
+      'https://new-link.com'
+    )
   })
 
   it('updates input value when selected shape changes', async () => {
     const store = useElementsStore()
     store.addShape('rectangle')
     const id1 = store.elements[0]!.id
-    store.updateElementLink(id1, 'https://link1.com')
+    store.updateElement(id1, { link: 'https://link1.com' })
 
     store.addShape('triangle')
     const id2 = store.elements[1]!.id
-    store.updateElementLink(id2, 'https://link2.com')
+    store.updateElement(id2, { link: 'https://link2.com' })
 
     store.selectElement(id1)
     const wrapper = mount(RightSidebar)
@@ -85,7 +99,7 @@ describe('RightSidebar', () => {
   it('removes shape link when remove button is clicked', async () => {
     const store = useElementsStore()
     store.addShape('rectangle')
-    store.updateElementLink(store.elements[0]!.id, 'https://test.com')
+    store.updateElement(store.elements[0]!.id, { link: 'https://test.com' })
     store.selectElement(store.elements[0]!.id)
 
     const wrapper = mount(RightSidebar)
@@ -94,7 +108,7 @@ describe('RightSidebar', () => {
 
     await button.trigger('click')
 
-    expect((store.elements[0] as any).link).toBeUndefined()
+    expect((store.elements[0] as ShapeElement).link).toBeUndefined()
   })
 
   it('strips duplicate protocol from input before saving', async () => {
@@ -126,7 +140,7 @@ describe('RightSidebar', () => {
     await input.trigger('input') // Trigger input to update model
     await input.trigger('change')
 
-    expect((store.elements[0] as any).outline).toBe('#ff0000')
+    expect((store.elements[0] as ShapeElement).outline).toBe('#ff0000')
   })
 
   it('updates shape fill color', async () => {
@@ -141,7 +155,7 @@ describe('RightSidebar', () => {
     await input.trigger('input')
     await input.trigger('change')
 
-    expect((store.elements[0] as any).fill).toBe('#00ff00')
+    expect((store.elements[0] as ShapeElement).fill).toBe('#00ff00')
   })
 
   it('updates shape stroke weight', async () => {
@@ -157,5 +171,66 @@ describe('RightSidebar', () => {
     await input.trigger('change')
 
     expect((store.elements[0] as any).strokeWeight).toBe(5)
+  })
+
+  it('allows updating text within shapes', async () => {
+    const store = useElementsStore()
+    store.addShape('rectangle')
+    store.selectElement(store.elements[0]!.id)
+
+    const wrapper = mount(RightSidebar)
+    const input = wrapper.find('#shape-text-content')
+
+    await input.setValue('test')
+    await input.trigger('input')
+    await input.trigger('change')
+
+    expect((store.elements[0] as ShapeElement).content).toBe('test')
+
+    const fontSizeInput = wrapper.find('#shape-font-size')
+
+    await fontSizeInput.setValue('16')
+    await fontSizeInput.trigger('input')
+    await fontSizeInput.trigger('change')
+
+    expect((store.elements[0] as ShapeElement).fontSize).toBe(16)
+
+    const textColorInput = wrapper.find('#shape-text-color')
+
+    await textColorInput.setValue('#ff0000')
+    await textColorInput.trigger('input')
+    await textColorInput.trigger('change')
+
+    expect((store.elements[0] as ShapeElement).color).toBe('#ff0000')
+  })
+
+  it('shows an alert when loading an invalid file', async () => {
+    const store = useElementsStore()
+    store.addShape('rectangle')
+    store.selectElement(store.elements[0]!.id)
+
+    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+
+    const wrapper = mount(RightSidebar)
+    const fileInput = wrapper.find('input[type="file"]')
+
+    const file = new File(['invalid content'], 'test.txt', {
+      type: 'text/plain',
+    })
+    Object.defineProperty(fileInput.element, 'files', {
+      value: [file],
+      writable: false,
+    })
+
+    loadFromFileMock.mockRejectedValue(new Error('Invalid JSON'))
+
+    await fileInput.trigger('change')
+
+    // Wait for async handler
+    await flushPromises()
+
+    expect(alertSpy).toHaveBeenCalledWith(
+      'Failed to load file. Please ensure it is a valid JSON file.'
+    )
   })
 })

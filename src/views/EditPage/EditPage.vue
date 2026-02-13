@@ -36,7 +36,7 @@
           :selected="elementsStore.selectedElementIds.includes(element.id)"
           @select="selectElement(element.id, $event)"
           @drag="(deltaX, deltaY) => handleDrag(element.id, deltaX, deltaY)"
-          @drag-end="elementsStore.endDrag()"
+          @drag-end="handleDragEnd"
           @resize="
             (handle, deltaX, deltaY) =>
               handleResize(element.id, handle, deltaX, deltaY)
@@ -49,6 +49,9 @@
         />
 
         <template #overlay>
+          <!-- Snap Lines (show alignment guides during drag) -->
+          <SnapLines :snap-lines="activeSnapLines" :zoom="zoomStore.zoom" />
+
           <!-- Context Bar (always upright, positioned based on selected element) -->
           <ElementContextBar
             v-if="elementsStore.selectedElement"
@@ -88,11 +91,15 @@ import { calculateNewElementState } from '@/utils/elementTransforms'
 import type { ResizeHandle } from '@/utils/elementTransforms'
 import { useZoomStore } from '@/stores/zoom/zoom'
 import { useCanvasIO } from '@/composables/useCanvasIO'
+import { calculateSnapResult } from '@/utils/snapUtils'
+import { SNAP_THRESHOLD } from '@/types/snapping'
+import type { SnapLine } from '@/types/snapping'
 
 import LeftSidebar from '@/components/Sidebar/LeftBar/LeftSidebar.vue'
 import RightSidebar from '@/components/Sidebar/RightBar/RightSidebar.vue'
 import DragGhost from '@/components/DragGhost/DragGhost.vue'
 import ElementContextBar from '@/components/ElementContextBar/ElementContextBar.vue'
+import SnapLines from '@/components/SnapLines/SnapLines.vue'
 
 const elementsStore = useElementsStore()
 const dragStore = useDragStore()
@@ -100,6 +107,7 @@ const sidebarCollapsed = ref(false)
 const rightSidebarCollapsed = ref(false)
 const zoomStore = useZoomStore()
 const { saveToFile } = useCanvasIO()
+const activeSnapLines = ref<SnapLine[]>([])
 
 const canvasRef = ref<InstanceType<typeof GridCanvas> | null>(null)
 
@@ -138,7 +146,7 @@ const deleteSelected = () => {
 
 const selectElement = (id: string, event?: MouseEvent) => {
   // Shift+Click for multi-selection
-  if (event?.shiftKey) {
+  if (event?.ctrlKey) {
     elementsStore.toggleElementSelection(id)
   } else if (elementsStore.selectedElementIds.includes(id)) {
     // If clicking on an already-selected element, don't reset selection
@@ -154,15 +162,47 @@ const handleCanvasClick = () => {
 }
 
 const handleDrag = (id: string, deltaX: number, deltaY: number) => {
-  // Move all selected elements together
-  if (elementsStore.selectedElementIds.includes(id)) {
-    elementsStore.selectedElementIds.forEach((selectedId) => {
-      elementsStore.updateElementPosition(selectedId, deltaX, deltaY)
-    })
+  // Get the element being dragged
+  const draggedElement = elementsStore.elements.find((e) => e.id === id)
+  if (!draggedElement) return
+
+  // Calculate hypothetical new position
+  const newX = draggedElement.x + deltaX
+  const newY = draggedElement.y + deltaY
+  const hypotheticalElement = { ...draggedElement, x: newX, y: newY }
+
+  // Calculate snapping if only one element is being dragged
+  if (elementsStore.selectedElementIds.length === 1) {
+    const snapResult = calculateSnapResult(
+      hypotheticalElement,
+      elementsStore.elements,
+      SNAP_THRESHOLD
+    )
+
+    // Update snap lines for visualization
+    activeSnapLines.value = snapResult.snapLines
+
+    // Apply snapped position
+    const adjustedDeltaX = snapResult.x - draggedElement.x
+    const adjustedDeltaY = snapResult.y - draggedElement.y
+    elementsStore.updateElementPosition(id, adjustedDeltaX, adjustedDeltaY)
   } else {
-    // If dragging an unselected element, just move that one
-    elementsStore.updateElementPosition(id, deltaX, deltaY)
+    // Move all selected elements together (no snapping for multi-select)
+    activeSnapLines.value = []
+    if (elementsStore.selectedElementIds.includes(id)) {
+      elementsStore.selectedElementIds.forEach((selectedId) => {
+        elementsStore.updateElementPosition(selectedId, deltaX, deltaY)
+      })
+    } else {
+      // If dragging an unselected element, just move that one
+      elementsStore.updateElementPosition(id, deltaX, deltaY)
+    }
   }
+}
+
+const handleDragEnd = () => {
+  activeSnapLines.value = []
+  elementsStore.endDrag()
 }
 
 const handleResize = (
@@ -171,72 +211,11 @@ const handleResize = (
   deltaX: number,
   deltaY: number
 ) => {
-  const selectedIds = elementsStore.selectedElementIds
+  const element = elementsStore.elements.find((e) => e.id === id)
+  if (!element) return
 
-  // If multiple elements are selected, scale them all proportionally
-  if (selectedIds.length > 1 && selectedIds.includes(id)) {
-    // Calculate bounding box of all selected elements
-    const selectedElements = elementsStore.elements.filter((e) =>
-      selectedIds.includes(e.id)
-    )
-
-    let minX = Infinity,
-      minY = Infinity,
-      maxX = -Infinity,
-      maxY = -Infinity
-    selectedElements.forEach((e) => {
-      minX = Math.min(minX, e.x)
-      minY = Math.min(minY, e.y)
-      maxX = Math.max(maxX, e.x + e.width)
-      maxY = Math.max(maxY, e.y + e.height)
-    })
-
-    const groupWidth = maxX - minX
-    const groupHeight = maxY - minY
-
-    // Calculate scale factor based on handle direction
-    let scaleX = 1,
-      scaleY = 1
-    let anchorX = minX,
-      anchorY = minY
-
-    if (handle.includes('e')) {
-      scaleX = groupWidth > 0 ? (groupWidth + deltaX) / groupWidth : 1
-    }
-    if (handle.includes('w')) {
-      scaleX = groupWidth > 0 ? (groupWidth - deltaX) / groupWidth : 1
-      anchorX = maxX
-    }
-    if (handle.includes('s')) {
-      scaleY = groupHeight > 0 ? (groupHeight + deltaY) / groupHeight : 1
-    }
-    if (handle.includes('n')) {
-      scaleY = groupHeight > 0 ? (groupHeight - deltaY) / groupHeight : 1
-      anchorY = maxY
-    }
-
-    // Apply scale to all selected elements
-    selectedElements.forEach((element) => {
-      const newX = anchorX + (element.x - anchorX) * scaleX
-      const newY = anchorY + (element.y - anchorY) * scaleY
-      const newWidth = element.width * scaleX
-      const newHeight = element.height * scaleY
-
-      elementsStore.updateElement(element.id, {
-        x: newX,
-        y: newY,
-        width: Math.max(10, newWidth),
-        height: Math.max(10, newHeight),
-      })
-    })
-  } else {
-    // Single element resize
-    const element = elementsStore.elements.find((e) => e.id === id)
-    if (!element) return
-
-    const newState = calculateNewElementState(element, handle, deltaX, deltaY)
-    elementsStore.updateElement(id, newState)
-  }
+  const newState = calculateNewElementState(element, handle, deltaX, deltaY)
+  elementsStore.updateElement(id, newState, false)
 }
 
 const handleElementRotate = async (id: string, currentRotation: number) => {
@@ -246,12 +225,20 @@ const handleElementRotate = async (id: string, currentRotation: number) => {
     elementsStore.selectedElementIds.includes(id)
   ) {
     elementsStore.selectedElements.forEach((element) => {
-      elementsStore.updateElement(element.id, {
-        rotation: (element.rotation + 90) % 360,
-      })
+      elementsStore.updateElement(
+        element.id,
+        {
+          rotation: (element.rotation + 90) % 360,
+        },
+        false
+      )
     })
   } else {
-    elementsStore.updateElement(id, { rotation: (currentRotation + 90) % 360 })
+    elementsStore.updateElement(
+      id,
+      { rotation: (currentRotation + 90) % 360 },
+      false
+    )
   }
   elementsStore.saveSnapshot()
 }

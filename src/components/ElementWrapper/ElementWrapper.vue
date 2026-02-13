@@ -1,12 +1,9 @@
 <template>
   <div class="absolute" :style="wrapperStyle" @mousedown.stop="handleMouseDown">
-    <!-- Content -->
     <div class="w-full h-full">
-      <component
-        :is="componentType"
-        v-bind="componentProps"
-        class="w-full h-full block"
-      />
+      <GenericShape v-if="shapeProps" v-bind="shapeProps" />
+      <TextElement v-else-if="textProps" v-bind="textProps" />
+      <IconElement v-else-if="iconProps" v-bind="iconProps" />
     </div>
 
     <div v-if="selected" class="absolute inset-0 pointer-events-none">
@@ -14,7 +11,6 @@
         class="absolute -inset-3 border-2 border-ma-primary-500 pointer-events-none"
       ></div>
 
-      <!-- Resize Handles -->
       <div
         v-for="handle in visibleHandles"
         :key="handle"
@@ -24,7 +20,10 @@
       ></div>
     </div>
 
-    <!-- Link indicator -->
+    <ElementTextOverlay
+      v-if="element.type === 'shape'"
+      :element="element as ShapeElement"
+    />
     <ElementLink v-if="element.link && !selected" :link="element.link" />
   </div>
 </template>
@@ -36,6 +35,8 @@ import type { ResizeHandle } from '@/utils/elementTransforms'
 import type { ResizeEvents } from '@/types/ResizeEvents'
 import type { ElementWrapperEvents } from '@/types/ElementWrapperEvents'
 import ElementLink from './ElementLink.vue'
+import ElementTextOverlay from './ElementTextOverlay.vue'
+import type { ShapeElement } from '@/types/Element'
 import {
   getHandleStyle,
   resizeHandles as allHandles,
@@ -43,6 +44,9 @@ import {
 import { useDraggable } from '@/composables/useDraggable'
 import { useResizable } from '@/composables/useResizable'
 import { useElementComponent } from '@/composables/useElementComponent'
+import GenericShape from '@/components/Shapes/GenericShape.vue'
+import TextElement from '@/components/TextElement/TextElement.vue'
+import IconElement from '@/components/IconElement/IconElement.vue'
 
 const props = defineProps<{
   element: CanvasElement
@@ -53,7 +57,7 @@ const emit = defineEmits<ElementWrapperEvents>()
 
 const { startDrag } = useDraggable(emit)
 const { startResize } = useResizable(emit as ResizeEvents)
-const { componentType, componentProps } = useElementComponent(
+const { shapeProps, textProps, iconProps } = useElementComponent(
   toRef(props, 'element')
 )
 

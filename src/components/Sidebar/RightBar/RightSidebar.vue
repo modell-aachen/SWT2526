@@ -39,6 +39,39 @@
           label="Stroke Width"
           @change="updateStrokeWeight"
         />
+
+        <div class="border-t border-ma-grey-300 my-2 pt-2">
+          <h3 class="text-sm font-semibold mb-2 text-ma-text-02">
+            Text Overlay
+          </h3>
+          <PropertyTextInput
+            id="shape-text-content"
+            v-model="textContentValue"
+            label="Text"
+            @update:model-value="updateTextContent"
+          />
+
+          <PropertySelectInput
+            id="shape-font-family"
+            v-model="fontFamilyValue"
+            label="Font Family"
+            :options="fontFamilyOptions"
+          />
+
+          <PropertyNumericInput
+            id="shape-font-size"
+            v-model="fontSizeValue"
+            label="Font Size"
+            @change="updateFontSize"
+          />
+
+          <PropertyColorInput
+            id="shape-text-color"
+            v-model="textColorValue"
+            label="Text Color"
+            @change="updateTextColor"
+          />
+        </div>
       </template>
 
       <template v-if="hasTextElements || selectedElement?.type === 'text'">
@@ -85,21 +118,6 @@
           @change="updateIconStrokeWeight"
         />
       </template>
-
-      <PropertyNumericInput
-        id="element-x"
-        v-model="xValue"
-        label="X-Coordinate"
-        class="flex-1"
-        @change="updateX"
-      />
-      <PropertyNumericInput
-        id="element-y"
-        v-model="yValue"
-        label="Y-Coordinate"
-        class="flex-1"
-        @change="updateY"
-      />
     </div>
     <div class="flex-1"></div>
     <div class="p-4 border-t border-ma-grey-300 flex gap-2">
@@ -138,13 +156,12 @@
 import { ref, watch, computed } from 'vue'
 import { Save, Upload } from 'lucide-vue-next'
 import { useElementsStore } from '@/stores/elements/elements'
-import type { ShapeElement, TextElement } from '@/types/Element'
+import type { ShapeElement, IconElement } from '@/types/Element'
 import PropertyColorInput from './components/PropertyColorInput.vue'
 import PropertyNumericInput from './components/PropertyNumericInput.vue'
 import PropertyLinkInput from './components/PropertyLinkInput.vue'
 import PropertyTextInput from './components/PropertyTextInput.vue'
 import PropertySelectInput from './components/PropertySelectInput.vue'
-import type { IconElement } from '@/types/Element'
 import { Button } from '@/components/ui/button'
 import { useCanvasIO } from '@/composables/useCanvasIO'
 
@@ -210,7 +227,7 @@ const fontFamilyOptions = [
   { label: 'Verdana', value: 'Verdana' },
 ]
 
-// Update local state when selected shape changes
+// Update local state when selected element changes
 watch(
   selectedElement,
   (newElement) => {
@@ -223,12 +240,17 @@ watch(
       outlineColorValue.value = shape.outline || '#000000'
       fillColorValue.value = shape.fill || 'transparent'
       strokeWeightValue.value = shape.strokeWeight || 0
+      // Unified text properties: content, color, fontFamily, fontSize
+      textContentValue.value = shape.content || ''
+      fontFamilyValue.value = shape.fontFamily || 'Arial'
+      textColorValue.value = shape.color || '#000000'
+      fontSizeValue.value = shape.fontSize || 16
     } else if (newElement && newElement.type === 'text') {
-      const text = newElement as TextElement
-      textContentValue.value = text.content
-      fontFamilyValue.value = text.fontFamily
-      textColorValue.value = text.color
-      fontSizeValue.value = text.fontSize
+      // Same property names as shape: content, color, fontFamily, fontSize
+      textContentValue.value = newElement.content
+      fontFamilyValue.value = newElement.fontFamily
+      textColorValue.value = newElement.color
+      fontSizeValue.value = newElement.fontSize
     } else if (newElement && newElement.type === 'icon') {
       const icon = newElement as IconElement
       iconColorValue.value = icon.color
@@ -242,85 +264,67 @@ const updateOutline = (val: string) => {
   // Apply to all editable shape elements (including group children)
   editableElements.value
     .filter((el) => el.type === 'shape')
-    .forEach((el) => elementsStore.updateShapeOutlineColor(el.id, val))
+    .forEach((el) => elementsStore.updateElement(el.id, { outline: val }))
 }
 
 const updateFill = (val: string) => {
   // Apply to all editable shape elements (including group children)
   editableElements.value
     .filter((el) => el.type === 'shape')
-    .forEach((el) => elementsStore.updateShapeFillColor(el.id, val))
+    .forEach((el) => elementsStore.updateElement(el.id, { fill: val }))
 }
 
 const updateStrokeWeight = (val: number) => {
   // Apply to all editable shape elements (including group children)
   editableElements.value
     .filter((el) => el.type === 'shape')
-    .forEach((el) => elementsStore.updateShapeStrokeWeight(el.id, val))
+    .forEach((el) => elementsStore.updateElement(el.id, { strokeWeight: val }))
   if (selectedElement.value && selectedElement.value.type === 'shape') {
-    strokeWeightValue.value = selectedElement.value.strokeWeight
+    strokeWeightValue.value = (
+      selectedElement.value as ShapeElement
+    ).strokeWeight
   }
 }
 
+// Unified: no if/else needed since both shape and text use fontFamily
 watch(fontFamilyValue, (val) => {
-  if (selectedElement.value && selectedElement.value.type === 'text') {
-    elementsStore.updateTextElement(selectedElement.value.id, {
-      fontFamily: val,
-    })
+  if (selectedElement.value) {
+    elementsStore.updateElement(selectedElement.value.id, { fontFamily: val })
   }
 })
 
-const updateX = (val: number) => {
-  if (selectedElement.value) {
-    elementsStore.setElementPosition(
-      selectedElement.value.id,
-      val,
-      selectedElement.value.y
-    )
-    xValue.value = selectedElement.value.x
-  }
-}
-
-const updateY = (val: number) => {
-  if (selectedElement.value) {
-    elementsStore.setElementPosition(
-      selectedElement.value.id,
-      selectedElement.value.x,
-      val
-    )
-    yValue.value = selectedElement.value.y
-  }
-}
-
 const updateLink = (link: string | undefined) => {
   if (selectedElement.value) {
-    elementsStore.updateElementLink(selectedElement.value.id, link)
+    elementsStore.updateElement(selectedElement.value.id, { link })
   }
 }
 
 const removeLink = () => {
   if (selectedElement.value) {
-    elementsStore.removeElementLink(selectedElement.value.id)
+    elementsStore.updateElement(selectedElement.value.id, { link: undefined })
   }
 }
 
+// Unified: no if/else needed since both shape and text use content
 const updateTextContent = (val: string) => {
-  if (selectedElement.value && selectedElement.value.type === 'text') {
-    elementsStore.updateTextElement(selectedElement.value.id, { content: val })
+  if (selectedElement.value) {
+    elementsStore.updateElement(selectedElement.value.id, { content: val })
   }
 }
 
+// Unified: no if/else needed since both shape and text use color
 const updateTextColor = (val: string) => {
-  // Apply to all editable text elements (including group children)
+  // Apply to all editable text/shape elements (including group children)
   editableElements.value
-    .filter((el) => el.type === 'text')
-    .forEach((el) => elementsStore.updateTextElement(el.id, { color: val }))
+    .filter((el) => el.type === 'text' || el.type === 'shape')
+    .forEach((el) => elementsStore.updateElement(el.id, { color: val }))
 }
 
+// Unified: no if/else needed since both shape and text use fontSize
 const updateFontSize = (val: number) => {
-  if (selectedElement.value && selectedElement.value.type === 'text') {
-    elementsStore.updateTextElement(selectedElement.value.id, { fontSize: val })
-    fontSizeValue.value = selectedElement.value.fontSize
+  if (selectedElement.value) {
+    elementsStore.updateElement(selectedElement.value.id, { fontSize: val })
+    fontSizeValue.value = val
   }
 }
 
@@ -328,13 +332,13 @@ const updateIconColor = (val: string) => {
   // Apply to all editable icon elements (including group children)
   editableElements.value
     .filter((el) => el.type === 'icon')
-    .forEach((el) => elementsStore.updateIconColor(el.id, val))
+    .forEach((el) => elementsStore.updateElement(el.id, { color: val }))
 }
 
 const updateIconStrokeWeight = (val: number) => {
   if (selectedElement.value && selectedElement.value.type === 'icon') {
-    elementsStore.updateIconStrokeWeight(selectedElement.value.id, val)
-    iconStrokeWeightValue.value = selectedElement.value.strokeWeight
+    elementsStore.updateElement(selectedElement.value.id, { strokeWeight: val })
+    iconStrokeWeightValue.value = val
   }
 }
 

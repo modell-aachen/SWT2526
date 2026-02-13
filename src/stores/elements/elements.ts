@@ -164,30 +164,6 @@ export const useElementsStore = defineStore('elements', {
       this.addElement(newShape)
     },
 
-    updateShapeOutlineColor(id: string, color: string) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element && element.type === 'shape') {
-        element.outline = color
-        this.saveSnapshot()
-      }
-    },
-
-    updateShapeFillColor(id: string, color: string) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element && element.type === 'shape') {
-        element.fill = color
-        this.saveSnapshot()
-      }
-    },
-
-    updateShapeStrokeWeight(id: string, weight: number) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element && element.type === 'shape' && weight >= 0) {
-        element.strokeWeight = weight
-        this.saveSnapshot()
-      }
-    },
-
     addText(x: number = 100, y: number = 100) {
       const newText: TextElement = {
         id: `text-${this.nextId++}`,
@@ -223,29 +199,18 @@ export const useElementsStore = defineStore('elements', {
       this.addElement(newIcon)
     },
 
-    updateIconColor(id: string, color: string) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element && element.type === 'icon') {
-        element.color = color
-        this.saveSnapshot()
-      }
-    },
-
-    updateIconStrokeWeight(id: string, weight: number) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element && element.type === 'icon' && weight >= 0) {
-        element.strokeWeight = weight
-        this.saveSnapshot()
-      }
-    },
-
-    updateElement(id: string, updates: Partial<CanvasElement>) {
+    updateElement(
+      id: string,
+      updates: Partial<CanvasElement>,
+      saveHistory: boolean = true
+    ) {
       const index = this.elements.findIndex((e: CanvasElement) => e.id === id)
       if (index !== -1) {
         this.elements[index] = {
           ...this.elements[index],
           ...updates,
         } as CanvasElement
+        if (saveHistory) this.saveSnapshot()
       }
     },
 
@@ -497,6 +462,7 @@ export const useElementsStore = defineStore('elements', {
         }
       })
 
+
       if (elementsToCopy.length > 0) {
         this.clipboard = JSON.parse(
           JSON.stringify(elementsToCopy)
@@ -512,6 +478,7 @@ export const useElementsStore = defineStore('elements', {
 
       // Create a mapping from old IDs to new IDs for proper group/child relationships
       const idMapping: Record<string, string> = {}
+
 
       // Sort clipboard elements by zIndex to preserve relative order
       const sortedClipboard = [...this.clipboard].sort(
@@ -551,6 +518,7 @@ export const useElementsStore = defineStore('elements', {
         if (!pastedElement.groupId) {
           pastedElementIds.push(pastedElement.id)
         }
+
       })
 
       // Update positions in clipboard for next paste
@@ -632,6 +600,7 @@ export const useElementsStore = defineStore('elements', {
         if (!duplicatedElement.groupId) {
           duplicatedElementIds.push(duplicatedElement.id)
         }
+
       })
 
       this.selectedElementIds = duplicatedElementIds
@@ -665,6 +634,7 @@ export const useElementsStore = defineStore('elements', {
 
     bringToFront() {
       if (this.selectedElementIds.length === 0) return
+
 
       // Collect all elements to move, including children of groups
       const elementsToMove: CanvasElement[] = []
@@ -703,6 +673,7 @@ export const useElementsStore = defineStore('elements', {
 
       // Bring all elements to front, maintaining their relative order
       elementsToMove.forEach((element, index) => {
+
         element.zIndex = maxZIndex + 1 + index
       })
 
@@ -758,30 +729,11 @@ export const useElementsStore = defineStore('elements', {
 
       // Send all elements to back, maintaining their relative order
       elementsToMove.forEach((element, index) => {
+
         element.zIndex = index
       })
 
       this.saveSnapshot()
-    },
-
-    setElementPosition(id: string, x: number, y: number) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element) {
-        element.x = x
-        element.y = y
-        this.saveSnapshot()
-      }
-    },
-
-    updateTextElement(id: string, updates: Partial<TextElement>) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      // Create a new object to avoid direct mutation issues and ensure reactivity
-      const updatedElement = { ...element, ...updates }
-      const index = this.elements.findIndex((e: CanvasElement) => e.id === id)
-      if (index !== -1) {
-        this.elements[index] = updatedElement as CanvasElement
-        this.saveSnapshot()
-      }
     },
 
     endDrag() {
@@ -798,21 +750,6 @@ export const useElementsStore = defineStore('elements', {
       this.saveSnapshot()
     },
 
-    updateElementLink(id: string, link: string | undefined) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element) {
-        element.link = link
-        this.saveSnapshot()
-      }
-    },
-
-    removeElementLink(id: string) {
-      const element = this.elements.find((e: CanvasElement) => e.id === id)
-      if (element) {
-        element.link = undefined
-        this.saveSnapshot()
-      }
-    },
     exportSnapshot(): Snapshot {
       return {
         version: 1,

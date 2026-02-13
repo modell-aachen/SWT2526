@@ -112,3 +112,27 @@ export function calculateNewElementState(
     rotation,
   }
 }
+
+/**
+ * Returns the visual bounding box of an element, accounting for rotation.
+ * For 90 and 270 degree rotations, width and height are swapped,
+ * and x/y are adjusted to maintain the same center point.
+ */
+export function getVisualBoundingBox(element: Rect): Rect {
+  const { x, y, width, height, rotation } = element
+  const normalizedRotation = ((rotation % 360) + 360) % 360
+
+  if (normalizedRotation === 90 || normalizedRotation === 270) {
+    const center = { x: x + width / 2, y: y + height / 2 }
+    // Swap width and height
+    return {
+      x: center.x - height / 2,
+      y: center.y - width / 2,
+      width: height,
+      height: width,
+      rotation: normalizedRotation,
+    }
+  }
+
+  return element
+}

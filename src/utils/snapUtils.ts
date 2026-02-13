@@ -7,6 +7,7 @@ import type {
 } from '@/types/snapping'
 
 import { getVisualBoundingBox } from './elementTransforms'
+import { useZoomStore } from '@/stores/zoom/zoom'
 
 /**
  * Extract all snap points from an element's bounds
@@ -85,8 +86,17 @@ function createSnapLine(snapPoint: SnapPoint): SnapLine {
     snapPoint.type === 'bottom' ||
     snapPoint.type === 'center-y'
 
+  const zoomStore = useZoomStore()
+  const container = document.querySelector('[data-testid="canvas-container"]')
+
   // Make lines span the entire visible area (large values to cover viewport)
-  const VIEWPORT_SIZE = 10000
+  let viewportWidth = 10000
+  let viewportHeight = 10000
+
+  if (container) {
+    viewportWidth = container?.clientWidth
+    viewportHeight = container?.clientHeight
+  }
 
   if (isHorizontal) {
     // Horizontal line - spans entire width
@@ -94,7 +104,7 @@ function createSnapLine(snapPoint: SnapPoint): SnapLine {
       axis: 'horizontal',
       position: snapPoint.value,
       start: 0,
-      end: VIEWPORT_SIZE,
+      end: viewportWidth / zoomStore.zoom,
     }
   } else {
     // Vertical line - spans entire height
@@ -102,7 +112,7 @@ function createSnapLine(snapPoint: SnapPoint): SnapLine {
       axis: 'vertical',
       position: snapPoint.value,
       start: 0,
-      end: VIEWPORT_SIZE,
+      end: viewportHeight / zoomStore.zoom,
     }
   }
 }

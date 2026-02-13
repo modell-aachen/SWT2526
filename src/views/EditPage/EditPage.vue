@@ -114,9 +114,42 @@ const canvasRef = ref<InstanceType<typeof GridCanvas> | null>(null)
 const handleKeyDown = (e: KeyboardEvent) => {
   const isMod = e.ctrlKey || e.metaKey
 
+  // Existing save shortcut
   if (isMod && e.key === 's') {
     e.preventDefault()
     saveToFile(elementsStore.exportSnapshot())
+    return
+  }
+
+  if (
+    ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key) &&
+    elementsStore.selectedElementIds.length > 0
+  ) {
+    e.preventDefault()
+
+    const step = e.shiftKey ? 20 : 5
+    let dx = 0
+    let dy = 0
+
+    switch (e.key) {
+      case 'ArrowUp':
+        dy = -step
+        break
+      case 'ArrowDown':
+        dy = step
+        break
+      case 'ArrowLeft':
+        dx = -step
+        break
+      case 'ArrowRight':
+        dx = step
+        break
+    }
+
+    elementsStore.selectedElementIds.forEach((id) => {
+      elementsStore.updateElementPosition(id, dx, dy)
+    })
+    elementsStore.saveSnapshot()
   }
 }
 

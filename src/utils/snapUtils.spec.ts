@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
+import { setActivePinia, createPinia } from 'pinia'
 import {
   getElementSnapPoints,
   findSnapPosition,
@@ -104,6 +105,10 @@ describe('snapUtils', () => {
   })
 
   describe('calculateSnapResult', () => {
+    beforeEach(() => {
+      setActivePinia(createPinia())
+    })
+
     // Shared elements for calculate tests
     const otherElements: CanvasElement[] = [
       createTestElement({

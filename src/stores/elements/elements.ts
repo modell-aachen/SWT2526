@@ -301,7 +301,9 @@ export const useElementsStore = defineStore('elements', {
           // If selecting a group, include its children instead
           const groupElement = element as GroupElement
           groupElement.childIds.forEach((childId) => {
-            const child = this.elements.find((e: CanvasElement) => e.id === childId)
+            const child = this.elements.find(
+              (e: CanvasElement) => e.id === childId
+            )
             if (child && !elementsToGroup.includes(child)) {
               // Clear the old groupId from child
               child.groupId = undefined
@@ -322,7 +324,9 @@ export const useElementsStore = defineStore('elements', {
 
       // Remove old groups that are being merged
       groupsToRemove.forEach((groupId) => {
-        const index = this.elements.findIndex((e: CanvasElement) => e.id === groupId)
+        const index = this.elements.findIndex(
+          (e: CanvasElement) => e.id === groupId
+        )
         if (index !== -1) {
           this.elements.splice(index, 1)
         }
@@ -462,7 +466,6 @@ export const useElementsStore = defineStore('elements', {
         }
       })
 
-
       if (elementsToCopy.length > 0) {
         this.clipboard = JSON.parse(
           JSON.stringify(elementsToCopy)
@@ -478,7 +481,6 @@ export const useElementsStore = defineStore('elements', {
 
       // Create a mapping from old IDs to new IDs for proper group/child relationships
       const idMapping: Record<string, string> = {}
-
 
       // Sort clipboard elements by zIndex to preserve relative order
       const sortedClipboard = [...this.clipboard].sort(
@@ -518,7 +520,6 @@ export const useElementsStore = defineStore('elements', {
         if (!pastedElement.groupId) {
           pastedElementIds.push(pastedElement.id)
         }
-
       })
 
       // Update positions in clipboard for next paste
@@ -600,7 +601,6 @@ export const useElementsStore = defineStore('elements', {
         if (!duplicatedElement.groupId) {
           duplicatedElementIds.push(duplicatedElement.id)
         }
-
       })
 
       this.selectedElementIds = duplicatedElementIds
@@ -635,7 +635,6 @@ export const useElementsStore = defineStore('elements', {
     bringToFront() {
       if (this.selectedElementIds.length === 0) return
 
-
       // Collect all elements to move, including children of groups
       const elementsToMove: CanvasElement[] = []
 
@@ -663,9 +662,7 @@ export const useElementsStore = defineStore('elements', {
       const maxZIndex = Math.max(...this.elements.map((e) => e.zIndex))
 
       // Check if all elements are already at front
-      const selectedMaxZIndex = Math.max(
-        ...elementsToMove.map((e) => e.zIndex)
-      )
+      const selectedMaxZIndex = Math.max(...elementsToMove.map((e) => e.zIndex))
       if (selectedMaxZIndex === maxZIndex) return
 
       // Sort elements by their current zIndex to maintain relative order
@@ -673,7 +670,6 @@ export const useElementsStore = defineStore('elements', {
 
       // Bring all elements to front, maintaining their relative order
       elementsToMove.forEach((element, index) => {
-
         element.zIndex = maxZIndex + 1 + index
       })
 
@@ -712,9 +708,7 @@ export const useElementsStore = defineStore('elements', {
 
       // Check if all elements are already at back
       const minZIndex = Math.min(...this.elements.map((e) => e.zIndex))
-      const selectedMinZIndex = Math.min(
-        ...elementsToMove.map((e) => e.zIndex)
-      )
+      const selectedMinZIndex = Math.min(...elementsToMove.map((e) => e.zIndex))
       if (selectedMinZIndex === minZIndex) return
 
       // Sort elements by their current zIndex to maintain relative order
@@ -729,7 +723,6 @@ export const useElementsStore = defineStore('elements', {
 
       // Send all elements to back, maintaining their relative order
       elementsToMove.forEach((element, index) => {
-
         element.zIndex = index
       })
 

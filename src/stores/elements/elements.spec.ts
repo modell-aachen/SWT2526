@@ -309,7 +309,9 @@ describe('Elements Store', () => {
 
         // Add another shape and group with existing group
         store.addShape('ellipse')
-        const id3 = store.elements.find((e) => e.type === 'shape' && !e.groupId)!.id
+        const id3 = store.elements.find(
+          (e) => e.type === 'shape' && !e.groupId
+        )!.id
 
         store.selectElement(firstGroupId)
         store.addToSelection(id3)
@@ -369,7 +371,9 @@ describe('Elements Store', () => {
         // Create second group
         store.addShape('ellipse')
         store.addShape('rectangle')
-        const shapes = store.elements.filter((e) => e.type === 'shape' && !e.groupId)
+        const shapes = store.elements.filter(
+          (e) => e.type === 'shape' && !e.groupId
+        )
         store.selectElement(shapes[0]!.id)
         store.addToSelection(shapes[1]!.id)
         store.groupSelectedElements()
@@ -526,7 +530,9 @@ describe('Elements Store', () => {
 
         // At least one element should be at max zIndex
         expect(
-          groupAndChildren.some((e) => e.zIndex >= maxZIndex - groupAndChildren.length)
+          groupAndChildren.some(
+            (e) => e.zIndex >= maxZIndex - groupAndChildren.length
+          )
         ).toBe(true)
       })
 

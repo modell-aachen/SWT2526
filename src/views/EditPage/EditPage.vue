@@ -229,35 +229,35 @@ const handleResize = (
   const newState = calculateNewElementState(element, handle, deltaX, deltaY)
   elementsStore.updateElement(id, newState, false)
 
-    // If resizing a group, also resize and reposition all children proportionally
-    if (element.type === 'group') {
-      const groupElement = element as import('@/types/GroupElement').GroupElement
-      const oldWidth = element.width
-      const oldHeight = element.height
-      const oldX = element.x
-      const oldY = element.y
+  // If resizing a group, also resize and reposition all children proportionally
+  if (element.type === 'group') {
+    const groupElement = element as import('@/types/GroupElement').GroupElement
+    const oldWidth = element.width
+    const oldHeight = element.height
+    const oldX = element.x
+    const oldY = element.y
 
-      const scaleX = oldWidth > 0 ? newState.width / oldWidth : 1
-      const scaleY = oldHeight > 0 ? newState.height / oldHeight : 1
+    const scaleX = oldWidth > 0 ? newState.width / oldWidth : 1
+    const scaleY = oldHeight > 0 ? newState.height / oldHeight : 1
 
-      // Resize and reposition each child proportionally
-      groupElement.childIds.forEach((childId) => {
-        const child = elementsStore.elements.find((e) => e.id === childId)
-        if (child) {
-          // Calculate child's relative position within the old group bounds
-          const relativeX = child.x - oldX
-          const relativeY = child.y - oldY
+    // Resize and reposition each child proportionally
+    groupElement.childIds.forEach((childId) => {
+      const child = elementsStore.elements.find((e) => e.id === childId)
+      if (child) {
+        // Calculate child's relative position within the old group bounds
+        const relativeX = child.x - oldX
+        const relativeY = child.y - oldY
 
-          // Scale the relative position and the child's size
-          elementsStore.updateElement(childId, {
-            x: newState.x + relativeX * scaleX,
-            y: newState.y + relativeY * scaleY,
-            width: Math.max(10, child.width * scaleX),
-            height: Math.max(10, child.height * scaleY),
-          })
-        }
-      })
-    }
+        // Scale the relative position and the child's size
+        elementsStore.updateElement(childId, {
+          x: newState.x + relativeX * scaleX,
+          y: newState.y + relativeY * scaleY,
+          width: Math.max(10, child.width * scaleX),
+          height: Math.max(10, child.height * scaleY),
+        })
+      }
+    })
+  }
 }
 
 const handleElementRotate = async (id: string, currentRotation: number) => {
@@ -287,7 +287,8 @@ const handleElementRotate = async (id: string, currentRotation: number) => {
 
     // If rotating a group, also rotate all children around the group's center
     if (element.type === 'group') {
-      const groupElement = element as import('@/types/GroupElement').GroupElement
+      const groupElement =
+        element as import('@/types/GroupElement').GroupElement
       // Calculate group center
       const groupCenterX = element.x + element.width / 2
       const groupCenterY = element.y + element.height / 2

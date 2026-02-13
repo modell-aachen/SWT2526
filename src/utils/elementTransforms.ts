@@ -77,6 +77,21 @@ export function calculateNewElementState(
   let localCenterShiftX = 0
   let localCenterShiftY = 0
 
+  // enforce scaled resizing on corner handles
+  if (handle.includes('nw') || handle.includes('se')) {
+    if (Math.abs(localDelta.x) < Math.abs(localDelta.y)) {
+      localDelta.x = localDelta.y
+    } else {
+      localDelta.y = localDelta.x
+    }
+  } else if (handle.includes('ne') || handle.includes('sw')) {
+    if (Math.abs(localDelta.x) < Math.abs(localDelta.y)) {
+      localDelta.x = -localDelta.y
+    } else {
+      localDelta.y = -localDelta.x
+    }
+  }
+
   // Apply horizontal resize
   if (handle.includes('e')) {
     newWidth = Math.max(MIN_SIZE, width + localDelta.x)

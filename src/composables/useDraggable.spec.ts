@@ -124,7 +124,7 @@ describe('useDraggable', () => {
       document.dispatchEvent(
         new MouseEvent('mousemove', { clientX: 170, clientY: 220 })
       )
-      expect(dragSpy).toHaveBeenCalledWith(10, 10)
+      expect(dragSpy).toHaveBeenCalledWith(10, 10, expect.any(MouseEvent))
     })
   })
 
@@ -148,13 +148,13 @@ describe('useDraggable', () => {
       document.dispatchEvent(
         new MouseEvent('mousemove', { clientX: 120, clientY: 130 })
       )
-      expect(dragSpy).toHaveBeenNthCalledWith(1, 10, 10)
+      expect(dragSpy).toHaveBeenNthCalledWith(1, 10, 10, expect.any(MouseEvent))
 
       // Third move - emits another drag event
       document.dispatchEvent(
         new MouseEvent('mousemove', { clientX: 125, clientY: 135 })
       )
-      expect(dragSpy).toHaveBeenNthCalledWith(2, 5, 5)
+      expect(dragSpy).toHaveBeenNthCalledWith(2, 5, 5, expect.any(MouseEvent))
 
       expect(dragSpy).toHaveBeenCalledTimes(2)
     })
@@ -178,7 +178,7 @@ describe('useDraggable', () => {
       document.dispatchEvent(
         new MouseEvent('mousemove', { clientX: 60, clientY: 80 })
       )
-      expect(dragSpy).toHaveBeenCalledWith(-20, -10)
+      expect(dragSpy).toHaveBeenCalledWith(-20, -10, expect.any(MouseEvent))
     })
 
     it('should not emit drag events when not dragging', () => {

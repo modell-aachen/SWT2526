@@ -35,7 +35,9 @@
           :element="element"
           :selected="elementsStore.selectedElementIds.includes(element.id)"
           @select="selectElement(element.id, $event)"
-          @drag="(deltaX, deltaY) => handleDrag(element.id, deltaX, deltaY)"
+          @drag="
+            (deltaX, deltaY, e) => handleDrag(element.id, deltaX, deltaY, e)
+          "
           @drag-end="handleDragEnd"
           @resize="
             (handle, deltaX, deltaY) =>
@@ -114,9 +116,42 @@ const canvasRef = ref<InstanceType<typeof GridCanvas> | null>(null)
 const handleKeyDown = (e: KeyboardEvent) => {
   const isMod = e.ctrlKey || e.metaKey
 
+  // Existing save shortcut
   if (isMod && e.key === 's') {
     e.preventDefault()
     saveToFile(elementsStore.exportSnapshot())
+    return
+  }
+
+  if (
+    ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key) &&
+    elementsStore.selectedElementIds.length > 0
+  ) {
+    e.preventDefault()
+
+    const step = e.shiftKey ? 20 : 5
+    let dx = 0
+    let dy = 0
+
+    switch (e.key) {
+      case 'ArrowUp':
+        dy = -step
+        break
+      case 'ArrowDown':
+        dy = step
+        break
+      case 'ArrowLeft':
+        dx = -step
+        break
+      case 'ArrowRight':
+        dx = step
+        break
+    }
+
+    elementsStore.selectedElementIds.forEach((id) => {
+      elementsStore.updateElementPosition(id, dx, dy)
+    })
+    elementsStore.saveSnapshot()
   }
 
   // Group selected elements with Ctrl+G
@@ -173,7 +208,12 @@ const handleCanvasClick = () => {
   elementsStore.selectElement(null)
 }
 
-const handleDrag = (id: string, deltaX: number, deltaY: number) => {
+const handleDrag = (
+  id: string,
+  deltaX: number,
+  deltaY: number,
+  e?: MouseEvent
+) => {
   // Get the element being dragged
   const draggedElement = elementsStore.elements.find((e) => e.id === id)
   if (!draggedElement) return
@@ -183,8 +223,11 @@ const handleDrag = (id: string, deltaX: number, deltaY: number) => {
   const newY = draggedElement.y + deltaY
   const hypotheticalElement = { ...draggedElement, x: newX, y: newY }
 
-  // Calculate snapping if only one element is being dragged
-  if (elementsStore.selectedElementIds.length === 1) {
+  // Check if Shift is held to disable snapping
+  const isShiftHeld = e?.shiftKey ?? false
+
+  // Calculate snapping if only one element is being dragged AND Shift is not held
+  if (elementsStore.selectedElementIds.length === 1 && !isShiftHeld) {
     const snapResult = calculateSnapResult(
       hypotheticalElement,
       elementsStore.elements,

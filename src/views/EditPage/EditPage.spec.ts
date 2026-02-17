@@ -135,4 +135,39 @@ describe('EditPage', () => {
       expect(store.elements[0]!.height).toBe(140)
     })
   })
+
+  describe('keyboard interactions', () => {
+    it('moves selected element with arrow keys', async () => {
+      const store = useElementsStore()
+      store.addShape('rectangle', 100, 100) // id: shape-1
+      const elementId = store.elements[0]!.id
+      store.selectElement(elementId)
+
+      mount(EditPage)
+
+      // Initial position: 100, 100
+
+      // Move Right (5px)
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }))
+      expect(store.elements[0]!.x).toBe(105)
+      expect(store.elements[0]!.y).toBe(100)
+
+      // Move Down (5px)
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }))
+      expect(store.elements[0]!.x).toBe(105)
+      expect(store.elements[0]!.y).toBe(105)
+
+      // Move Left with Shift (20px)
+      window.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowLeft', shiftKey: true })
+      )
+      expect(store.elements[0]!.x).toBe(85) // 105 - 20
+      expect(store.elements[0]!.y).toBe(105)
+
+      // Move Up (5px)
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp' }))
+      expect(store.elements[0]!.x).toBe(85)
+      expect(store.elements[0]!.y).toBe(100) // 105 - 5
+    })
+  })
 })

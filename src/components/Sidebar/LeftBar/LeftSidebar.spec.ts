@@ -234,7 +234,7 @@ describe('LeftSidebar', () => {
     })
 
     it('shows an alert when loading an invalid file', async () => {
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => { })
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
 
       const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },

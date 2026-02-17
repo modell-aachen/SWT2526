@@ -19,36 +19,24 @@ Navigate to: http://localhost:5173/view or http://localhost:5173/edit
 
 ### Required
 
-- Detail Popup (Per Shape - Settings) Elisabeth & Laura
-- Rotation by 90 degrees only Elisabeth & Laura
-- Sidebar with visible Shapes (drag and drop) Jan & Wiem
-- View Page/Zoombutton Elisabeth & Laura
-- Shape Link Sam & Jan
-- Text Advanced (Text Color, Fontsize, Font Family, Extra: Render Markdown?, FA-Icons, Text dynamic Size) Sam & Jan
-- Text Upside, disregarding rotation -> Text speparated from Shapes
-- Shape Groups (Shapewrapper for multiple Ids?) Jakob & Wiem
-- Responsive
-- Arrow Shape / More shapes
-- JSON Export
-- JSON Import (Validate JSON)
+- Shape Groups (Wiem)
+- Responsiveness View Page (Jakob)
+- Arrows between Shapes
+- Move Save & Load from Right Sidebar (Load & Save Left Siedebar, Zoom Floating) (Elisabeth)
+- Arrow-Keys to move Shapes minimally (Sam)
+- "Unclutter" Sidebars (Jakob)
 
 ### Optional
 
+- Render Markdown?
 - Templates
 - Connect Shapes in Datastructure
-- Guiding Lines on Resize
 - Predefined Colors, ColorPallets?
-- Legend
+- Legend (Shortcuts / Controls)
 - Versioning of a Diagram
-- Polygons as Shape (Hexagon -> Movable Points, new Page?)
 - Visual History Snapshots
 
-### Highly Optional
+### Highly Optional (soon™)
 
-- Edit Page and View Page as Webcomponent?
-- "Reshaping" of svgs
-- Custom Shape Drawer? (~ 100 Story Points)
-
-## Considerations
-
-- Refactor to save Grid Span Values instead of Absolutely Positioned Pixels
+- Editable Custom Shapes
+- Edit Page and View Page as Webcomponent / Vue Library

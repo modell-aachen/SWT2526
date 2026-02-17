@@ -228,13 +228,32 @@ export const useElementsStore = defineStore('elements', {
 
     deleteSelectedElement() {
       if (this.selectedElementIds.length === 0) return
-      // Delete all selected elements
+
+      // Collect all IDs to delete, including children of groups
+      const idsToDelete: string[] = []
+
       this.selectedElementIds.forEach((id) => {
+        idsToDelete.push(id)
+        const element = this.elements.find((e: CanvasElement) => e.id === id)
+        // If it's a group, also include its children
+        if (element && element.type === 'group') {
+          const groupElement = element as GroupElement
+          groupElement.childIds.forEach((childId) => {
+            if (!idsToDelete.includes(childId)) {
+              idsToDelete.push(childId)
+            }
+          })
+        }
+      })
+
+      // Delete all elements in the list
+      idsToDelete.forEach((id) => {
         const index = this.elements.findIndex((e: CanvasElement) => e.id === id)
         if (index !== -1) {
           this.elements.splice(index, 1)
         }
       })
+
       this.selectedElementIds = []
       this.saveSnapshot()
     },
@@ -270,13 +289,48 @@ export const useElementsStore = defineStore('elements', {
     groupSelectedElements() {
       if (this.selectedElementIds.length < 2) return // Need at least 2 elements to group
 
-      // Get selected elements that are not already in a group
-      const elementsToGroup = this.elements.filter(
-        (e: CanvasElement) =>
-          this.selectedElementIds.includes(e.id) && !e.groupId
-      )
+      // Collect all elements to group, flattening existing groups
+      const elementsToGroup: CanvasElement[] = []
+      const groupsToRemove: string[] = []
+
+      this.selectedElementIds.forEach((id) => {
+        const element = this.elements.find((e: CanvasElement) => e.id === id)
+        if (!element) return
+
+        if (element.type === 'group') {
+          // If selecting a group, include its children instead
+          const groupElement = element as GroupElement
+          groupElement.childIds.forEach((childId) => {
+            const child = this.elements.find(
+              (e: CanvasElement) => e.id === childId
+            )
+            if (child && !elementsToGroup.includes(child)) {
+              // Clear the old groupId from child
+              child.groupId = undefined
+              elementsToGroup.push(child)
+            }
+          })
+          // Mark the old group for removal
+          groupsToRemove.push(element.id)
+        } else if (!element.groupId) {
+          // Regular element not in a group
+          if (!elementsToGroup.includes(element)) {
+            elementsToGroup.push(element)
+          }
+        }
+      })
 
       if (elementsToGroup.length < 2) return
+
+      // Remove old groups that are being merged
+      groupsToRemove.forEach((groupId) => {
+        const index = this.elements.findIndex(
+          (e: CanvasElement) => e.id === groupId
+        )
+        if (index !== -1) {
+          this.elements.splice(index, 1)
+        }
+      })
 
       // Calculate bounding box of all elements
       let minX = Infinity,
@@ -389,10 +443,29 @@ export const useElementsStore = defineStore('elements', {
 
     copySelectedElement() {
       if (this.selectedElementIds.length === 0) return
-      // Copy all selected elements
-      const elementsToCopy = this.elements.filter((e: CanvasElement) =>
-        this.selectedElementIds.includes(e.id)
-      )
+
+      // Collect all elements to copy, including children of groups
+      const elementsToCopy: CanvasElement[] = []
+
+      this.selectedElementIds.forEach((id) => {
+        const element = this.elements.find((e: CanvasElement) => e.id === id)
+        if (element) {
+          elementsToCopy.push(element)
+          // If it's a group, also include its children
+          if (element.type === 'group') {
+            const groupElement = element as GroupElement
+            groupElement.childIds.forEach((childId) => {
+              const child = this.elements.find(
+                (e: CanvasElement) => e.id === childId
+              )
+              if (child && !elementsToCopy.includes(child)) {
+                elementsToCopy.push(child)
+              }
+            })
+          }
+        }
+      })
+
       if (elementsToCopy.length > 0) {
         this.clipboard = JSON.parse(
           JSON.stringify(elementsToCopy)
@@ -406,23 +479,47 @@ export const useElementsStore = defineStore('elements', {
       const pastedElementIds: string[] = []
       const baseZIndex = this.elements.length
 
+      // Create a mapping from old IDs to new IDs for proper group/child relationships
+      const idMapping: Record<string, string> = {}
+
       // Sort clipboard elements by zIndex to preserve relative order
       const sortedClipboard = [...this.clipboard].sort(
         (a, b) => a.zIndex - b.zIndex
       )
 
-      // Paste all copied elements, preserving relative z-order
+      // First pass: create new IDs for all elements
+      sortedClipboard.forEach((element) => {
+        idMapping[element.id] = `${element.type}-${this.nextId++}`
+      })
+
+      // Second pass: paste all elements with remapped IDs
       sortedClipboard.forEach((clipboardElement, index) => {
         const pastedElement: CanvasElement = {
           ...JSON.parse(JSON.stringify(clipboardElement)),
-          id: `${clipboardElement.type}-${this.nextId++}`,
+          id: idMapping[clipboardElement.id]!,
           x: clipboardElement.x + 20,
           y: clipboardElement.y + 20,
-          zIndex: baseZIndex + index, // Preserve relative z-order
+          zIndex: baseZIndex + index,
+        }
+
+        // Remap groupId if element belongs to a group
+        if (pastedElement.groupId && idMapping[pastedElement.groupId]) {
+          pastedElement.groupId = idMapping[pastedElement.groupId]
+        }
+
+        // Remap childIds if element is a group
+        if (pastedElement.type === 'group') {
+          const groupEl = pastedElement as GroupElement
+          groupEl.childIds = groupEl.childIds.map(
+            (childId) => idMapping[childId] || childId
+          )
         }
 
         this.elements.push(pastedElement)
-        pastedElementIds.push(pastedElement.id)
+        // Only add top-level elements (not grouped children) to selection
+        if (!pastedElement.groupId) {
+          pastedElementIds.push(pastedElement.id)
+        }
       })
 
       // Update positions in clipboard for next paste
@@ -438,32 +535,72 @@ export const useElementsStore = defineStore('elements', {
     duplicateSelectedElement() {
       if (this.selectedElementIds.length === 0) return
 
-      // Get all selected elements
-      const elementsToDuplicate = this.elements.filter((e: CanvasElement) =>
-        this.selectedElementIds.includes(e.id)
-      )
+      // Collect all elements to duplicate, including children of groups
+      const elementsToDuplicate: CanvasElement[] = []
+
+      this.selectedElementIds.forEach((id) => {
+        const element = this.elements.find((e: CanvasElement) => e.id === id)
+        if (element) {
+          elementsToDuplicate.push(element)
+          // If it's a group, also include its children
+          if (element.type === 'group') {
+            const groupElement = element as GroupElement
+            groupElement.childIds.forEach((childId) => {
+              const child = this.elements.find(
+                (e: CanvasElement) => e.id === childId
+              )
+              if (child && !elementsToDuplicate.includes(child)) {
+                elementsToDuplicate.push(child)
+              }
+            })
+          }
+        }
+      })
+
       if (elementsToDuplicate.length === 0) return
 
       const duplicatedElementIds: string[] = []
       const baseZIndex = this.elements.length
+
+      // Create a mapping from old IDs to new IDs
+      const idMapping: Record<string, string> = {}
+      elementsToDuplicate.forEach((element) => {
+        idMapping[element.id] = `${element.type}-${this.nextId++}`
+      })
 
       // Sort by zIndex to preserve relative order
       const sortedElements = [...elementsToDuplicate].sort(
         (a, b) => a.zIndex - b.zIndex
       )
 
-      // Duplicate all selected elements
+      // Duplicate all elements with remapped IDs
       sortedElements.forEach((element, index) => {
         const duplicatedElement: CanvasElement = {
           ...JSON.parse(JSON.stringify(element)),
-          id: `${element.type}-${this.nextId++}`,
+          id: idMapping[element.id]!,
           x: element.x + 20,
           y: element.y + 20,
-          zIndex: baseZIndex + index, // Preserve relative z-order
+          zIndex: baseZIndex + index,
+        }
+
+        // Remap groupId if element belongs to a group
+        if (duplicatedElement.groupId && idMapping[duplicatedElement.groupId]) {
+          duplicatedElement.groupId = idMapping[duplicatedElement.groupId]
+        }
+
+        // Remap childIds if element is a group
+        if (duplicatedElement.type === 'group') {
+          const groupEl = duplicatedElement as GroupElement
+          groupEl.childIds = groupEl.childIds.map(
+            (childId) => idMapping[childId] || childId
+          )
         }
 
         this.elements.push(duplicatedElement)
-        duplicatedElementIds.push(duplicatedElement.id)
+        // Only add top-level elements to selection
+        if (!duplicatedElement.groupId) {
+          duplicatedElementIds.push(duplicatedElement.id)
+        }
       })
 
       this.selectedElementIds = duplicatedElementIds
@@ -478,31 +615,61 @@ export const useElementsStore = defineStore('elements', {
       if (element) {
         element.x += deltaX
         element.y += deltaY
+
+        // If it's a group, also move all children
+        if (element.type === 'group') {
+          const groupElement = element as GroupElement
+          groupElement.childIds.forEach((childId) => {
+            const child = this.elements.find(
+              (e: CanvasElement) => e.id === childId
+            )
+            if (child) {
+              child.x += deltaX
+              child.y += deltaY
+            }
+          })
+        }
       }
     },
 
     bringToFront() {
       if (this.selectedElementIds.length === 0) return
 
-      // Get all selected elements
-      const selectedElements = this.elements.filter((e: CanvasElement) =>
-        this.selectedElementIds.includes(e.id)
-      )
-      if (selectedElements.length === 0) return
+      // Collect all elements to move, including children of groups
+      const elementsToMove: CanvasElement[] = []
+
+      this.selectedElementIds.forEach((id) => {
+        const element = this.elements.find((e: CanvasElement) => e.id === id)
+        if (element) {
+          elementsToMove.push(element)
+          // If it's a group, also include its children
+          if (element.type === 'group') {
+            const groupElement = element as GroupElement
+            groupElement.childIds.forEach((childId) => {
+              const child = this.elements.find(
+                (e: CanvasElement) => e.id === childId
+              )
+              if (child && !elementsToMove.includes(child)) {
+                elementsToMove.push(child)
+              }
+            })
+          }
+        }
+      })
+
+      if (elementsToMove.length === 0) return
 
       const maxZIndex = Math.max(...this.elements.map((e) => e.zIndex))
 
-      // Check if all selected elements are already at front (have the highest zIndexes)
-      const selectedMaxZIndex = Math.max(
-        ...selectedElements.map((e) => e.zIndex)
-      )
-      if (selectedMaxZIndex === maxZIndex) return // Already at front
+      // Check if all elements are already at front
+      const selectedMaxZIndex = Math.max(...elementsToMove.map((e) => e.zIndex))
+      if (selectedMaxZIndex === maxZIndex) return
 
-      // Sort selected elements by their current zIndex to maintain relative order
-      selectedElements.sort((a, b) => a.zIndex - b.zIndex)
+      // Sort elements by their current zIndex to maintain relative order
+      elementsToMove.sort((a, b) => a.zIndex - b.zIndex)
 
-      // Bring all selected elements to front, maintaining their relative order
-      selectedElements.forEach((element, index) => {
+      // Bring all elements to front, maintaining their relative order
+      elementsToMove.forEach((element, index) => {
         element.zIndex = maxZIndex + 1 + index
       })
 
@@ -512,31 +679,50 @@ export const useElementsStore = defineStore('elements', {
     bringToBack() {
       if (this.selectedElementIds.length === 0) return
 
-      // Get all selected elements
-      const selectedElements = this.elements.filter((e: CanvasElement) =>
-        this.selectedElementIds.includes(e.id)
-      )
-      if (selectedElements.length === 0) return
+      // Collect all elements to move, including children of groups
+      const elementsToMove: CanvasElement[] = []
+      const idsToMove: string[] = []
 
-      // Check if all selected elements are already at back (have zIndex 0, 1, 2...)
-      const minZIndex = Math.min(...this.elements.map((e) => e.zIndex))
-      const selectedMinZIndex = Math.min(
-        ...selectedElements.map((e) => e.zIndex)
-      )
-      if (selectedMinZIndex === minZIndex) return // Already at back
-
-      // Sort selected elements by their current zIndex to maintain relative order
-      selectedElements.sort((a, b) => a.zIndex - b.zIndex)
-
-      // Shift all non-selected elements up by the number of selected elements
-      this.elements.forEach((e: CanvasElement) => {
-        if (!this.selectedElementIds.includes(e.id)) {
-          e.zIndex += selectedElements.length
+      this.selectedElementIds.forEach((id) => {
+        const element = this.elements.find((e: CanvasElement) => e.id === id)
+        if (element) {
+          elementsToMove.push(element)
+          idsToMove.push(element.id)
+          // If it's a group, also include its children
+          if (element.type === 'group') {
+            const groupElement = element as GroupElement
+            groupElement.childIds.forEach((childId) => {
+              const child = this.elements.find(
+                (e: CanvasElement) => e.id === childId
+              )
+              if (child && !elementsToMove.includes(child)) {
+                elementsToMove.push(child)
+                idsToMove.push(child.id)
+              }
+            })
+          }
         }
       })
 
-      // Send all selected elements to back, maintaining their relative order
-      selectedElements.forEach((element, index) => {
+      if (elementsToMove.length === 0) return
+
+      // Check if all elements are already at back
+      const minZIndex = Math.min(...this.elements.map((e) => e.zIndex))
+      const selectedMinZIndex = Math.min(...elementsToMove.map((e) => e.zIndex))
+      if (selectedMinZIndex === minZIndex) return
+
+      // Sort elements by their current zIndex to maintain relative order
+      elementsToMove.sort((a, b) => a.zIndex - b.zIndex)
+
+      // Shift all non-selected elements up by the number of elements being moved
+      this.elements.forEach((e: CanvasElement) => {
+        if (!idsToMove.includes(e.id)) {
+          e.zIndex += elementsToMove.length
+        }
+      })
+
+      // Send all elements to back, maintaining their relative order
+      elementsToMove.forEach((element, index) => {
         element.zIndex = index
       })
 

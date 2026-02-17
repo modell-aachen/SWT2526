@@ -1,9 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import RightSidebar from './RightSidebar.vue'
 import { useElementsStore } from '@/stores/elements/elements'
-import flushPromises from 'flush-promises'
 import type { ShapeElement } from '@/types/Element'
 
 const { loadFromFileMock } = vi.hoisted(() => ({

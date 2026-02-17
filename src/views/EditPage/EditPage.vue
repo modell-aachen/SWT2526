@@ -153,6 +153,18 @@ const handleKeyDown = (e: KeyboardEvent) => {
     })
     elementsStore.saveSnapshot()
   }
+
+  // Group selected elements with Ctrl+G
+  if (isMod && e.key === 'g' && !e.shiftKey) {
+    e.preventDefault()
+    elementsStore.groupSelectedElements()
+  }
+
+  // Ungroup with Ctrl+Shift+G
+  if (isMod && e.shiftKey && e.key === 'G') {
+    e.preventDefault()
+    elementsStore.ungroupSelectedElements()
+  }
 }
 
 onMounted(() => {
@@ -259,6 +271,36 @@ const handleResize = (
 
   const newState = calculateNewElementState(element, handle, deltaX, deltaY)
   elementsStore.updateElement(id, newState, false)
+
+  // If resizing a group, also resize and reposition all children proportionally
+  if (element.type === 'group') {
+    const groupElement = element as import('@/types/GroupElement').GroupElement
+    const oldWidth = element.width
+    const oldHeight = element.height
+    const oldX = element.x
+    const oldY = element.y
+
+    const scaleX = oldWidth > 0 ? newState.width / oldWidth : 1
+    const scaleY = oldHeight > 0 ? newState.height / oldHeight : 1
+
+    // Resize and reposition each child proportionally
+    groupElement.childIds.forEach((childId) => {
+      const child = elementsStore.elements.find((e) => e.id === childId)
+      if (child) {
+        // Calculate child's relative position within the old group bounds
+        const relativeX = child.x - oldX
+        const relativeY = child.y - oldY
+
+        // Scale the relative position and the child's size
+        elementsStore.updateElement(childId, {
+          x: newState.x + relativeX * scaleX,
+          y: newState.y + relativeY * scaleY,
+          width: Math.max(10, child.width * scaleX),
+          height: Math.max(10, child.height * scaleY),
+        })
+      }
+    })
+  }
 }
 
 const handleElementRotate = async (id: string, currentRotation: number) => {
@@ -277,11 +319,52 @@ const handleElementRotate = async (id: string, currentRotation: number) => {
       )
     })
   } else {
+    const element = elementsStore.elements.find((e) => e.id === id)
+    if (!element) return
+
     elementsStore.updateElement(
       id,
       { rotation: (currentRotation + 90) % 360 },
       false
     )
+
+    // If rotating a group, also rotate all children around the group's center
+    if (element.type === 'group') {
+      const groupElement =
+        element as import('@/types/GroupElement').GroupElement
+      // Calculate group center
+      const groupCenterX = element.x + element.width / 2
+      const groupCenterY = element.y + element.height / 2
+
+      // Rotate each child around the group's center by 90 degrees
+      groupElement.childIds.forEach((childId) => {
+        const child = elementsStore.elements.find((e) => e.id === childId)
+        if (child) {
+          // Calculate child's center
+          const childCenterX = child.x + child.width / 2
+          const childCenterY = child.y + child.height / 2
+
+          // Calculate offset from group center
+          const offsetX = childCenterX - groupCenterX
+          const offsetY = childCenterY - groupCenterY
+
+          // Rotate offset by 90 degrees clockwise: (x, y) -> (y, -x)
+          const newOffsetX = offsetY
+          const newOffsetY = -offsetX
+
+          // Calculate new child center
+          const newChildCenterX = groupCenterX + newOffsetX
+          const newChildCenterY = groupCenterY + newOffsetY
+
+          // Update child position (converting from center back to top-left)
+          elementsStore.updateElement(childId, {
+            x: newChildCenterX - child.width / 2,
+            y: newChildCenterY - child.height / 2,
+            rotation: (child.rotation + 90) % 360,
+          })
+        }
+      })
+    }
   }
   elementsStore.saveSnapshot()
 }

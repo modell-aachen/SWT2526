@@ -35,7 +35,9 @@
           :element="element"
           :selected="elementsStore.selectedElementIds.includes(element.id)"
           @select="selectElement(element.id, $event)"
-          @drag="(deltaX, deltaY) => handleDrag(element.id, deltaX, deltaY)"
+          @drag="
+            (deltaX, deltaY, e) => handleDrag(element.id, deltaX, deltaY, e)
+          "
           @drag-end="handleDragEnd"
           @resize="
             (handle, deltaX, deltaY) =>
@@ -194,7 +196,12 @@ const handleCanvasClick = () => {
   elementsStore.selectElement(null)
 }
 
-const handleDrag = (id: string, deltaX: number, deltaY: number) => {
+const handleDrag = (
+  id: string,
+  deltaX: number,
+  deltaY: number,
+  e?: MouseEvent
+) => {
   // Get the element being dragged
   const draggedElement = elementsStore.elements.find((e) => e.id === id)
   if (!draggedElement) return
@@ -204,8 +211,11 @@ const handleDrag = (id: string, deltaX: number, deltaY: number) => {
   const newY = draggedElement.y + deltaY
   const hypotheticalElement = { ...draggedElement, x: newX, y: newY }
 
-  // Calculate snapping if only one element is being dragged
-  if (elementsStore.selectedElementIds.length === 1) {
+  // Check if Shift is held to disable snapping
+  const isShiftHeld = e?.shiftKey ?? false
+
+  // Calculate snapping if only one element is being dragged AND Shift is not held
+  if (elementsStore.selectedElementIds.length === 1 && !isShiftHeld) {
     const snapResult = calculateSnapResult(
       hypotheticalElement,
       elementsStore.elements,

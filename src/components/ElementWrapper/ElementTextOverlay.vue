@@ -30,6 +30,7 @@ const textBoundsStyle = computed(() => {
     alignItems: 'center',
     justifyContent: 'center',
     pointerEvents: 'none',
+    overflow: 'hidden',
   } as const
 })
 
@@ -44,6 +45,8 @@ const textStyle = computed(() => {
     overflowWrap: 'break-word' as const,
     lineHeight: '1.2',
     userSelect: 'none' as const,
+    maxWidth: '100%',
+    maxHeight: '100%',
   }
 })
 </script>

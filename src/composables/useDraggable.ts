@@ -36,7 +36,7 @@ export function useDraggable(emit: DraggableEvents) {
     lastMouseX = e.clientX
     lastMouseY = e.clientY
 
-    emit('drag', deltaX / zoomStore.zoom, deltaY / zoomStore.zoom)
+    emit('drag', deltaX / zoomStore.zoom, deltaY / zoomStore.zoom, e)
   }
 
   const handleMouseUp = () => {

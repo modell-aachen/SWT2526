@@ -12,13 +12,14 @@
         />
       </GridCanvas>
 
-      <!-- Floating toolbar: bottom-left -->
+      <!-- Floating zoom controls: bottom-right -->
+      <FloatingZoomControls :right-sidebar-collapsed="true" />
+
+      <!-- Upload button: bottom-left -->
       <div
         data-testid="view-toolbar"
-        class="absolute bottom-4 left-4 z-50 flex items-center gap-2 bg-ma-grey-100 border border-ma-grey-300 rounded-lg shadow-md p-1"
+        class="absolute bottom-[50px] left-[50px] z-50 flex items-center gap-2 bg-ma-grey-100 border border-ma-grey-300 rounded-lg shadow-md p-2"
       >
-        <ZoomControls />
-        <div class="w-px h-6 bg-ma-grey-300" />
         <Button
           variant="ghost"
           size="icon-sm"
@@ -47,7 +48,7 @@ import { useElementsStore } from '@/stores/elements/elements'
 import { useCanvasIO } from '@/composables/useCanvasIO'
 import GridCanvas from '@/components/GridCanvas/GridCanvas.vue'
 import ElementWrapperReadOnly from '@/components/ElementWrapperReadOnly/ElementWrapperReadOnly.vue'
-import ZoomControls from '@/components/Sidebar/LeftBar/ZoomControls.vue'
+import FloatingZoomControls from '@/components/FloatingZoomControls/FloatingZoomControls.vue'
 import { Button } from '@/components/ui/button'
 
 const elementsStore = useElementsStore()

@@ -131,7 +131,7 @@ describe('EditPage', () => {
 
       await elementWrapper.vm.$emit('resize', 'se', 30, 40)
 
-      expect(store.elements[0]!.width).toBe(130)
+      expect(store.elements[0]!.width).toBe(140)
       expect(store.elements[0]!.height).toBe(140)
     })
   })

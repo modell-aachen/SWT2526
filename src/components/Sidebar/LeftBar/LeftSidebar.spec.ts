@@ -1,8 +1,19 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import LeftSidebar from './LeftSidebar.vue'
 import { useElementsStore } from '@/stores/elements/elements'
+
+const { loadFromFileMock } = vi.hoisted(() => ({
+  loadFromFileMock: vi.fn(),
+}))
+
+vi.mock('@/composables/useCanvasIO', () => ({
+  useCanvasIO: () => ({
+    saveToFile: vi.fn(),
+    loadFromFile: loadFromFileMock,
+  }),
+}))
 
 describe('LeftSidebar', () => {
   beforeEach(() => {
@@ -70,6 +81,8 @@ describe('LeftSidebar', () => {
       expect(wrapper.find('[data-testid="dark-mode-button"]').exists()).toBe(
         true
       )
+      expect(wrapper.find('[data-testid="save-button"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="load-button"]').exists()).toBe(true)
     })
 
     it('disables undo button when no history', () => {
@@ -200,6 +213,53 @@ describe('LeftSidebar', () => {
       // Shape buttons should be hidden after collapsing the group
       const shapeButtons = wrapper.findAll('[data-testid="shape-button"]')
       expect(shapeButtons.every((btn) => !btn.isVisible())).toBe(true)
+    })
+  })
+
+  describe('save and load buttons', () => {
+    it('renders save button', () => {
+      const wrapper = mount(LeftSidebar, {
+        props: { isCollapsed: false },
+      })
+
+      expect(wrapper.find('[data-testid="save-button"]').exists()).toBe(true)
+    })
+
+    it('renders load button', () => {
+      const wrapper = mount(LeftSidebar, {
+        props: { isCollapsed: false },
+      })
+
+      expect(wrapper.find('[data-testid="load-button"]').exists()).toBe(true)
+    })
+
+    it('shows an alert when loading an invalid file', async () => {
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => { })
+
+      const wrapper = mount(LeftSidebar, {
+        props: { isCollapsed: false },
+      })
+
+      const fileInput = wrapper.find('input[type="file"]')
+
+      const file = new File(['invalid content'], 'test.txt', {
+        type: 'text/plain',
+      })
+      Object.defineProperty(fileInput.element, 'files', {
+        value: [file],
+        writable: false,
+      })
+
+      loadFromFileMock.mockRejectedValue(new Error('Invalid JSON'))
+
+      await fileInput.trigger('change')
+
+      // Wait for async handler
+      await flushPromises()
+
+      expect(alertSpy).toHaveBeenCalledWith(
+        'Failed to load file. Please ensure it is a valid JSON file.'
+      )
     })
   })
 })

@@ -56,7 +56,7 @@
       />
     </div>
 
-    <ZoomControls />
+    <SaveLoadButtons />
     <SidebarActions @clear-all="$emit('clear-all')" />
   </aside>
 </template>
@@ -68,7 +68,7 @@ import { Button } from '@/components/ui/button'
 import SidebarGroup from '@/components/Sidebar/SidebarGroup.vue'
 import IconPicker from './IconPicker.vue'
 import ShapeButton from './ShapeButton.vue'
-import ZoomControls from './ZoomControls.vue'
+import SaveLoadButtons from './SaveLoadButtons.vue'
 import SidebarActions from './SidebarActions.vue'
 import CustomShapeDialog from './CustomShapeDialog.vue'
 import { useElementsStore } from '@/stores/elements/elements'

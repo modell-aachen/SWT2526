@@ -1,19 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
+import { describe, it, expect, beforeEach } from 'vitest'
+import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import RightSidebar from './RightSidebar.vue'
 import { useElementsStore } from '@/stores/elements/elements'
 import type { ShapeElement } from '@/types/Element'
-
-const { loadFromFileMock } = vi.hoisted(() => ({
-  loadFromFileMock: vi.fn(),
-}))
-
-vi.mock('@/composables/useCanvasIO', () => ({
-  useCanvasIO: () => ({
-    loadFromFile: loadFromFileMock,
-  }),
-}))
 
 describe('RightSidebar', () => {
   beforeEach(() => {
@@ -201,35 +191,5 @@ describe('RightSidebar', () => {
     await textColorInput.trigger('change')
 
     expect((store.elements[0] as ShapeElement).color).toBe('#ff0000')
-  })
-
-  it('shows an alert when loading an invalid file', async () => {
-    const store = useElementsStore()
-    store.addShape('rectangle')
-    store.selectElement(store.elements[0]!.id)
-
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
-
-    const wrapper = mount(RightSidebar)
-    const fileInput = wrapper.find('input[type="file"]')
-
-    const file = new File(['invalid content'], 'test.txt', {
-      type: 'text/plain',
-    })
-    Object.defineProperty(fileInput.element, 'files', {
-      value: [file],
-      writable: false,
-    })
-
-    loadFromFileMock.mockRejectedValue(new Error('Invalid JSON'))
-
-    await fileInput.trigger('change')
-
-    // Wait for async handler
-    await flushPromises()
-
-    expect(alertSpy).toHaveBeenCalledWith(
-      'Failed to load file. Please ensure it is a valid JSON file.'
-    )
   })
 })

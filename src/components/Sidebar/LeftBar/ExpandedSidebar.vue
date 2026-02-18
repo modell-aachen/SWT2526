@@ -50,6 +50,15 @@
         </Button>
       </SidebarGroup>
 
+      <SidebarGroup title="Templates" :sidebar-collapsed="false">
+        <TemplateButton
+          v-for="template in templates"
+          :key="template.name"
+          :template="template"
+          :collapsed="false"
+        />
+      </SidebarGroup>
+
       <CustomShapeDialog
         :open="isCustomShapeDialogOpen"
         @update:open="isCustomShapeDialogOpen = $event"
@@ -71,8 +80,10 @@ import ShapeButton from './ShapeButton.vue'
 import SaveLoadButtons from './SaveLoadButtons.vue'
 import SidebarActions from './SidebarActions.vue'
 import CustomShapeDialog from './CustomShapeDialog.vue'
+import TemplateButton from './TemplateButton.vue'
 import { useElementsStore } from '@/stores/elements/elements'
 import type { ShapeType } from '@/types/ShapeType'
+import { templates } from '@/templates'
 
 defineEmits<{
   'clear-all': []

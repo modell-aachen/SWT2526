@@ -74,33 +74,12 @@ const positionClass = computed(() =>
 const autoFit = () => {
   const elementsStore = useElementsStore()
   const container = document.querySelector('[data-testid="canvas-container"]')
-  if (container && elementsStore.elements.length > 0) {
+  if (container) {
     zoomStore.autoFit(
       elementsStore.elements,
       container.clientWidth,
       container.clientHeight
     )
-
-    // Center content in viewport after zoom adjustment
-    setTimeout(() => {
-      const minX = Math.min(...elementsStore.elements.map((e) => e.x))
-      const minY = Math.min(...elementsStore.elements.map((e) => e.y))
-      const maxX = Math.max(...elementsStore.elements.map((e) => e.x + e.width))
-      const maxY = Math.max(
-        ...elementsStore.elements.map((e) => e.y + e.height)
-      )
-
-      const contentWidth = (maxX - minX) * zoomStore.zoom
-      const contentHeight = (maxY - minY) * zoomStore.zoom
-      const centerX = minX * zoomStore.zoom + contentWidth / 2
-      const centerY = minY * zoomStore.zoom + contentHeight / 2
-
-      container.scrollTo({
-        left: centerX - container.clientWidth / 2,
-        top: centerY - container.clientHeight / 2,
-        behavior: 'smooth',
-      })
-    }, 0)
   }
 }
 </script>

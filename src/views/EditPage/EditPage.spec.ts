@@ -73,6 +73,83 @@ describe('EditPage', () => {
     })
   })
 
+  describe('group rotation', () => {
+    it('keeps group rotation at 0 and distributes rotation to children', async () => {
+      const store = useElementsStore()
+      store.addShape('rectangle', 0, 0)
+      store.addShape('rectangle', 100, 0)
+      const childId1 = store.elements[0]!.id
+      const childId2 = store.elements[1]!.id
+
+      store.selectElement(childId1)
+      store.addToSelection(childId2)
+      store.groupSelectedElements()
+
+      const groupId = store.selectedElementIds[0]!
+
+      const wrapper = mount(EditPage)
+      const groupWrapper = wrapper
+        .findAllComponents(ElementWrapper)
+        .find((w) => w.props('element').id === groupId)
+
+      expect(groupWrapper).toBeDefined()
+
+      // Emit rotate on the group
+      await groupWrapper!.vm.$emit('rotate')
+      await wrapper.vm.$nextTick()
+
+      // Group rotation should stay 0 (no double rotation via CSS)
+      const updatedGroup = store.elements.find((e) => e.id === groupId)!
+      expect(updatedGroup.rotation).toBe(0)
+
+      // Children should have rotation = 90
+      const child1 = store.elements.find((e) => e.id === childId1)!
+      const child2 = store.elements.find((e) => e.id === childId2)!
+      expect(child1.rotation).toBe(90)
+      expect(child2.rotation).toBe(90)
+    })
+
+    it('recalculates group bounds after rotating children', async () => {
+      const store = useElementsStore()
+      store.addShape('rectangle', 0, 0)
+      store.updateElement(
+        store.elements[0]!.id,
+        { width: 200, height: 50 },
+        false
+      )
+      store.addShape('rectangle', 250, 0)
+      store.updateElement(
+        store.elements[1]!.id,
+        { width: 50, height: 50 },
+        false
+      )
+
+      store.selectElement(store.elements[0]!.id)
+      store.addToSelection(store.elements[1]!.id)
+      store.groupSelectedElements()
+
+      const groupId = store.selectedElementIds[0]!
+      const groupBefore = store.elements.find((e) => e.id === groupId)!
+
+      expect(groupBefore.width).toBe(300)
+      expect(groupBefore.height).toBe(50)
+
+      const wrapper = mount(EditPage)
+      const groupWrapper = wrapper
+        .findAllComponents(ElementWrapper)
+        .find((w) => w.props('element').id === groupId)
+
+      await groupWrapper!.vm.$emit('rotate')
+      await wrapper.vm.$nextTick()
+
+      const groupAfter = store.elements.find((e) => e.id === groupId)!
+      expect(groupAfter.rotation).toBe(0)
+      // After children rotate, the 200x50 shape becomes visually 50x200
+      // The group bounds must expand vertically
+      expect(groupAfter.height).toBeGreaterThan(50)
+    })
+  })
+
   describe('element interactions', () => {
     it('selects element when clicking on ElementWrapper', async () => {
       const store = useElementsStore()

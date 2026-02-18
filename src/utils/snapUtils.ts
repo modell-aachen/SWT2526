@@ -94,8 +94,8 @@ function createSnapLine(snapPoint: SnapPoint): SnapLine {
   let viewportHeight = 10000
 
   if (container) {
-    viewportWidth = container?.clientWidth
-    viewportHeight = container?.clientHeight
+    viewportWidth = container?.scrollWidth
+    viewportHeight = container?.scrollHeight
   }
 
   if (isHorizontal) {

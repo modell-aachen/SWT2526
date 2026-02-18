@@ -87,8 +87,6 @@ const containerStyle = computed(() => ({
 const contentStyle = computed(() => ({
   width: baseWidth.value ? `${baseWidth.value}px` : '100%',
   height: baseHeight.value ? `${baseHeight.value}px` : '100%',
-  minWidth: '100%',
-  minHeight: '100%',
   transform: `scale(${zoomStore.zoom})`,
   transformOrigin: 'top left',
 }))

@@ -12,6 +12,7 @@
     <div class="p-4 flex flex-col gap-4">
       <template v-if="hasShapeElements || selectedElement?.type === 'shape'">
         <PropertyLinkInput
+          v-if="!isGroupSelected"
           id="shape-link"
           label="Link"
           :model-value="selectedElement.link"
@@ -40,7 +41,10 @@
           @change="updateStrokeWeight"
         />
 
-        <div class="border-t border-ma-grey-300 my-2 pt-2">
+        <div
+          v-if="!isGroupSelected"
+          class="border-t border-ma-grey-300 my-2 pt-2"
+        >
           <h3 class="text-sm font-semibold mb-2 text-ma-text-02">
             Text Overlay
           </h3>
@@ -74,7 +78,12 @@
         </div>
       </template>
 
-      <template v-if="hasTextElements || selectedElement?.type === 'text'">
+      <template
+        v-if="
+          !isGroupSelected &&
+          (hasTextElements || selectedElement?.type === 'text')
+        "
+      >
         <PropertyTextInput
           id="text-content"
           v-model="textContentValue"
@@ -137,6 +146,7 @@ defineProps<{
 }>()
 const elementsStore = useElementsStore()
 const selectedElement = computed(() => elementsStore.selectedElement)
+const isGroupSelected = computed(() => selectedElement.value?.type === 'group')
 
 // Get all elements that can have properties changed (including group children)
 const editableElements = computed(() => {
@@ -251,11 +261,11 @@ const updateStrokeWeight = (val: number) => {
   }
 }
 
-// Unified: no if/else needed since both shape and text use fontFamily
+// Unified: broadcast fontFamily to all editable text/shape elements
 watch(fontFamilyValue, (val) => {
-  if (selectedElement.value) {
-    elementsStore.updateElement(selectedElement.value.id, { fontFamily: val })
-  }
+  editableElements.value
+    .filter((el) => el.type === 'text' || el.type === 'shape')
+    .forEach((el) => elementsStore.updateElement(el.id, { fontFamily: val }))
 })
 
 const updateLink = (link: string | undefined) => {
@@ -285,12 +295,12 @@ const updateTextColor = (val: string) => {
     .forEach((el) => elementsStore.updateElement(el.id, { color: val }))
 }
 
-// Unified: no if/else needed since both shape and text use fontSize
+// Unified: broadcast fontSize to all editable text/shape elements
 const updateFontSize = (val: number) => {
-  if (selectedElement.value) {
-    elementsStore.updateElement(selectedElement.value.id, { fontSize: val })
-    fontSizeValue.value = val
-  }
+  editableElements.value
+    .filter((el) => el.type === 'text' || el.type === 'shape')
+    .forEach((el) => elementsStore.updateElement(el.id, { fontSize: val }))
+  fontSizeValue.value = val
 }
 
 const updateIconColor = (val: string) => {

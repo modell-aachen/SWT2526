@@ -17,6 +17,10 @@ Navigate to: http://localhost:5173/view or http://localhost:5173/edit
 
 ### Refactor
 
+### Bug Fixes
+
+- Shapes Reindraggen bei Zoom (Position und Größe richtig in Vorschau anpassen) (Sam)
+
 ### Required
 
 - Shape Groups (Wiem)
@@ -29,7 +33,7 @@ Navigate to: http://localhost:5173/view or http://localhost:5173/edit
 ### Optional
 
 - Render Markdown?
-- Templates
+- Templates (Jan)
 - Connect Shapes in Datastructure
 - Predefined Colors, ColorPallets?
 - Legend (Shortcuts / Controls)

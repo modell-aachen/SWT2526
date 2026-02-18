@@ -275,4 +275,67 @@ describe('GridCanvas', () => {
       expect(canvas.classes()).toContain('outline-none')
     })
   })
+
+  describe('scrolling and centering', () => {
+    it('has overflow-auto to enable scrollbars when content exceeds viewport', () => {
+      const wrapper = mount(GridCanvas)
+      const canvas = wrapper.find('[data-testid="canvas-container"]')
+
+      expect(canvas.classes()).toContain('overflow-auto')
+    })
+
+    it('canvas container has scrollable properties', () => {
+      const wrapper = mount(GridCanvas)
+      const canvas = wrapper.find('[data-testid="canvas-container"]')
+      const canvasElement = canvas.element as HTMLElement
+
+      // Verify element has scroll properties
+      expect(canvasElement.scrollLeft).toBeDefined()
+      expect(canvasElement.scrollTop).toBeDefined()
+    })
+
+    it('adjusts scrollable area based on content dimensions', () => {
+      const wrapper = mount(GridCanvas, {
+        props: {
+          contentWidth: 2000,
+          contentHeight: 1500,
+        },
+      })
+
+      const zoomContainer = wrapper.find('.zoom-container')
+
+      // Container should expand to accommodate content
+      expect(zoomContainer.attributes('style')).toContain('width: 2000px;')
+      expect(zoomContainer.attributes('style')).toContain('height: 1500px;')
+    })
+
+    it('maintains minimum size of 100% for small content', () => {
+      const wrapper = mount(GridCanvas, {
+        props: {
+          contentWidth: 500,
+          contentHeight: 300,
+        },
+      })
+
+      const zoomContainer = wrapper.find('.zoom-container')
+      const style = zoomContainer.attributes('style') || ''
+
+      // Should have min-width and min-height
+      expect(style).toContain('min-width: 100%;')
+      expect(style).toContain('min-height: 100%;')
+    })
+
+    it('emits canvas-click when clicking zoom-content for deselection', async () => {
+      const wrapper = mount(GridCanvas, {
+        slots: {
+          default: '<div class="zoom-content">Content</div>',
+        },
+      })
+
+      const zoomContent = wrapper.find('.zoom-content')
+      await zoomContent.trigger('mousedown')
+
+      expect(wrapper.emitted('canvas-click')).toBeTruthy()
+    })
+  })
 })

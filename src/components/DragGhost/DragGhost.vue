@@ -7,8 +7,8 @@
       :style="ghostStyle"
     >
       <GenericShape
-        :width="SHAPE_SIZE"
-        :height="SHAPE_SIZE"
+        :width="SHAPE_SIZE * zoom"
+        :height="SHAPE_SIZE * zoom"
         :shape-type="draggedShapeType"
         :custom-points="draggedCustomPoints"
         outline="var(--ma-primary-600)"
@@ -22,11 +22,14 @@
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useDragStore } from '@/stores/drag/dragGhost'
+import { useZoomStore } from '@/stores/zoom/zoom'
 import GenericShape from '../Shapes/GenericShape.vue'
 
 const SHAPE_SIZE = 100
 
+const zoomStore = useZoomStore()
 const dragStore = useDragStore()
+const { zoom } = storeToRefs(zoomStore)
 const { isDragging, draggedShapeType, ghostPosition, draggedCustomPoints } =
   storeToRefs(dragStore)
 

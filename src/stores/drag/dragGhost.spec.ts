@@ -4,12 +4,14 @@
 import { setActivePinia, createPinia } from 'pinia'
 import { useDragStore } from './dragGhost'
 import { useElementsStore } from '../elements/elements'
+import { useZoomStore } from '../zoom/zoom'
 import { describe, it, expect, beforeEach } from 'vitest'
 import type { ShapeElement } from '@/types/Element'
 
 describe('Drag Store', () => {
   let store: ReturnType<typeof useDragStore>
   let elementsStore: ReturnType<typeof useElementsStore>
+  let zoomStore: ReturnType<typeof useZoomStore>
 
   function createMockEvent(
     type: 'mousedown' | 'mouseup',
@@ -39,6 +41,7 @@ describe('Drag Store', () => {
     setActivePinia(createPinia())
     store = useDragStore()
     elementsStore = useElementsStore()
+    zoomStore = useZoomStore()
   })
 
   it('starts drag with shape type', () => {
@@ -62,6 +65,17 @@ describe('Drag Store', () => {
     expect(store.ghostPosition).toEqual({ x: 100, y: 100 })
   })
 
+  it('centers ghost position accounting for zoom', () => {
+    zoomStore.setZoom(2.0)
+    const event = createMockEvent('mousedown', 200, 200)
+    store.startDrag('rectangle', event)
+
+    // Ghost shape renders at SHAPE_SIZE * zoom = 100 * 2 = 200px
+    // Centering offset = 200 / 2 = 100
+    // ghostPosition = (200 - 100, 200 - 100) = (100, 100)
+    expect(store.ghostPosition).toEqual({ x: 100, y: 100 })
+  })
+
   it('adds shape to elements store on drop over canvas', () => {
     setupMockCanvas()
     const event = createMockEvent('mousedown', 100, 100)
@@ -72,6 +86,23 @@ describe('Drag Store', () => {
 
     expect(elementsStore.elements).toHaveLength(1)
     expect(elementsStore.elements[0]!.type).toBe('shape')
+  })
+
+  it('places shape at correct canvas position when zoomed', () => {
+    setupMockCanvas()
+    zoomStore.setZoom(2.0)
+
+    const event = createMockEvent('mousedown', 200, 200)
+    store.startDrag('rectangle', event)
+
+    const mouseUpEvent = createMockEvent('mouseup', 200, 200)
+    store._handleMouseUp(mouseUpEvent)
+
+    // Canvas at (0,0), mouse at (200,200), zoom = 2.0
+    // Canvas-space position = (200 - 0 + 0) / 2.0 - 100 / 2 = 100 - 50 = 50
+    const element = elementsStore.elements[0] as ShapeElement
+    expect(element.x).toBe(50)
+    expect(element.y).toBe(50)
   })
 
   it('adds custom shape to elements store on drop', () => {

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import type { ShapeType } from '@/types/ShapeType'
 import { useElementsStore } from '@/stores/elements/elements'
+import { useZoomStore } from '@/stores/zoom/zoom'
 
 const SHAPE_SIZE = 100
 
@@ -27,10 +28,11 @@ export const useDragStore = defineStore('drag', {
       this.draggedShapeType = type
       this.draggedCustomPoints = customPoints
 
-      // Center ghost on initial cursor position
+      // Center ghost on initial cursor position (ghost renders at SHAPE_SIZE * zoom)
+      const zoomStore = useZoomStore()
       this.ghostPosition = {
-        x: event.clientX - SHAPE_SIZE / 2,
-        y: event.clientY - SHAPE_SIZE / 2,
+        x: event.clientX - (SHAPE_SIZE * zoomStore.zoom) / 2,
+        y: event.clientY - (SHAPE_SIZE * zoomStore.zoom) / 2,
       }
 
       document.addEventListener('mousemove', this._handleMouseMove)
@@ -49,9 +51,10 @@ export const useDragStore = defineStore('drag', {
     _handleMouseMove(event: MouseEvent) {
       if (!this.isDragging) return
 
+      const zoomStore = useZoomStore()
       this.ghostPosition = {
-        x: event.clientX - SHAPE_SIZE / 2,
-        y: event.clientY - SHAPE_SIZE / 2,
+        x: event.clientX - (SHAPE_SIZE * zoomStore.zoom) / 2,
+        y: event.clientY - (SHAPE_SIZE * zoomStore.zoom) / 2,
       }
     },
 
@@ -74,17 +77,17 @@ export const useDragStore = defineStore('drag', {
           mouseY <= canvasRect.bottom
 
         if (isOverCanvas) {
-          // Calculate position relative to canvas (centered on cursor)
+          // Convert screen-space to canvas-space, then center the element
+          const zoomStore = useZoomStore()
+
           const x =
-            mouseX -
-            canvasRect.left -
-            SHAPE_SIZE / 2 +
-            this.canvasElement.scrollLeft
+            (mouseX - canvasRect.left + this.canvasElement.scrollLeft) /
+              zoomStore.zoom -
+            SHAPE_SIZE / 2
           const y =
-            mouseY -
-            canvasRect.top -
-            SHAPE_SIZE / 2 +
-            this.canvasElement.scrollTop
+            (mouseY - canvasRect.top + this.canvasElement.scrollTop) /
+              zoomStore.zoom -
+            SHAPE_SIZE / 2
 
           const elementsStore = useElementsStore()
           elementsStore.addShape(

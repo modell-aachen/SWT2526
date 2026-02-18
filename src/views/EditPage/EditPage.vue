@@ -21,6 +21,8 @@
 
       <GridCanvas
         ref="canvasRef"
+        :content-width="canvasContentSize.width"
+        :content-height="canvasContentSize.height"
         @canvas-click="handleCanvasClick"
         @delete-selected="deleteSelected"
         @copy-selected="elementsStore.copySelectedElement()"
@@ -78,6 +80,8 @@
 
     <RightSidebar :is-collapsed="rightSidebarCollapsed" />
 
+    <FloatingZoomControls :right-sidebar-collapsed="rightSidebarCollapsed" />
+
     <DragGhost />
   </div>
 </template>
@@ -102,14 +106,30 @@ import RightSidebar from '@/components/Sidebar/RightBar/RightSidebar.vue'
 import DragGhost from '@/components/DragGhost/DragGhost.vue'
 import ElementContextBar from '@/components/ElementContextBar/ElementContextBar.vue'
 import SnapLines from '@/components/SnapLines/SnapLines.vue'
+import FloatingZoomControls from '@/components/FloatingZoomControls/FloatingZoomControls.vue'
 
 const elementsStore = useElementsStore()
 const dragStore = useDragStore()
 const sidebarCollapsed = ref(false)
-const rightSidebarCollapsed = ref(false)
+const rightSidebarCollapsed = ref(true)
 const zoomStore = useZoomStore()
 const { saveToFile } = useCanvasIO()
 const activeSnapLines = ref<SnapLine[]>([])
+const canvasPadding = 50
+
+const canvasContentSize = computed(() => {
+  if (elementsStore.elements.length === 0) {
+    return { width: 0, height: 0 }
+  }
+
+  const maxX = Math.max(...elementsStore.elements.map((el) => el.x + el.width))
+  const maxY = Math.max(...elementsStore.elements.map((el) => el.y + el.height))
+
+  return {
+    width: Math.max(0, maxX + canvasPadding),
+    height: Math.max(0, maxY + canvasPadding),
+  }
+})
 
 const canvasRef = ref<InstanceType<typeof GridCanvas> | null>(null)
 
@@ -185,6 +205,17 @@ watch(canvasRef, (newRef) => {
     dragStore.setCanvasElement(newRef.$el)
   }
 })
+
+watch(
+  () => elementsStore.selectedElement,
+  (selected) => {
+    if (selected) {
+      rightSidebarCollapsed.value = false
+    } else {
+      rightSidebarCollapsed.value = true
+    }
+  }
+)
 
 const deleteSelected = () => {
   if (elementsStore.selectedElementIds.length > 0)

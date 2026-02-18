@@ -83,6 +83,34 @@ describe('GridCanvas', () => {
       expect(rect.attributes('height')).toBe('100%')
       expect(rect.attributes('fill')).toBe('url(#grid)')
     })
+
+    it('expands content area when content dimensions are provided', () => {
+      const wrapper = mount(GridCanvas, {
+        props: {
+          contentWidth: 1200,
+          contentHeight: 800,
+        },
+      })
+
+      const zoomContainer = wrapper.find('.zoom-container')
+      expect(zoomContainer.attributes('style')).toContain('width: 1200px;')
+      expect(zoomContainer.attributes('style')).toContain('height: 800px;')
+
+      const overlay = wrapper
+        .findAll('div')
+        .find((el) => el.classes().includes('pointer-events-none'))
+      expect(overlay).toBeTruthy()
+      expect(overlay!.attributes('style')).toContain('width: 1200px;')
+      expect(overlay!.attributes('style')).toContain('height: 800px;')
+    })
+
+    it('uses full size when no content dimensions are provided', () => {
+      const wrapper = mount(GridCanvas)
+
+      const zoomContainer = wrapper.find('.zoom-container')
+      expect(zoomContainer.attributes('style')).toContain('width: 100%;')
+      expect(zoomContainer.attributes('style')).toContain('height: 100%;')
+    })
   })
 
   describe('slot content', () => {

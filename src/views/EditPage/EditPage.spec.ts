@@ -5,6 +5,8 @@ import EditPage from './EditPage.vue'
 import { useElementsStore } from '../../stores/elements/elements'
 import ElementWrapper from '../../components/ElementWrapper/ElementWrapper.vue'
 import GridCanvas from '../../components/GridCanvas/GridCanvas.vue'
+import FloatingZoomControls from '../../components/FloatingZoomControls/FloatingZoomControls.vue'
+import RightSidebar from '../../components/Sidebar/RightBar/RightSidebar.vue'
 
 describe('EditPage', () => {
   beforeEach(() => {
@@ -168,6 +170,82 @@ describe('EditPage', () => {
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp' }))
       expect(store.elements[0]!.x).toBe(85)
       expect(store.elements[0]!.y).toBe(100) // 105 - 5
+    })
+  })
+
+  describe('floating zoom controls', () => {
+    it('positions controls in bottom-right when right sidebar is collapsed', () => {
+      const wrapper = mount(EditPage)
+      const floatingControls = wrapper.findComponent(FloatingZoomControls)
+
+      expect(floatingControls.exists()).toBe(true)
+      expect(floatingControls.classes()).toContain('right-[50px]')
+    })
+
+    it('moves zoom controls left when right sidebar auto-expands', async () => {
+      const store = useElementsStore()
+      const wrapper = mount(EditPage)
+      const floatingControls = wrapper.findComponent(FloatingZoomControls)
+      expect(floatingControls.classes()).toContain('right-[50px]')
+
+      store.addShape('rectangle')
+      await wrapper.vm.$nextTick()
+
+      expect(floatingControls.classes()).toContain('right-[330px]')
+    })
+
+    it('moves zoom controls back to bottom-right when right sidebar is collapsed', async () => {
+      const store = useElementsStore()
+      const wrapper = mount(EditPage)
+      const floatingControls = wrapper.findComponent(FloatingZoomControls)
+
+      store.addShape('rectangle')
+      await wrapper.vm.$nextTick()
+
+      expect(floatingControls.classes()).toContain('right-[330px]')
+
+      const toggleButtons = wrapper.findAll('[data-testid="sidebar-toggle"]')
+      const rightToggle = toggleButtons.find((btn) =>
+        btn.classes().includes('right-3')
+      )
+
+      expect(rightToggle).toBeTruthy()
+
+      await rightToggle!.trigger('click')
+
+      expect(floatingControls.classes()).toContain('right-[50px]')
+    })
+
+    it('renders zoom in/out, percentage, reset, and auto-fit buttons', () => {
+      const wrapper = mount(EditPage)
+
+      expect(wrapper.find('[data-testid="zoom-out-button"]').exists()).toBe(
+        true
+      )
+      expect(
+        wrapper.find('[data-testid="zoom-percentage-button"]').exists()
+      ).toBe(true)
+      expect(wrapper.find('[data-testid="zoom-in-button"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="reset-zoom-button"]').exists()).toBe(
+        true
+      )
+      expect(wrapper.find('[data-testid="auto-fit-button"]').exists()).toBe(
+        true
+      )
+    })
+  })
+
+  describe('right sidebar behavior', () => {
+    it('auto-expands when an element is selected', async () => {
+      const store = useElementsStore()
+      const wrapper = mount(EditPage)
+
+      store.addShape('rectangle')
+      await wrapper.vm.$nextTick()
+
+      const rightSidebar = wrapper.findComponent(RightSidebar)
+      expect(rightSidebar.exists()).toBe(true)
+      expect(rightSidebar.props('isCollapsed')).toBe(false)
     })
   })
 })

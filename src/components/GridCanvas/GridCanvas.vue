@@ -32,25 +32,30 @@
       <rect width="100%" height="100%" fill="url(#grid)" />
     </svg>
 
-    <div
-      class="zoom-container absolute top-0 left-0 w-full h-full"
-      :style="{
-        transform: `scale(${zoomStore.zoom})`,
-        transformOrigin: 'top left',
-      }"
-    >
-      <slot />
+    <div class="zoom-container absolute top-0 left-0" :style="containerStyle">
+      <div class="zoom-content" :style="contentStyle">
+        <slot />
+      </div>
     </div>
 
     <!-- Overlay slot for elements that should move with the canvas but not scale with zoom -->
-    <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
+    <div
+      class="absolute top-0 left-0 pointer-events-none"
+      :style="overlayStyle"
+    >
       <slot name="overlay" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useZoomStore } from '@/stores/zoom/zoom'
+
+const props = defineProps<{
+  contentWidth?: number
+  contentHeight?: number
+}>()
 
 const emit = defineEmits<{
   'canvas-click': []
@@ -64,11 +69,43 @@ const emit = defineEmits<{
 
 const zoomStore = useZoomStore()
 
+const baseWidth = computed(() =>
+  props.contentWidth && props.contentWidth > 0 ? props.contentWidth : null
+)
+
+const baseHeight = computed(() =>
+  props.contentHeight && props.contentHeight > 0 ? props.contentHeight : null
+)
+
+const containerStyle = computed(() => ({
+  width: baseWidth.value ? `${baseWidth.value * zoomStore.zoom}px` : '100%',
+  height: baseHeight.value ? `${baseHeight.value * zoomStore.zoom}px` : '100%',
+  minWidth: '100%',
+  minHeight: '100%',
+}))
+
+const contentStyle = computed(() => ({
+  width: baseWidth.value ? `${baseWidth.value}px` : '100%',
+  height: baseHeight.value ? `${baseHeight.value}px` : '100%',
+  minWidth: '100%',
+  minHeight: '100%',
+  transform: `scale(${zoomStore.zoom})`,
+  transformOrigin: 'top left',
+}))
+
+const overlayStyle = computed(() => ({
+  width: containerStyle.value.width,
+  height: containerStyle.value.height,
+  minWidth: '100%',
+  minHeight: '100%',
+}))
+
 const handleCanvasClick = (event: MouseEvent) => {
   if (
     event.target === event.currentTarget ||
     (event.target as HTMLElement).classList.contains('grid-pattern') ||
-    (event.target as HTMLElement).classList.contains('zoom-container')
+    (event.target as HTMLElement).classList.contains('zoom-container') ||
+    (event.target as HTMLElement).classList.contains('zoom-content')
   ) {
     emit('canvas-click')
   }

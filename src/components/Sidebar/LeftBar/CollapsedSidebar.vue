@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <ZoomControls collapsed />
+    <SaveLoadButtons collapsed />
     <SidebarActions collapsed @clear-all="$emit('clear-all')" />
   </aside>
 </template>
@@ -40,7 +40,7 @@ import { Wrench, Type } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import IconPicker from './IconPicker.vue'
 import ShapeButton from './ShapeButton.vue'
-import ZoomControls from './ZoomControls.vue'
+import SaveLoadButtons from './SaveLoadButtons.vue'
 import SidebarActions from './SidebarActions.vue'
 import { useElementsStore } from '@/stores/elements/elements'
 import type { ShapeType } from '@/types/ShapeType'

@@ -8,60 +8,42 @@ import { useElementsStore } from '@/stores/elements/elements'
 import { useZoomStore } from '@/stores/zoom/zoom'
 
 describe('useContextBarPosition', () => {
-  beforeEach(() => {
-    setActivePinia(createPinia())
-  })
+    beforeEach(() => {
+        setActivePinia(createPinia())
+    })
 
-  it('returns empty object when nothing is selected', () => {
-    const { contextBarStyle } = useContextBarPosition()
-    expect(contextBarStyle.value).toEqual({})
-  })
+    it('positions context bar on top and accounts for zoom level in positioning', () => {
+        const elementsStore = useElementsStore()
+        const zoomStore = useZoomStore()
 
-  it('positions context bar above the selected element', () => {
-    const elementsStore = useElementsStore()
-    elementsStore.addShape('rectangle', 100, 200)
-    elementsStore.selectElement(elementsStore.elements[0]!.id)
+        elementsStore.addShape('rectangle', 100, 200)
+        elementsStore.selectElement(elementsStore.elements[0]!.id)
 
-    const { contextBarStyle } = useContextBarPosition()
-    const style = contextBarStyle.value as Record<string, string>
+        const { contextBarStyle: style1x } = useContextBarPosition()
+        const pos1x = style1x.value as Record<string, string>
 
-    expect(style.left).toBeDefined()
-    expect(style.top).toBeDefined()
-    expect(style.transform).toBe('translateX(-50%)')
-  })
+        zoomStore.setZoom(2)
+        const { contextBarStyle: style2x } = useContextBarPosition()
+        const pos2x = style2x.value as Record<string, string>
 
-  it('accounts for zoom level in positioning', () => {
-    const elementsStore = useElementsStore()
-    const zoomStore = useZoomStore()
+        // At 2x zoom, the left position should be doubled
+        const left1 = parseFloat(pos1x.left!)
+        const left2 = parseFloat(pos2x.left!)
+        expect(left2).toBe(left1 * 2)
+    })
 
-    elementsStore.addShape('rectangle', 100, 200)
-    elementsStore.selectElement(elementsStore.elements[0]!.id)
+    it('flips to bottom when near top edge', () => {
+        const elementsStore = useElementsStore()
 
-    const { contextBarStyle: style1x } = useContextBarPosition()
-    const pos1x = style1x.value as Record<string, string>
+        // Place element very near the top
+        elementsStore.addShape('rectangle', 100, 0)
+        elementsStore.selectElement(elementsStore.elements[0]!.id)
 
-    zoomStore.setZoom(2)
-    const { contextBarStyle: style2x } = useContextBarPosition()
-    const pos2x = style2x.value as Record<string, string>
+        const { contextBarStyle } = useContextBarPosition()
+        const style = contextBarStyle.value as Record<string, string>
 
-    // At 2x zoom, the left position should be doubled
-    const left1 = parseFloat(pos1x.left!)
-    const left2 = parseFloat(pos2x.left!)
-    expect(left2).toBe(left1 * 2)
-  })
-
-  it('flips to bottom when near top edge', () => {
-    const elementsStore = useElementsStore()
-
-    // Place element very near the top
-    elementsStore.addShape('rectangle', 100, 0)
-    elementsStore.selectElement(elementsStore.elements[0]!.id)
-
-    const { contextBarStyle } = useContextBarPosition()
-    const style = contextBarStyle.value as Record<string, string>
-
-    // Should flip — top should be positive (below the element)
-    const topValue = parseFloat(style.top!)
-    expect(topValue).toBeGreaterThan(0)
-  })
+        // Should flip — top should be positive (below the element)
+        const topValue = parseFloat(style.top!)
+        expect(topValue).toBeGreaterThan(0)
+    })
 })

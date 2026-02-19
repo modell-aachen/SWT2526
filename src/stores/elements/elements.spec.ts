@@ -26,7 +26,9 @@ describe('Elements Store', () => {
     expect(store.selectedElementId).toBe(element.id)
     expect(element.fill).toBe('rgb(156, 210, 232)')
     expect(element.outline).toBe('rgb(39, 154, 200)')
-    expect(element.color).toBe(undefined)
+    expect(element.fontSize).toBe(16)
+    expect(element.fontFamily).toBe('Arial')
+    expect(element.color).toBe('rgb(7, 52, 70)')
   })
 
   it('adds a text element', () => {

@@ -14,6 +14,11 @@ import {
   remapGroupIds,
   calculateGroupBounds,
 } from '@/utils/groupUtils'
+import {
+  defaultFillColor,
+  defaultOutlineColor,
+  defaultTextColor,
+} from '@/types/DefaultColors'
 
 const MAX_HISTORY_SIZE = 50
 
@@ -160,8 +165,8 @@ export const useElementsStore = defineStore('elements', {
         y,
         width: 100,
         height: 100,
-        outline: '#000',
-        fill: 'transparent',
+        outline: defaultOutlineColor,
+        fill: defaultFillColor,
         strokeWeight: 3,
         zIndex: this.elements.length,
         rotation: 0,
@@ -181,7 +186,7 @@ export const useElementsStore = defineStore('elements', {
         height: 50,
         fontSize: 16,
         fontFamily: 'Arial',
-        color: '#000',
+        color: defaultTextColor,
         zIndex: this.elements.length,
         rotation: 0,
       }
@@ -197,7 +202,7 @@ export const useElementsStore = defineStore('elements', {
         y,
         width: 50,
         height: 50,
-        color: '#000',
+        color: defaultOutlineColor,
         strokeWeight: 2,
         zIndex: this.elements.length,
         rotation: 0,

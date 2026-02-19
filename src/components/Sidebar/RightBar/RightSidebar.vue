@@ -140,6 +140,11 @@ import PropertyNumericInput from './components/PropertyNumericInput.vue'
 import PropertyLinkInput from './components/PropertyLinkInput.vue'
 import PropertyTextInput from './components/PropertyTextInput.vue'
 import PropertySelectInput from './components/PropertySelectInput.vue'
+import {
+  defaultFillColor,
+  defaultOutlineColor,
+  defaultTextColor,
+} from '@/types/DefaultColors'
 
 defineProps<{
   isCollapsed?: boolean
@@ -182,16 +187,16 @@ const hasIconElements = computed(() =>
 )
 
 // Local state
-const outlineColorValue = ref('#000000')
-const fillColorValue = ref('#transparent')
+const outlineColorValue = ref('defaultOutlineColor')
+const fillColorValue = ref('defaultFillColor')
 const strokeWeightValue = ref(1)
 const xValue = ref(0)
 const yValue = ref(0)
 const textContentValue = ref('')
 const fontFamilyValue = ref('Arial')
-const textColorValue = ref('#000000')
+const textColorValue = ref('defaultTextColor')
 const fontSizeValue = ref(16)
-const iconColorValue = ref('#000000')
+const iconColorValue = ref('defaultOutlineColor')
 const iconStrokeWeightValue = ref(2)
 
 const fontFamilyOptions = [
@@ -212,23 +217,23 @@ watch(
     }
     if (newElement && newElement.type === 'shape') {
       const shape = newElement as ShapeElement
-      outlineColorValue.value = shape.outline || '#000000'
-      fillColorValue.value = shape.fill || 'transparent'
+      outlineColorValue.value = shape.outline || defaultOutlineColor
+      fillColorValue.value = shape.fill || defaultFillColor
       strokeWeightValue.value = shape.strokeWeight || 0
       // Unified text properties: content, color, fontFamily, fontSize
       textContentValue.value = shape.content || ''
       fontFamilyValue.value = shape.fontFamily || 'Arial'
-      textColorValue.value = shape.color || '#000000'
+      textColorValue.value = shape.color || defaultTextColor
       fontSizeValue.value = shape.fontSize || 16
     } else if (newElement && newElement.type === 'text') {
       // Same property names as shape: content, color, fontFamily, fontSize
       textContentValue.value = newElement.content
       fontFamilyValue.value = newElement.fontFamily
-      textColorValue.value = newElement.color
+      textColorValue.value = newElement.color || defaultTextColor
       fontSizeValue.value = newElement.fontSize
     } else if (newElement && newElement.type === 'icon') {
       const icon = newElement as IconElement
-      iconColorValue.value = icon.color
+      iconColorValue.value = icon.color || defaultOutlineColor
       iconStrokeWeightValue.value = icon.strokeWeight
     }
   },

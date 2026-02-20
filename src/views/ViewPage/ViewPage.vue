@@ -53,7 +53,7 @@ import { Button } from '@/components/ui/button'
 
 const elementsStore = useElementsStore()
 const { loadFromFile } = useCanvasIO()
-const canvasRef = ref<InstanceType<typeof GridCanvas> | null>(null)
+
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 onMounted(() => {

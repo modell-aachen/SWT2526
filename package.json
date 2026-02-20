@@ -1,8 +1,21 @@
 {
   "name": "whiteboard-v2",
-  "private": true,
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "type": "module",
+  "main": "./dist/whiteboard-editor.umd.cjs",
+  "module": "./dist/whiteboard-editor.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/whiteboard-editor.js",
+      "require": "./dist/whiteboard-editor.umd.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./style.css": "./dist/style.css"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
@@ -47,6 +60,7 @@
     "tw-animate-css": "^1.4.0",
     "typescript": "^5.9.3",
     "vite": "^7.2.2",
+    "vite-plugin-dts": "^4.5.4",
     "vitest": "^4.0.9",
     "vue-eslint-parser": "^10.2.0",
     "vue-tsc": "^3.1.3"

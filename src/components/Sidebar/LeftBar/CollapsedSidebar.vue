@@ -23,7 +23,10 @@
           class="w-full justify-start gap-2 h-10 ml-1"
           @click="elementsStore.addText()"
         >
-          <Type class="w-4 h-4 text-ma-text-01" />
+          <Type
+            :style="{ color: defaultOutlineColor }"
+            class="w-4 h-4 text-ma-text-01"
+          />
         </Button>
         <div class="w-full h-px bg-ma-grey-300 my-1" />
         <IconPicker collapsed />
@@ -44,6 +47,7 @@ import SaveLoadButtons from './SaveLoadButtons.vue'
 import SidebarActions from './SidebarActions.vue'
 import { useElementsStore } from '@/stores/elements/elements'
 import type { ShapeType } from '@/types/ShapeType'
+import { defaultOutlineColor } from '@/types/DefaultColors'
 
 defineEmits<{
   'clear-all': []

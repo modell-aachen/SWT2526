@@ -41,8 +41,8 @@ const props = defineProps({
   height: { type: Number, required: true },
   shapeType: { type: String, required: true },
   strokeWeight: { type: Number, default: 3 },
-  outline: { type: String, default: '#000' },
-  fill: { type: String, default: 'transparent' },
+  outline: { type: String, default: 'defaultOutlineColor' },
+  fill: { type: String, default: 'defaultFillColor' },
   customPoints: { type: String, default: '' },
 })
 

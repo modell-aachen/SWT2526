@@ -200,9 +200,9 @@ export function rotateGroupChildren(
     const offsetX = childCenterX - groupCenterX
     const offsetY = childCenterY - groupCenterY
 
-    // Rotate offset by 90° clockwise: (x, y) -> (y, -x)
-    const newOffsetX = offsetY
-    const newOffsetY = -offsetX
+    // Rotate offset by 90° clockwise in SVG coords (Y down): (x, y) -> (-y, x)
+    const newOffsetX = -offsetY
+    const newOffsetY = offsetX
 
     const newChildCenterX = groupCenterX + newOffsetX
     const newChildCenterY = groupCenterY + newOffsetY

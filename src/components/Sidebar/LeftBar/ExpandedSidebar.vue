@@ -23,7 +23,10 @@
           title="Add Text"
           @click="elementsStore.addText()"
         >
-          <Type class="w-4 h-4 text-ma-text-01" />
+          <Type
+            :style="{ color: defaultOutlineColor }"
+            class="w-4 h-4 text-ma-text-01"
+          />
           <span class="text-sm text-ma-text-01">Text</span>
         </Button>
       </SidebarGroup>
@@ -73,6 +76,7 @@ import SidebarActions from './SidebarActions.vue'
 import CustomShapeDialog from './CustomShapeDialog.vue'
 import { useElementsStore } from '@/stores/elements/elements'
 import type { ShapeType } from '@/types/ShapeType'
+import { defaultOutlineColor } from '@/types/DefaultColors'
 
 defineEmits<{
   'clear-all': []

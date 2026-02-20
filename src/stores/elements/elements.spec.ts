@@ -21,8 +21,14 @@ describe('Elements Store', () => {
     const store = useElementsStore()
     store.addShape('rectangle')
     expect(store.elements).toHaveLength(1)
-    expect(store.elements[0]!.type).toBe('shape')
-    expect(store.selectedElementId).toBe(store.elements[0]!.id)
+    const element = store.elements[0] as ShapeElement
+    expect(element.type).toBe('shape')
+    expect(store.selectedElementId).toBe(element.id)
+    expect(element.fill).toBe('#cfe4ed')
+    expect(element.outline).toBe('#279ac8')
+    expect(element.fontSize).toBe(16)
+    expect(element.fontFamily).toBe('Arial')
+    expect(element.color).toBe('#073446')
   })
 
   it('adds a text element', () => {
@@ -31,7 +37,9 @@ describe('Elements Store', () => {
     const element = store.elements[0] as TextElement
     expect(element).toBeDefined()
     expect(element.type).toBe('text')
+    expect(store.selectedElementId).toBe(element.id)
     expect(element.content).toBe('Double click to edit')
+    expect(element.color).toBe('#073446')
   })
 
   it('saves custom shape', () => {
@@ -146,7 +154,9 @@ describe('Elements Store', () => {
     const element = store.elements[0] as IconElement
     expect(element).toBeDefined()
     expect(element.type).toBe('icon')
+    expect(store.selectedElementId).toBe(element.id)
     expect(element.iconType).toBe('star')
+    expect(element.color).toBe('#279ac8')
   })
 
   it('updates icon color', () => {

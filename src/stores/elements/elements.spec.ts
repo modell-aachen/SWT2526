@@ -24,11 +24,11 @@ describe('Elements Store', () => {
     const element = store.elements[0] as ShapeElement
     expect(element.type).toBe('shape')
     expect(store.selectedElementId).toBe(element.id)
-    expect(element.fill).toBe('rgb(156, 210, 232)')
-    expect(element.outline).toBe('rgb(39, 154, 200)')
+    expect(element.fill).toBe('#cfe4ed')
+    expect(element.outline).toBe('#279ac8')
     expect(element.fontSize).toBe(16)
     expect(element.fontFamily).toBe('Arial')
-    expect(element.color).toBe('rgb(7, 52, 70)')
+    expect(element.color).toBe('#073446')
   })
 
   it('adds a text element', () => {
@@ -39,7 +39,7 @@ describe('Elements Store', () => {
     expect(element.type).toBe('text')
     expect(store.selectedElementId).toBe(element.id)
     expect(element.content).toBe('Double click to edit')
-    expect(element.color).toBe('rgb(7, 52, 70)')
+    expect(element.color).toBe('#073446')
   })
 
   it('saves custom shape', () => {
@@ -156,7 +156,7 @@ describe('Elements Store', () => {
     expect(element.type).toBe('icon')
     expect(store.selectedElementId).toBe(element.id)
     expect(element.iconType).toBe('star')
-    expect(element.color).toBe('rgb(39, 154, 200)')
+    expect(element.color).toBe('#279ac8')
   })
 
   it('updates icon color', () => {

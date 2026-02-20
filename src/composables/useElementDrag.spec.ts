@@ -16,7 +16,7 @@ describe('useElementDrag', () => {
     store.addShape('rectangle', 100, 100)
     store.selectElement(store.elements[0]!.id)
 
-    const { handleDrag, activeSnapLines } = useElementDrag()
+    const { handleDrag } = useElementDrag()
     const id = store.elements[0]!.id
 
     handleDrag(id, 10, 20)

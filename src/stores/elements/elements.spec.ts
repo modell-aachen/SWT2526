@@ -5,6 +5,7 @@ import { setActivePinia, createPinia } from 'pinia'
 import { useElementsStore } from './elements'
 import { describe, it, expect, beforeEach } from 'vitest'
 import type { ShapeElement, TextElement, IconElement } from '@/types/Element'
+import type { GroupElement } from '@/types/GroupElement'
 
 describe('Elements Store', () => {
   beforeEach(() => {
@@ -267,9 +268,7 @@ describe('Elements Store', () => {
         const group = store.elements.find((e) => e.type === 'group')
         expect(group).toBeDefined()
         expect(group!.type).toBe('group')
-        // @ts-ignore
         expect(group!.childIds).toContain(id1)
-        // @ts-ignore
         expect(group!.childIds).toContain(id2)
 
         // Children should have groupId set
@@ -331,7 +330,6 @@ describe('Elements Store', () => {
         const groups = store.elements.filter((e) => e.type === 'group')
         expect(groups).toHaveLength(1)
 
-        // @ts-ignore
         expect(groups[0]!.childIds).toHaveLength(3)
       })
     })
@@ -453,7 +451,6 @@ describe('Elements Store', () => {
         expect(store.selectedElementIds).toContain(pastedGroup.id)
 
         // Pasted children should reference new group ID
-        // @ts-ignore
         const pastedChildIds = pastedGroup.childIds
         pastedChildIds.forEach((childId: string) => {
           const child = store.elements.find((e) => e.id === childId)
@@ -485,7 +482,6 @@ describe('Elements Store', () => {
         // Duplicated group should have different ID and correct children
         const duplicatedGroup = groups.find((g) => g.id !== originalGroupId)!
         expect(duplicatedGroup).toBeDefined()
-        // @ts-ignore
         expect(duplicatedGroup.childIds).toHaveLength(2)
       })
     })
@@ -507,8 +503,7 @@ describe('Elements Store', () => {
         // Only the ungrouped ellipse should remain
         expect(store.elements).toHaveLength(1)
         expect(store.elements[0]!.type).toBe('shape')
-        // @ts-ignore
-        expect(store.elements[0]!.shapeType).toBe('ellipse')
+        expect((store.elements[0] as ShapeElement).shapeType).toBe('ellipse')
       })
     })
 
@@ -526,8 +521,7 @@ describe('Elements Store', () => {
 
         const groupId = store.selectedElementIds[0]!
         const group = store.elements.find((e) => e.id === groupId)!
-        // @ts-ignore
-        const childIds = group.childIds
+        const childIds = (group as GroupElement).childIds
 
         // Bring to front
         store.bringToFront()
@@ -559,8 +553,7 @@ describe('Elements Store', () => {
 
         const groupId = store.selectedElementIds[0]!
         const group = store.elements.find((e) => e.id === groupId)!
-        // @ts-ignore
-        const childIds = group.childIds
+        const childIds = (group as GroupElement).childIds
 
         store.bringToBack()
 

@@ -12,6 +12,7 @@
         title="Icons"
       >
         <Smile
+          :style="{ color: defaultOutlineColor }"
           :class="['text-ma-text-01', collapsed ? 'w-4 h-4' : 'w-4 h-4']"
         />
         <span v-if="!collapsed" class="text-sm text-ma-text-01">Icons</span>
@@ -32,7 +33,11 @@
           :title="iconName"
           @click="handleIconClick(iconName as string)"
         >
-          <component :is="iconComponent" class="w-5 h-5 text-ma-text-01" />
+          <component
+            :is="iconComponent"
+            class="w-5 h-5 text-ma-text-01"
+            :style="{ color: defaultOutlineColor }"
+          />
         </Button>
       </div>
     </PopoverContent>
@@ -49,6 +54,7 @@ import {
 } from '@/components/ui/popover'
 import { ICONS } from '@/components/Icons'
 import { useElementsStore } from '@/stores/elements/elements'
+import { defaultOutlineColor } from '@/types/DefaultColors'
 
 defineProps<{
   collapsed?: boolean

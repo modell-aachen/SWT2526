@@ -14,8 +14,8 @@
       :shape-type="shapeType"
       :custom-points="customPoints"
       :stroke-weight="1"
-      outline="currentColor"
-      fill="none"
+      :outline="defaultOutlineColor"
+      :fill="defaultFillColor"
       class="pointer-events-none shrink-0"
     />
     <span v-if="!collapsed" class="capitalize">{{ label || shapeType }}</span>
@@ -27,6 +27,7 @@ import { Button } from '@/components/ui/button'
 import type { ShapeType } from '@/types/ShapeType'
 import { useDragStore } from '@/stores/drag/dragGhost'
 import GenericShape from '@/components/Shapes/GenericShape.vue'
+import { defaultFillColor, defaultOutlineColor } from '@/types/DefaultColors'
 
 const props = defineProps<{
   shapeType: ShapeType

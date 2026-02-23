@@ -10,19 +10,20 @@
   >
     <svg
       data-testid="grid-svg"
-      class="absolute top-0 left-0 w-full h-full pointer-events-none z-0 text-ma-grey-200"
+      class="absolute top-0 left-0 pointer-events-none z-0 text-ma-grey-700"
+      :style="containerStyle"
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
         <pattern
           id="grid"
-          :width="20 / zoomStore.zoom"
-          :height="20 / zoomStore.zoom"
+          :width="20 * zoomStore.zoom"
+          :height="20 * zoomStore.zoom"
           patternUnits="userSpaceOnUse"
         >
           <path
             data-testid="grid-pattern-path"
-            d="M 20 0 L 0 0 0 20"
+            :d="`M ${20 * zoomStore.zoom} 0 L 0 0 0 ${20 * zoomStore.zoom}`"
             fill="none"
             stroke="currentColor"
             stroke-width="0.5"

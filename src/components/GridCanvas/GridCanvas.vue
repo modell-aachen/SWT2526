@@ -17,13 +17,13 @@
       <defs>
         <pattern
           id="grid"
-          :width="20 * zoomStore.zoom"
-          :height="20 * zoomStore.zoom"
+          :width="gridSize"
+          :height="gridSize"
           patternUnits="userSpaceOnUse"
         >
           <path
             data-testid="grid-pattern-path"
-            :d="`M ${20 * zoomStore.zoom} 0 L 0 0 0 ${20 * zoomStore.zoom}`"
+            :d="`M ${gridSize} 0 L 0 0 0 ${gridSize}`"
             fill="none"
             stroke="currentColor"
             stroke-width="0.5"
@@ -69,6 +69,8 @@ const emit = defineEmits<{
 }>()
 
 const zoomStore = useZoomStore()
+
+const gridSize = computed(() => zoomStore.zoom * 20)
 
 const baseWidth = computed(() =>
   props.contentWidth && props.contentWidth > 0 ? props.contentWidth : null

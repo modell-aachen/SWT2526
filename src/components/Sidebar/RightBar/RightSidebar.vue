@@ -43,7 +43,7 @@
 
         <div
           v-if="!isGroupSelected"
-          class="border-t border-ma-grey-300 my-2 pt-2"
+          class="border-t border-ma-grey-300 my-2 pt-2 flex flex-col gap-4"
         >
           <h3 class="text-sm font-semibold mb-2 text-ma-text-02">
             Text Overlay

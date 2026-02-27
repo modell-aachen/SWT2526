@@ -1,6 +1,6 @@
 import type { Snapshot } from '@/stores/elements/elements'
-import processLandscapeBlueSnapshot from './process-landscape-blue.json'
-import processLandscapeRedSnapshot from './process-landscape-red.json'
+import processLandscapeConstructionSnapshot from './process-landscape-Construction.json'
+import processLandscapeIMSMarketSnapshot from './process-landscape-IMSMarket.json'
 import processLandscapePdcaSnapshot from './process-landscape-pdca.json'
 import processLandscapeCorporateSnapshot from './process-landscape-corporate.json'
 import processLandscapeI2mSnapshot from './process-landscape-i2m.json'
@@ -13,14 +13,14 @@ export interface Template {
 
 export const templates: Template[] = [
   {
-    name: 'Prozesslandschaft (Blau)',
+    name: 'Prozesslandschaft Construction',
     description: 'Process landscape diagram with blue color scheme (German)',
-    snapshot: processLandscapeBlueSnapshot as Snapshot,
+    snapshot: processLandscapeConstructionSnapshot as Snapshot,
   },
   {
-    name: 'Prozesslandschaft (Rot)',
+    name: 'Prozesslandschaft IMS Markt',
     description: 'Process landscape diagram with red color scheme (German)',
-    snapshot: processLandscapeRedSnapshot as Snapshot,
+    snapshot: processLandscapeIMSMarketSnapshot as Snapshot,
   },
   {
     name: 'Prozesslandschaft (PDCA)',

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "timestamp": 1771494579801,
+  "timestamp": 1772201027363,
   "elements": [
     {
       "id": "shape-60",
@@ -123,7 +123,10 @@
       "strokeWeight": 3,
       "zIndex": 9,
       "rotation": 180,
-      "customPoints": "0,100 97,100 100,50 97,0 0,0 3,50"
+      "customPoints": "0,100 97,100 100,50 97,0 0,0 3,50",
+      "content": "Kontinuierliche und Fortlaufende Verbesserung",
+      "fontSize": 14,
+      "color": "#ffffff"
     },
     {
       "id": "shape-77",
@@ -138,7 +141,10 @@
       "strokeWeight": 3,
       "zIndex": 10,
       "rotation": 0,
-      "customPoints": "0,100 93,100 100,50 93,0 0,0 7,50"
+      "customPoints": "0,100 93,100 100,50 93,0 0,0 7,50",
+      "content": "Vertrieb",
+      "color": "#ffffff",
+      "fontSize": 14
     },
     {
       "id": "shape-78",
@@ -153,7 +159,10 @@
       "strokeWeight": 3,
       "zIndex": 11,
       "rotation": 0,
-      "customPoints": "0,100 93,100 100,50 93,0 0,0 7,50"
+      "customPoints": "0,100 93,100 100,50 93,0 0,0 7,50",
+      "content": "Fertigung",
+      "fontSize": 14,
+      "color": "#ffffff"
     },
     {
       "id": "shape-79",
@@ -168,7 +177,10 @@
       "strokeWeight": 3,
       "zIndex": 12,
       "rotation": 0,
-      "customPoints": "0,100 93,100 100,50 93,0 0,0 7,50"
+      "customPoints": "0,100 93,100 100,50 93,0 0,0 7,50",
+      "content": "Abnahme",
+      "color": "#ffffff",
+      "fontSize": 14
     },
     {
       "id": "shape-80",
@@ -183,7 +195,10 @@
       "strokeWeight": 3,
       "zIndex": 13,
       "rotation": 0,
-      "customPoints": "0,100 93,100 100,50 93,0 0,0 7,50"
+      "customPoints": "0,100 93,100 100,50 93,0 0,0 7,50",
+      "content": "Versand",
+      "fontSize": 14,
+      "color": "#ffffff"
     },
     {
       "id": "shape-81",
@@ -198,7 +213,10 @@
       "strokeWeight": 3,
       "zIndex": 14,
       "rotation": 0,
-      "customPoints": "0,100 93,100 100,50 93,0 0,0 7,50"
+      "customPoints": "0,100 93,100 100,50 93,0 0,0 7,50",
+      "content": "Projekt-\nabschluss",
+      "fontSize": 14,
+      "color": "#ffffff"
     },
     {
       "id": "shape-83",
@@ -213,7 +231,9 @@
       "strokeWeight": 3,
       "zIndex": 16,
       "rotation": 180,
-      "customPoints": "0,100 93,100 100,50 93,0 0,0 7,50"
+      "customPoints": "0,100 93,100 100,50 93,0 0,0 7,50",
+      "content": "Feedback\nReklamation",
+      "fontSize": 14
     },
     {
       "id": "shape-84",
@@ -228,7 +248,9 @@
       "strokeWeight": 3,
       "zIndex": 16,
       "rotation": 0,
-      "customPoints": "0,100 93,100 100,50 93,0 0,0 7,50"
+      "customPoints": "0,100 93,100 100,50 93,0 0,0 7,50",
+      "content": "Baustelle",
+      "fontSize": 14
     },
     {
       "id": "shape-85",
@@ -242,7 +264,10 @@
       "fill": "#74A7FE",
       "strokeWeight": 3,
       "zIndex": 17,
-      "rotation": 0
+      "rotation": 0,
+      "content": "Orga",
+      "fontSize": 14,
+      "color": "#ffffff"
     },
     {
       "id": "shape-86",
@@ -256,7 +281,10 @@
       "fill": "#74A7FE",
       "strokeWeight": 3,
       "zIndex": 18,
-      "rotation": 180
+      "rotation": 180,
+      "content": "IT",
+      "fontSize": 14,
+      "color": "#ffffff"
     },
     {
       "id": "shape-87",
@@ -270,7 +298,10 @@
       "fill": "#74A7FE",
       "strokeWeight": 3,
       "zIndex": 19,
-      "rotation": 0
+      "rotation": 0,
+      "content": "Mitarbeiter",
+      "fontSize": 14,
+      "color": "#ffffff"
     },
     {
       "id": "shape-88",
@@ -284,7 +315,10 @@
       "fill": "#74A7FE",
       "strokeWeight": 3,
       "zIndex": 20,
-      "rotation": 180
+      "rotation": 180,
+      "content": "Einkauf",
+      "fontSize": 14,
+      "color": "#ffffff"
     },
     {
       "id": "shape-89",
@@ -298,7 +332,10 @@
       "fill": "#74A7FE",
       "strokeWeight": 3,
       "zIndex": 21,
-      "rotation": 0
+      "rotation": 0,
+      "content": "Finanzen",
+      "fontSize": 14,
+      "color": "#ffffff"
     },
     {
       "id": "shape-98",
@@ -314,7 +351,9 @@
       "zIndex": 21,
       "rotation": 180,
       "customPoints": "0,100 100,100 80,0 20,0",
-      "content": ""
+      "content": "Operations",
+      "fontSize": 14,
+      "color": "#ffffff"
     },
     {
       "id": "shape-99",
@@ -329,7 +368,10 @@
       "strokeWeight": 3,
       "zIndex": 22,
       "rotation": 0,
-      "customPoints": "9,100 100,100 100,0 9,0 0,50"
+      "customPoints": "9,100 100,100 100,0 9,0 0,50",
+      "content": "Normen, Recht \nund Literatur",
+      "fontSize": 14,
+      "color": "#ffffff"
     },
     {
       "id": "shape-101",
@@ -344,7 +386,10 @@
       "strokeWeight": 3,
       "zIndex": 24,
       "rotation": 180,
-      "customPoints": "9,100 100,100 100,0 9,0 0,50"
+      "customPoints": "9,100 100,100 100,0 9,0 0,50",
+      "content": "Ziele und Politik\nQM / UM / SGA",
+      "fontSize": 14,
+      "color": "#ffffff"
     },
     {
       "id": "shape-102",
@@ -359,7 +404,10 @@
       "strokeWeight": 3,
       "zIndex": 24,
       "rotation": 0,
-      "customPoints": "0,100 100,100 93,0 7,0"
+      "customPoints": "0,100 100,100 93,0 7,0",
+      "content": "Steuerung",
+      "fontSize": 14,
+      "color": "#ffffff"
     },
     {
       "id": "shape-103",
@@ -374,7 +422,10 @@
       "strokeWeight": 3,
       "zIndex": 25,
       "rotation": 180,
-      "customPoints": "0,100 100,100 93,0 7,0"
+      "customPoints": "0,100 100,100 93,0 7,0",
+      "content": "Organisationsstruktur",
+      "fontSize": 14,
+      "color": "#ffffff"
     },
     {
       "id": "icon-104",
@@ -505,7 +556,35 @@
       "strokeWeight": 2,
       "zIndex": 35,
       "rotation": 180
+    },
+    {
+      "id": "text-114",
+      "type": "text",
+      "content": "Kunden",
+      "x": 8,
+      "y": 238,
+      "width": 226,
+      "height": 76,
+      "fontSize": 18,
+      "fontFamily": "Arial",
+      "color": "#000000",
+      "zIndex": 36,
+      "rotation": 270
+    },
+    {
+      "id": "text-115",
+      "type": "text",
+      "content": "Kunden",
+      "x": 757,
+      "y": 238,
+      "width": 226,
+      "height": 76,
+      "fontSize": 18,
+      "fontFamily": "Arial",
+      "color": "#000000",
+      "zIndex": 37,
+      "rotation": 270
     }
   ],
-  "nextId": 114
+  "nextId": 116
 }

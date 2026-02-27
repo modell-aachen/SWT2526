@@ -106,5 +106,6 @@ const shapes: ShapeType[] = [
   'diamond',
   'parallelogram',
   'pentagon',
+  'arrow',
 ]
 </script>

@@ -25,10 +25,16 @@
 import { ref } from 'vue'
 import { ChevronDown } from 'lucide-vue-next'
 
-defineProps<{
-  title: string
-  sidebarCollapsed: boolean
-}>()
+const props = withDefaults(
+  defineProps<{
+    title: string
+    sidebarCollapsed: boolean
+    defaultOpen?: boolean
+  }>(),
+  {
+    defaultOpen: true,
+  }
+)
 
-const isOpen = ref(true)
+const isOpen = ref(props.defaultOpen)
 </script>

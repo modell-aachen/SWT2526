@@ -9,4 +9,5 @@ export type ShapeType =
   | 'parallelogram'
   | 'pentagon'
   | 'arrow'
+  | 'line'
   | 'custom'

@@ -8,9 +8,21 @@
     </div>
 
     <div class="flex-1 overflow-y-auto p-2">
-      <SidebarGroup title="Shapes" :sidebar-collapsed="false">
+      <SidebarGroup title="Basic Shapes" :sidebar-collapsed="false">
         <ShapeButton
-          v-for="shape in shapes"
+          v-for="shape in primaryShapes"
+          :key="shape"
+          :shape-type="shape"
+          :collapsed="false"
+        />
+      </SidebarGroup>
+      <SidebarGroup
+        title="Advanced Shapes"
+        :sidebar-collapsed="false"
+        :default-open="false"
+      >
+        <ShapeButton
+          v-for="shape in secondaryShapes"
           :key="shape"
           :shape-type="shape"
           :collapsed="false"
@@ -95,17 +107,20 @@ defineEmits<{
 
 const isCustomShapeDialogOpen = ref(false)
 const elementsStore = useElementsStore()
-
-const shapes: ShapeType[] = [
+const primaryShapes: ShapeType[] = [
   'rectangle',
+  'chevron',
+  'ellipse',
+  'line',
+  'arrow',
+]
+
+const secondaryShapes: ShapeType[] = [
   'triangle',
   'trapezoid',
-  'chevron',
   'hexagon',
-  'ellipse',
   'diamond',
   'parallelogram',
   'pentagon',
-  'arrow',
 ]
 </script>

@@ -88,8 +88,8 @@
               :height="100"
               shape-type="custom"
               :custom-points="previewPointsString"
-              outline="currentColor"
-              fill="transparent"
+              :outline="defaultOutlineColor"
+              :fill="defaultFillColor"
               class="text-ma-text-01"
             />
           </div>
@@ -120,6 +120,7 @@ import { Label } from '@/components/ui/label'
 import GenericShape from '@/components/Shapes/GenericShape.vue'
 import { useElementsStore } from '@/stores/elements/elements'
 import { Minus, Plus } from 'lucide-vue-next'
+import { defaultFillColor, defaultOutlineColor } from '@/types/DefaultColors'
 
 defineProps<{
   open: boolean

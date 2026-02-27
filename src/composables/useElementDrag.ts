@@ -31,7 +31,7 @@ export function useElementDrag() {
     if (elementsStore.selectedElementIds.length === 1 && !isShiftHeld) {
       const snapResult = calculateSnapResult(
         hypotheticalElement,
-        elementsStore.elements,
+        elementsStore.topLevelElements,
         SNAP_THRESHOLD
       )
 

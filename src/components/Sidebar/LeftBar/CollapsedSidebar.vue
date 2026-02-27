@@ -30,6 +30,13 @@
         </Button>
         <div class="w-full h-px bg-ma-grey-300 my-1" />
         <IconPicker collapsed />
+        <div class="w-full h-px bg-ma-grey-300 my-1" />
+        <TemplateButton
+          v-for="template in templates"
+          :key="template.name"
+          :template="template"
+          collapsed
+        />
       </div>
     </div>
 
@@ -45,9 +52,11 @@ import IconPicker from './IconPicker.vue'
 import ShapeButton from './ShapeButton.vue'
 import SaveLoadButtons from './SaveLoadButtons.vue'
 import SidebarActions from './SidebarActions.vue'
+import TemplateButton from './TemplateButton.vue'
 import { useElementsStore } from '@/stores/elements/elements'
 import type { ShapeType } from '@/types/ShapeType'
 import { defaultOutlineColor } from '@/types/DefaultColors'
+import { templates } from '@/templates'
 
 defineEmits<{
   'clear-all': []

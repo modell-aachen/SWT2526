@@ -29,7 +29,9 @@
         class="flex items-center justify-between p-3 border-b border-ma-grey-300 bg-transparent"
       >
         <div class="flex items-center gap-2.5">
-          <div class="shadow-sm border border-ma-grey-300 bg-ma-grey-100 p-1 rounded-lg">
+          <div
+            class="shadow-sm border border-ma-grey-300 bg-ma-grey-100 p-1 rounded-lg"
+          >
             <Smile class="w-4 h-4 text-ma-text-02" />
           </div>
           <h3 class="text-sm font-semibold tracking-wide text-ma-text-01">

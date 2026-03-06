@@ -78,12 +78,12 @@ describe('EditPage', () => {
       const store = useElementsStore()
       const wrapper = mount(EditPage)
       const floatingControls = wrapper.findComponent(FloatingZoomControls)
-      expect(floatingControls.classes()).toContain('right-[50px]')
+      expect(floatingControls.classes()).toContain('right-4')
 
       store.addShape('rectangle')
       await wrapper.vm.$nextTick()
 
-      expect(floatingControls.classes()).toContain('right-[330px]')
+      expect(floatingControls.classes()).toContain('right-[272px]')
     })
   })
 

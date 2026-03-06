@@ -1,23 +1,24 @@
 <template>
   <div :class="containerClass">
+    <div class="w-full h-px bg-ma-grey-300 my-1" v-if="collapsed" />
     <Button
-      variant="outline"
+      variant="ghost"
       :class="buttonClass"
       data-testid="save-button"
       title="Save to JSON"
       @click="handleSave"
     >
-      <Save class="w-4 h-4" />
+      <Save class="w-4 h-4 text-ma-text-01" />
       <span v-if="!collapsed">Save</span>
     </Button>
     <Button
-      variant="outline"
+      variant="ghost"
       :class="buttonClass"
       data-testid="load-button"
       title="Upload JSON"
       @click="handleUploadClick"
     >
-      <Upload class="w-4 h-4" />
+      <Upload class="w-4 h-4 text-ma-text-01" />
       <span v-if="!collapsed">Load</span>
     </Button>
     <input
@@ -48,12 +49,14 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
 
 const containerClass = computed(() =>
   props.collapsed
-    ? 'p-2 border-t border-ma-grey-300 flex flex-col gap-1 items-center'
-    : 'p-1 border-t border-ma-grey-300 flex gap-1 justify-between'
+    ? 'p-1 flex flex-col gap-1 items-center'
+    : 'p-2 border-t border-ma-grey-300 flex gap-2 justify-between'
 )
 
 const buttonClass = computed(() =>
-  props.collapsed ? 'w-full gap-0' : 'flex-1 gap-2'
+  props.collapsed
+    ? 'w-full h-10 gap-0 text-ma-text-01 hover:bg-ma-grey-200'
+    : 'flex-1 h-9 gap-2 text-sm text-ma-text-01 hover:bg-ma-grey-200'
 )
 
 const handleSave = () => {

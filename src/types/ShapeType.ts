@@ -10,4 +10,5 @@ export type ShapeType =
   | 'pentagon'
   | 'arrow'
   | 'line'
+  | 'horizontal-line'
   | 'custom'

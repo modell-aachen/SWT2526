@@ -111,13 +111,7 @@ defineEmits<{
 
 const isCustomShapeDialogOpen = ref(false)
 const elementsStore = useElementsStore()
-const primaryShapes: ShapeType[] = [
-  'rectangle',
-  'chevron',
-  'ellipse',
-  'line',
-  'arrow',
-]
+const primaryShapes: ShapeType[] = ['rectangle', 'chevron', 'ellipse', 'arrow']
 
 const secondaryShapes: ShapeType[] = [
   'triangle',
@@ -126,5 +120,7 @@ const secondaryShapes: ShapeType[] = [
   'diamond',
   'parallelogram',
   'pentagon',
+  'line',
+  'horizontal-line',
 ]
 </script>

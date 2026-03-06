@@ -4,7 +4,7 @@
     <button
       v-if="!sidebarCollapsed"
       data-testid="sidebar-group-toggle"
-      class="flex items-center justify-between w-full px-1 py-1 text-xs text-ma-text-02 hover:text-ma-text-01 transition-colors"
+      class="flex items-center justify-between w-full py-1 text-xs text-ma-text-02 hover:text-ma-text-01 transition-colors"
       @click="isOpen = !isOpen"
     >
       <span>{{ title }}</span>
@@ -25,10 +25,16 @@
 import { ref } from 'vue'
 import { ChevronDown } from 'lucide-vue-next'
 
-defineProps<{
-  title: string
-  sidebarCollapsed: boolean
-}>()
+const props = withDefaults(
+  defineProps<{
+    title: string
+    sidebarCollapsed: boolean
+    defaultOpen?: boolean
+  }>(),
+  {
+    defaultOpen: true,
+  }
+)
 
-const isOpen = ref(true)
+const isOpen = ref(props.defaultOpen)
 </script>

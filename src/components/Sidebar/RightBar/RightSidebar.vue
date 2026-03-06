@@ -27,19 +27,25 @@
           @change="updateOutline"
         />
 
-        <PropertyColorInput
-          id="shape-fill"
-          v-model="fillColorValue"
-          label="Fill"
-          @change="updateFill"
-        />
+        <SidebarGroup
+          title="Fill & Stroke"
+          :sidebar-collapsed="false"
+          :default-open="false"
+        >
+          <PropertyColorInput
+            id="shape-fill"
+            v-model="fillColorValue"
+            label="Fill"
+            @change="updateFill"
+          />
 
-        <PropertyNumericInput
-          id="shape-stroke-width"
-          v-model="strokeWeightValue"
-          label="Stroke Width"
-          @change="updateStrokeWeight"
-        />
+          <PropertyNumericInput
+            id="shape-stroke-width"
+            v-model="strokeWeightValue"
+            label="Stroke Width"
+            @change="updateStrokeWeight"
+          />
+        </SidebarGroup>
 
         <div
           v-if="!isGroupSelected"
@@ -55,26 +61,32 @@
             @update:model-value="updateTextContent"
           />
 
-          <PropertySelectInput
-            id="shape-font-family"
-            v-model="fontFamilyValue"
-            label="Font Family"
-            :options="fontFamilyOptions"
-          />
+          <SidebarGroup
+            title="Typography"
+            :sidebar-collapsed="false"
+            :default-open="false"
+          >
+            <PropertySelectInput
+              id="shape-font-family"
+              v-model="fontFamilyValue"
+              label="Font Family"
+              :options="fontFamilyOptions"
+            />
 
-          <PropertyNumericInput
-            id="shape-font-size"
-            v-model="fontSizeValue"
-            label="Font Size"
-            @change="updateFontSize"
-          />
+            <PropertyNumericInput
+              id="shape-font-size"
+              v-model="fontSizeValue"
+              label="Font Size"
+              @change="updateFontSize"
+            />
 
-          <PropertyColorInput
-            id="shape-text-color"
-            v-model="textColorValue"
-            label="Text Color"
-            @change="updateTextColor"
-          />
+            <PropertyColorInput
+              id="shape-text-color"
+              v-model="textColorValue"
+              label="Text Color"
+              @change="updateTextColor"
+            />
+          </SidebarGroup>
         </div>
       </template>
 
@@ -91,26 +103,32 @@
           @update:model-value="updateTextContent"
         />
 
-        <PropertySelectInput
-          id="text-font-family"
-          v-model="fontFamilyValue"
-          label="Font Family"
-          :options="fontFamilyOptions"
-        />
+        <SidebarGroup
+          title="Typography"
+          :sidebar-collapsed="false"
+          :default-open="false"
+        >
+          <PropertySelectInput
+            id="text-font-family"
+            v-model="fontFamilyValue"
+            label="Font Family"
+            :options="fontFamilyOptions"
+          />
 
-        <PropertyNumericInput
-          id="text-font-size"
-          v-model="fontSizeValue"
-          label="Font Size"
-          @change="updateFontSize"
-        />
+          <PropertyNumericInput
+            id="text-font-size"
+            v-model="fontSizeValue"
+            label="Font Size"
+            @change="updateFontSize"
+          />
 
-        <PropertyColorInput
-          id="text-color"
-          v-model="textColorValue"
-          label="Color"
-          @change="updateTextColor"
-        />
+          <PropertyColorInput
+            id="text-color"
+            v-model="textColorValue"
+            label="Color"
+            @change="updateTextColor"
+          />
+        </SidebarGroup>
       </template>
       <template v-if="hasIconElements || selectedElement?.type === 'icon'">
         <PropertyColorInput
@@ -140,6 +158,7 @@ import PropertyNumericInput from './components/PropertyNumericInput.vue'
 import PropertyLinkInput from './components/PropertyLinkInput.vue'
 import PropertyTextInput from './components/PropertyTextInput.vue'
 import PropertySelectInput from './components/PropertySelectInput.vue'
+import SidebarGroup from '@/components/Sidebar/SidebarGroup.vue'
 import {
   defaultFillColor,
   defaultOutlineColor,

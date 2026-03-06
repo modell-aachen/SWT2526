@@ -9,7 +9,6 @@
       @click="handleSave"
     >
       <Save class="w-4 h-4 text-ma-text-01" />
-      <span v-if="!collapsed">Save</span>
     </Button>
     <Button
       variant="ghost"
@@ -19,7 +18,15 @@
       @click="handleUploadClick"
     >
       <Upload class="w-4 h-4 text-ma-text-01" />
-      <span v-if="!collapsed">Load</span>
+    </Button>
+    <Button
+      variant="ghost"
+      :class="buttonClass"
+      data-testid="view-button"
+      title="View Mode"
+      @click="handleViewClick"
+    >
+      <Eye class="w-4 h-4 text-ma-text-01" />
     </Button>
     <input
       ref="fileInputRef"
@@ -33,7 +40,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Save, Upload } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
+import { Save, Upload, Eye } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useCanvasIO } from '@/composables/useCanvasIO'
 import { useElementsStore } from '@/stores/elements/elements'
@@ -42,8 +50,13 @@ const props = defineProps<{
   collapsed?: boolean
 }>()
 
+const router = useRouter()
 const elementsStore = useElementsStore()
 const { saveToFile, loadFromFile } = useCanvasIO()
+
+const handleViewClick = () => {
+  router.push('/view')
+}
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
@@ -55,8 +68,8 @@ const containerClass = computed(() =>
 
 const buttonClass = computed(() =>
   props.collapsed
-    ? 'w-full h-10 gap-0 text-ma-text-01 hover:bg-ma-grey-200'
-    : 'flex-1 h-9 gap-2 text-sm text-ma-text-01 hover:bg-ma-grey-200'
+    ? 'w-full h-10 gap-0 text-ma-text-01 hover:bg-ma-grey-200 justify-center'
+    : 'flex-1 h-9 justify-center text-ma-text-01 hover:bg-ma-grey-200'
 )
 
 const handleSave = () => {

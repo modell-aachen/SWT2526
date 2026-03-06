@@ -13,13 +13,22 @@
       </GridCanvas>
 
       <!-- Floating zoom controls: bottom-right -->
-      <FloatingZoomControls :right-sidebar-collapsed="true" />
+      <FloatingZoomControls :right-sidebar-collapsed="true" view-mode />
 
       <!-- Upload button: bottom-left -->
       <div
         data-testid="view-toolbar"
         class="absolute bottom-[50px] left-[50px] z-50 flex items-center gap-2 bg-ma-grey-100 border border-ma-grey-300 rounded-lg shadow-md p-2"
       >
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          data-testid="edit-button"
+          title="Edit Canvas"
+          @click="router.push('/edit')"
+        >
+          <Edit3 class="w-4 h-4 text-ma-text-01" />
+        </Button>
         <Button
           variant="ghost"
           size="icon-sm"
@@ -43,9 +52,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Upload } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
+import { Upload, Edit3 } from 'lucide-vue-next'
 import { useElementsStore } from '@/stores/elements/elements'
 import { useCanvasIO } from '@/composables/useCanvasIO'
+import { useDarkMode } from '@/composables/useDarkMode'
 import GridCanvas from '@/components/GridCanvas/GridCanvas.vue'
 import ElementWrapperReadOnly from '@/components/ElementWrapperReadOnly/ElementWrapperReadOnly.vue'
 import FloatingZoomControls from '@/components/FloatingZoomControls/FloatingZoomControls.vue'
@@ -53,6 +64,9 @@ import { Button } from '@/components/ui/button'
 
 const elementsStore = useElementsStore()
 const { loadFromFile } = useCanvasIO()
+const router = useRouter()
+// Initializing useDarkMode will ensure the persistent dark state applies here too
+useDarkMode()
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
 

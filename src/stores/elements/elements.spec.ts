@@ -39,7 +39,7 @@ describe('Elements Store', () => {
     expect(element).toBeDefined()
     expect(element.type).toBe('text')
     expect(store.selectedElementId).toBe(element.id)
-    expect(element.content).toBe('Double click to edit')
+    expect(element.content).toBe('Text element')
     expect(element.color).toBe('#073446')
   })
 

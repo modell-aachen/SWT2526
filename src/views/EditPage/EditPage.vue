@@ -76,6 +76,41 @@
           />
         </template>
       </GridCanvas>
+
+      <!-- Keyboard legend control (info button + legend) -->
+      <div class="absolute bottom-4 left-4 z-20">
+        <button
+          v-if="!showLegend"
+          aria-label="Show keyboard shortcuts legend"
+          class="bg-white rounded-full shadow p-2 hover:bg-gray-100 focus:outline-none focus:ring"
+          style="
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+          @click="showLegend = true"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            class="w-6 h-6 text-gray-700"
+          >
+            <circle cx="12" cy="12" r="10" stroke-width="2" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 16v-4m0-4h.01"
+            />
+          </svg>
+        </button>
+
+        <KeyboardLegend v-if="showLegend" @close="showLegend = false" />
+      </div>
     </div>
 
     <RightSidebar :is-collapsed="rightSidebarCollapsed" />
@@ -111,6 +146,7 @@ import { useContextBarPosition } from '@/composables/useContextBarPosition'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import { useElementDrag } from '@/composables/useElementDrag'
 import { useCanvasContentSize } from '@/composables/useCanvasContentSize'
+import KeyboardLegend from '@/components/KeyboardLegend/KeyboardLegend.vue'
 
 const elementsStore = useElementsStore()
 const dragStore = useDragStore()
@@ -126,6 +162,7 @@ const { handleDrag, handleDragEnd, activeSnapLines } = useElementDrag()
 const { canvasContentSize } = useCanvasContentSize()
 
 const canvasRef = ref<InstanceType<typeof GridCanvas> | null>(null)
+const showLegend = ref(false)
 
 onMounted(() => {
   if (canvasRef.value?.$el) {

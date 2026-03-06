@@ -19,7 +19,7 @@
       </Button>
     </PopoverTrigger>
     <PopoverContent
-      class="w-64 p-2 bg-ma-surface shadow-xl border-ma-grey-300"
+      class="w-64 p-2 shadow-xl border-ma-grey-300"
       align="start"
       side="right"
       :side-offset="10"

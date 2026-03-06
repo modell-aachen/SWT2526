@@ -182,7 +182,7 @@ export const useElementsStore = defineStore('elements', {
       const newText: TextElement = {
         id: `text-${this.nextId++}`,
         type: 'text',
-        content: 'Double click to edit',
+        content: 'Text element',
         x,
         y,
         width: 200,

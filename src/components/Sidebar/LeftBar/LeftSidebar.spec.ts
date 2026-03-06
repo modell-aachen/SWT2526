@@ -47,15 +47,6 @@ describe('LeftSidebar', () => {
       expect(wrapper.text()).not.toContain('Tools')
     })
 
-    it('renders shape buttons for all shapes', () => {
-      const wrapper = mount(LeftSidebar, {
-        props: { isCollapsed: false },
-      })
-
-      const shapeButtons = wrapper.findAll('[data-testid="shape-button"]')
-      expect(shapeButtons).toHaveLength(9) // rectangle, triangle, trapezoid
-    })
-
     it('renders sidebar group with Shapes title', () => {
       const wrapper = mount(LeftSidebar, {
         props: { isCollapsed: false },

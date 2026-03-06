@@ -62,14 +62,16 @@ import { useElementsStore } from '@/stores/elements/elements'
 
 const props = defineProps<{
   rightSidebarCollapsed: boolean
+  viewMode?: boolean
 }>()
 
 const zoomStore = useZoomStore()
 
 // Position changes based on right sidebar state
-const positionClass = computed(() =>
-  props.rightSidebarCollapsed ? 'right-4' : 'right-[272px]'
-)
+const positionClass = computed(() => {
+  if (props.viewMode) return 'right-[50px]'
+  return props.rightSidebarCollapsed ? 'right-4' : 'right-[272px]'
+})
 
 const autoFit = () => {
   const elementsStore = useElementsStore()

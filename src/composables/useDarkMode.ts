@@ -2,15 +2,15 @@ import { ref } from 'vue'
 
 const STORAGE_KEY = 'darkMode'
 
+const storedValue = localStorage.getItem(STORAGE_KEY)
+const isDark = ref(storedValue === 'true')
+
+// Apply initial state immediately when the module is evaluated
+if (isDark.value) {
+  document.documentElement.classList.add('dark-mode')
+}
+
 export function useDarkMode() {
-  const storedValue = localStorage.getItem(STORAGE_KEY)
-  const isDark = ref(storedValue === 'true')
-
-  // Apply initial state
-  if (isDark.value) {
-    document.documentElement.classList.add('dark-mode')
-  }
-
   const toggle = () => {
     isDark.value = !isDark.value
     if (isDark.value) {

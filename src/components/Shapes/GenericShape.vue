@@ -68,6 +68,8 @@ const points = computed(() => {
       return '50,0 100,38 82,100 18,100 0,38'
     case 'line':
       return '0,100 100,0'
+    case 'horizontal-line':
+      return '0,50 100,50'
     case 'arrow':
       return '0,30 60,30 60,0 100,50 60,100 60,70 0,70'
     default:

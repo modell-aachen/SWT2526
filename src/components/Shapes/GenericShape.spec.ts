@@ -62,6 +62,20 @@ describe('GenericShape', () => {
     expect(polygon.attributes('points')).toBe('20,0 80,0 100,100 0,100')
   })
 
+  it('renders horizontal line correctly', () => {
+    const wrapper = mount(GenericShape, {
+      props: {
+        width: 100,
+        height: 100,
+        shapeType: 'horizontal-line',
+      },
+    })
+
+    const polygon = wrapper.find('polygon')
+    expect(polygon.exists()).toBe(true)
+    expect(polygon.attributes('points')).toBe('0,50 100,50')
+  })
+
   it('renders custom shape correctly', () => {
     const wrapper = mount(GenericShape, {
       props: {

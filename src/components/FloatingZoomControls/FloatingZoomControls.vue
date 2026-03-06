@@ -68,7 +68,7 @@ const zoomStore = useZoomStore()
 
 // Position changes based on right sidebar state
 const positionClass = computed(() =>
-  props.rightSidebarCollapsed ? 'right-[50px]' : 'right-[330px]'
+  props.rightSidebarCollapsed ? 'right-4' : 'right-[272px]'
 )
 
 const autoFit = () => {

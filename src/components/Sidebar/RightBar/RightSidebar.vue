@@ -80,7 +80,7 @@
           />
           <div
             v-else-if="hasTextElements || hasShapeElements"
-            class="text-xs text-ma-text-02 italic py-1"
+            class="text-xs text-ma-text-02 italic py-1 pl-2"
           >
             Select single element to edit text
           </div>

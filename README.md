@@ -1,46 +1,200 @@
-# Whiteboard v2 App
+# Whiteboard-v2
 
-Our SWT 2025 application.
+A modern, Vue 3-based whiteboard and diagramming library for building interactive canvas applications.
 
-## Setup
+## Installation
 
-Make sure you have `NodeJS v24` and `yarn v1` installed
+```bash
+npm install whiteboard-v2
+# or
+yarn add whiteboard-v2
+```
 
-## Start
+### Peer Dependencies
 
-Run `yarn install` once.
-`yarn dev` to start the development server
+This library requires the following peer dependencies:
 
-Navigate to: http://localhost:5173/view or http://localhost:5173/edit
+```bash
+npm install vue@^3.5 pinia@^3.0
+```
+
+## Quick Start
+
+### 1. Import the styles
+
+```ts
+import 'whiteboard-v2/style.css'
+```
+
+### 2. Set up Pinia store
+
+```ts
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import App from './App.vue'
+
+const app = createApp(App)
+app.use(createPinia())
+app.mount('#app')
+```
+
+### 3. Use the components
+
+```vue
+<script setup lang="ts">
+import { EditPage } from 'whiteboard-v2'
+</script>
+
+<template>
+  <EditPage />
+</template>
+```
+
+## Exports
+
+### Components
+
+| Component  | Description                                              |
+| ---------- | -------------------------------------------------------- |
+| `EditPage` | Full-featured editor with sidebars, toolbars, and canvas |
+
+### Stores (Pinia)
+
+| Store              | Description                                                |
+| ------------------ | ---------------------------------------------------------- |
+| `useElementsStore` | Manages canvas elements, selection, clipboard, and history |
+| `useZoomStore`     | Controls zoom level                                        |
+| `useDragStore`     | Manages drag state and ghost elements                      |
+
+### Types
+
+All TypeScript types are exported for type-safe integration:
+
+- `Element` - Base element interface
+- `GroupElement` - Grouped elements
+- `ShapeType` - Available shape types
+- `SnapLine` - Snapping guide types
+- `ElementWrapperEvents` - Event interfaces
+- `ResizeEvents` - Resize event interfaces
 
 ## Features
 
-### Refactor
+### Shape Types
 
-### Bug Fixes
+- Rectangle, Triangle, Trapezoid, Chevron
+- Hexagon, Ellipse, Diamond, Parallelogram
+- Pentagon, Arrow, Line, Horizontal Line
+- Custom shapes
 
-- Shapes Reindraggen bei Zoom (Position und Größe richtig in Vorschau anpassen) (Sam)
+### Editing Capabilities
 
-### Required
+- Drag and drop positioning
+- 8-direction resize handles
+- 90-degree rotation
+- Multi-element selection
+- Shape grouping and ungrouping
+- Copy, paste, and duplicate
+- Undo/redo history (up to 50 states)
+- Smart snap alignment guides
 
-- Shape Groups (Wiem)
-- Responsiveness View Page (Jakob)
-- Arrows between Shapes
-- Move Save & Load from Right Sidebar (Load & Save Left Siedebar, Zoom Floating) (Elisabeth)
-- Arrow-Keys to move Shapes minimally (Sam)
-- "Unclutter" Sidebars (Jakob)
+### Canvas Features
 
-### Optional
+- Grid-based canvas
+- Zoom controls (in, out, fit to view)
+- Dark mode support
+- Save/load JSON files
+- Template support
 
-- Render Markdown?
-- Templates (Jan)
-- Connect Shapes in Datastructure
-- Predefined Colors, ColorPallets?
-- Legend (Shortcuts / Controls)
-- Versioning of a Diagram
-- Visual History Snapshots
+### Keyboard Shortcuts
 
-### Highly Optional (soon™)
+| Shortcut               | Action                        |
+| ---------------------- | ----------------------------- |
+| `Arrow keys`           | Move selected elements (5px)  |
+| `Shift + Arrow keys`   | Move selected elements (20px) |
+| `Ctrl/Cmd + C`         | Copy                          |
+| `Ctrl/Cmd + V`         | Paste                         |
+| `Ctrl/Cmd + D`         | Duplicate                     |
+| `Ctrl/Cmd + G`         | Group elements                |
+| `Ctrl/Cmd + Shift + G` | Ungroup                       |
+| `Ctrl/Cmd + S`         | Save                          |
+| `Delete / Backspace`   | Delete selected               |
 
-- Editable Custom Shapes
-- Edit Page and View Page as Webcomponent / Vue Library
+## Advanced Usage
+
+### Using stores directly
+
+```vue
+<script setup lang="ts">
+import { useElementsStore, useZoomStore } from 'whiteboard-v2'
+
+const elementsStore = useElementsStore()
+const zoomStore = useZoomStore()
+
+// Add an element programmatically
+elementsStore.addElement({
+  type: 'shape',
+  shapeType: 'rectangle',
+  x: 100,
+  y: 100,
+  width: 200,
+  height: 100,
+  fillColor: '#3b82f6',
+  outlineColor: '#1e40af',
+})
+
+// Control zoom
+zoomStore.setZoom(1.5)
+</script>
+```
+
+### Save and load canvas state
+
+```ts
+import { useElementsStore } from 'whiteboard-v2'
+
+const store = useElementsStore()
+
+// Export canvas state
+const canvasData = JSON.stringify(store.elements)
+
+// Import canvas state
+store.elements = JSON.parse(canvasData)
+```
+
+## Upcoming: Improved TypeScript Support
+
+The `swt-export-ready` branch contains improvements for better TypeScript declaration bundling when using the library in other applications. These changes will be merged soon.
+
+## Development
+
+### Prerequisites
+
+- Node.js v24
+- Yarn v1
+
+### Setup
+
+```bash
+yarn install
+yarn dev
+```
+
+Navigate to:
+
+- `http://localhost:5173/edit` - Full editor
+- `http://localhost:5173/view` - Read-only viewer
+
+### Scripts
+
+| Script          | Description                  |
+| --------------- | ---------------------------- |
+| `yarn dev`      | Start development server     |
+| `yarn build`    | Build library for production |
+| `yarn test`     | Run tests in watch mode      |
+| `yarn test:run` | Run tests once               |
+| `yarn lint`     | Lint and fix code            |
+| `yarn format`   | Format code with Prettier    |
+
+## License
+
+MIT License - Modell Aachen GmbH

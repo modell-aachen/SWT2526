@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-1 py-1 pl-2">
+  <div class="flex flex-col gap-1 py-1">
     <Label :for="id" class="text-xs text-ma-text-02">
       {{ label }}
     </Label>

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-1.5 py-1 pl-2">
+  <div class="flex items-center gap-1.5 py-1">
     <Label :for="id" class="text-xs text-ma-text-02 w-12 shrink-0">
       {{ label }}
     </Label>

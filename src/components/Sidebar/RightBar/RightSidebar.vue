@@ -16,7 +16,7 @@
         <!-- Shape Style Section -->
         <SidebarGroup v-if="hasShapeElements" :sidebar-collapsed="false">
           <template #title>
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5 pl-1">
               <Palette class="w-3 h-3" />
               <span>Shape</span>
             </div>
@@ -44,7 +44,7 @@
         <!-- Icon Style Section -->
         <SidebarGroup v-if="hasIconElements" :sidebar-collapsed="false">
           <template #title>
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5 pl-1">
               <Sparkles class="w-3 h-3" />
               <span>Icon</span>
             </div>
@@ -66,7 +66,7 @@
         <!-- Typography Section -->
         <SidebarGroup v-if="showTypographySection" :sidebar-collapsed="false">
           <template #title>
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5 pl-1">
               <Type class="w-3 h-3" />
               <span>Text</span>
             </div>
@@ -80,7 +80,7 @@
           />
           <div
             v-else-if="hasTextElements || hasShapeElements"
-            class="text-xs text-ma-text-02 italic py-1 pl-2"
+            class="text-xs text-ma-text-02 italic py-1"
           >
             Select single element to edit text
           </div>
@@ -111,7 +111,7 @@
           :default-open="false"
         >
           <template #title>
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5 pl-1">
               <LinkIcon class="w-3 h-3" />
               <span>Link</span>
             </div>

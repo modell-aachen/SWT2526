@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { setActivePinia, createPinia } from 'pinia'
 import ElementWrapper from './ElementWrapper.vue'
 import type { ShapeElement, IconElement } from '@/types/Element'
 
@@ -44,6 +45,10 @@ const createIconElement = (overrides?: Partial<IconElement>): IconElement => ({
 })
 
 describe('ElementWrapper', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
   describe('wrapper styles', () => {
     it('applies correct positioning and rotation', () => {
       const wrapper = mount(ElementWrapper, {

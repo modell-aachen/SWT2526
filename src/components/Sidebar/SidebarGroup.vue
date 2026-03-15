@@ -7,7 +7,9 @@
       class="flex items-center justify-between w-full py-1 text-xs text-ma-text-02 hover:text-ma-text-01 transition-colors"
       @click="isOpen = !isOpen"
     >
-      <span>{{ title }}</span>
+      <slot name="title">
+        <span>{{ title }}</span>
+      </slot>
       <ChevronDown
         class="w-3 h-3 transition-transform"
         :class="{ 'rotate-180': !isOpen }"
@@ -27,11 +29,12 @@ import { ChevronDown } from 'lucide-vue-next'
 
 const props = withDefaults(
   defineProps<{
-    title: string
+    title?: string
     sidebarCollapsed: boolean
     defaultOpen?: boolean
   }>(),
   {
+    title: '',
     defaultOpen: true,
   }
 )

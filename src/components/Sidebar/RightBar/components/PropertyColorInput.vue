@@ -1,39 +1,29 @@
 <template>
-  <div class="flex flex-col gap-2">
-    <Label :for="id" class="text-xs font-medium text-ma-text-01">
+  <div class="flex items-center gap-2 py-1">
+    <Label :for="id" class="text-xs text-ma-text-02 w-14 shrink-0">
       {{ label }}
     </Label>
     <div
-      class="flex gap-2 items-center border border-ma-grey-500 rounded-md bg-ma-grey-200 overflow-hidden"
+      class="flex flex-1 items-center h-7 border border-ma-grey-300 rounded bg-ma-grey-200 overflow-hidden"
     >
-      <div
-        class="flex flex-1 items-center h-8 border border-ma-grey-300 rounded-md bg-ma-grey-200 overflow-hidden"
-      >
-        <input
-          type="color"
-          class="w-8 h-full border-none p-0 cursor-pointer"
-          :value="modelValue"
-          @input="
-            $emit(
-              'update:modelValue',
-              ($event.target as HTMLInputElement).value
-            )
-          "
-          @change="$emit('change', ($event.target as HTMLInputElement).value)"
-        />
-        <input
-          :id="id"
-          :value="modelValue"
-          class="flex-1 h-full px-2 text-xs outline-none min-w-0 bg-transparent text-ma-text-01 placeholder:text-muted-foreground uppercase"
-          @input="
-            $emit(
-              'update:modelValue',
-              ($event.target as HTMLInputElement).value
-            )
-          "
-          @change="$emit('change', ($event.target as HTMLInputElement).value)"
-        />
-      </div>
+      <input
+        type="color"
+        class="w-7 h-full border-none p-0 cursor-pointer"
+        :value="modelValue"
+        @input="
+          $emit('update:modelValue', ($event.target as HTMLInputElement).value)
+        "
+        @change="$emit('change', ($event.target as HTMLInputElement).value)"
+      />
+      <input
+        :id="id"
+        :value="modelValue"
+        class="flex-1 h-full px-2 text-xs outline-none min-w-0 bg-transparent text-ma-text-01 uppercase"
+        @input="
+          $emit('update:modelValue', ($event.target as HTMLInputElement).value)
+        "
+        @change="$emit('change', ($event.target as HTMLInputElement).value)"
+      />
     </div>
   </div>
 </template>

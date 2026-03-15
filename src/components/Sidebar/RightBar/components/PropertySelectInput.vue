@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-col gap-2">
-    <Label :for="id" class="text-xs font-medium text-ma-text-01">
+  <div class="flex items-center gap-2 py-1">
+    <Label :for="id" class="text-xs text-ma-text-02 w-14 shrink-0">
       {{ label }}
     </Label>
     <div
-      class="flex items-center border border-ma-grey-300 rounded-md bg-ma-grey-200 overflow-hidden h-8"
+      class="flex flex-1 items-center h-7 border border-ma-grey-300 rounded bg-ma-grey-200 overflow-hidden"
     >
       <select
         :id="id"
@@ -23,7 +23,7 @@
         </option>
       </select>
       <div class="px-2 pointer-events-none text-ma-text-02">
-        <ChevronDown class="w-4 h-4" />
+        <ChevronDown class="w-3 h-3" />
       </div>
     </div>
   </div>

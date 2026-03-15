@@ -1,23 +1,16 @@
 <template>
-  <div class="flex flex-col gap-2">
-    <Label :for="id" class="text-xs font-medium text-ma-text-01">
+  <div class="flex flex-col gap-1 py-1">
+    <Label :for="id" class="text-xs text-ma-text-02">
       {{ label }}
     </Label>
-    <div
-      class="flex flex-col border border-ma-grey-300 rounded-md bg-ma-grey-200 overflow-hidden"
-    >
-      <textarea
-        :id="id"
-        class="flex-1 p-2 text-xs outline-none min-w-0 bg-ma-grey-200 text-ma-text-01 resize-y min-h-[60px]"
-        :value="modelValue"
-        @input="
-          $emit(
-            'update:modelValue',
-            ($event.target as HTMLTextAreaElement).value
-          )
-        "
-      ></textarea>
-    </div>
+    <textarea
+      :id="id"
+      class="w-full p-2 text-xs outline-none bg-ma-grey-200 text-ma-text-01 resize-y min-h-[48px] border border-ma-grey-300 rounded"
+      :value="modelValue"
+      @input="
+        $emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)
+      "
+    ></textarea>
   </div>
 </template>
 

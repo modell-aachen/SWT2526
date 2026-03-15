@@ -1,8 +1,6 @@
 import './style.css'
 
-export { default as GridCanvas } from './components/GridCanvas/GridCanvas.vue'
 export { default as EditPage } from './views/EditPage/EditPage.vue'
-export { default as ElementWrapper } from './components/ElementWrapper/ElementWrapper.vue'
 
 // Export stores and composables
 export { useElementsStore } from './stores/elements/elements'

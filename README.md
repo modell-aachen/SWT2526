@@ -54,17 +54,17 @@ import { EditPage } from 'whiteboard-v2'
 
 ### Components
 
-| Component | Description |
-|-----------|-------------|
+| Component  | Description                                              |
+| ---------- | -------------------------------------------------------- |
 | `EditPage` | Full-featured editor with sidebars, toolbars, and canvas |
 
 ### Stores (Pinia)
 
-| Store | Description |
-|-------|-------------|
+| Store              | Description                                                |
+| ------------------ | ---------------------------------------------------------- |
 | `useElementsStore` | Manages canvas elements, selection, clipboard, and history |
-| `useZoomStore` | Controls zoom level |
-| `useDragStore` | Manages drag state and ghost elements |
+| `useZoomStore`     | Controls zoom level                                        |
+| `useDragStore`     | Manages drag state and ghost elements                      |
 
 ### Types
 
@@ -107,17 +107,17 @@ All TypeScript types are exported for type-safe integration:
 
 ### Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `Arrow keys` | Move selected elements (5px) |
-| `Shift + Arrow keys` | Move selected elements (20px) |
-| `Ctrl/Cmd + C` | Copy |
-| `Ctrl/Cmd + V` | Paste |
-| `Ctrl/Cmd + D` | Duplicate |
-| `Ctrl/Cmd + G` | Group elements |
-| `Ctrl/Cmd + Shift + G` | Ungroup |
-| `Ctrl/Cmd + S` | Save |
-| `Delete / Backspace` | Delete selected |
+| Shortcut               | Action                        |
+| ---------------------- | ----------------------------- |
+| `Arrow keys`           | Move selected elements (5px)  |
+| `Shift + Arrow keys`   | Move selected elements (20px) |
+| `Ctrl/Cmd + C`         | Copy                          |
+| `Ctrl/Cmd + V`         | Paste                         |
+| `Ctrl/Cmd + D`         | Duplicate                     |
+| `Ctrl/Cmd + G`         | Group elements                |
+| `Ctrl/Cmd + Shift + G` | Ungroup                       |
+| `Ctrl/Cmd + S`         | Save                          |
+| `Delete / Backspace`   | Delete selected               |
 
 ## Advanced Usage
 
@@ -180,19 +180,20 @@ yarn dev
 ```
 
 Navigate to:
+
 - `http://localhost:5173/edit` - Full editor
 - `http://localhost:5173/view` - Read-only viewer
 
 ### Scripts
 
-| Script | Description |
-|--------|-------------|
-| `yarn dev` | Start development server |
-| `yarn build` | Build library for production |
-| `yarn test` | Run tests in watch mode |
-| `yarn test:run` | Run tests once |
-| `yarn lint` | Lint and fix code |
-| `yarn format` | Format code with Prettier |
+| Script          | Description                  |
+| --------------- | ---------------------------- |
+| `yarn dev`      | Start development server     |
+| `yarn build`    | Build library for production |
+| `yarn test`     | Run tests in watch mode      |
+| `yarn test:run` | Run tests once               |
+| `yarn lint`     | Lint and fix code            |
+| `yarn format`   | Format code with Prettier    |
 
 ## License
 

@@ -45,9 +45,10 @@
           v-for="shape in elementsStore.customShapes"
           :key="shape.name"
           variant="ghost"
-          class="h-10 w-10 p-0 hover:bg-toolbar-btn-bg-hover transition-colors rounded-lg flex items-center justify-center cursor-grab"
+          class="h-10 w-10 p-0 hover:bg-toolbar-btn-bg-hover transition-colors rounded-lg flex items-center justify-center cursor-pointer"
           :title="shape.name"
-          @mousedown="handleCustomShapeMouseDown(shape.points, $event)"
+          @mousedown="(e) => handleCustomShapeMouseDown(shape.points, e)"
+          @click="() => handleCustomShapeClick(shape.points)"
         >
           <GenericShape
             :width="24"
@@ -75,6 +76,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { Pencil, Plus } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import {
@@ -98,7 +100,44 @@ defineEmits<{
 const dragStore = useDragStore()
 const elementsStore = useElementsStore()
 
+const mouseDownPos = ref<{ x: number; y: number } | null>(null)
+const isDragging = ref(false)
+const currentPoints = ref<string | null>(null)
+
 const handleCustomShapeMouseDown = (points: string, event: MouseEvent) => {
-  dragStore.startDrag('custom', event, points)
+  mouseDownPos.value = { x: event.clientX, y: event.clientY }
+  isDragging.value = false
+  currentPoints.value = points
+
+  const onMouseMove = (e: MouseEvent) => {
+    if (!mouseDownPos.value) return
+
+    const deltaX = Math.abs(e.clientX - mouseDownPos.value.x)
+    const deltaY = Math.abs(e.clientY - mouseDownPos.value.y)
+
+    if (deltaX > 5 || deltaY > 5) {
+      isDragging.value = true
+      dragStore.startDrag('custom', event, points)
+      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('mouseup', onMouseUp)
+    }
+  }
+
+  const onMouseUp = () => {
+    document.removeEventListener('mousemove', onMouseMove)
+    document.removeEventListener('mouseup', onMouseUp)
+    mouseDownPos.value = null
+  }
+
+  document.addEventListener('mousemove', onMouseMove)
+  document.addEventListener('mouseup', onMouseUp)
+}
+
+const handleCustomShapeClick = (points: string) => {
+  if (!isDragging.value) {
+    const center = dragStore.viewportCenter
+    elementsStore.addShape('custom', center.x, center.y, points)
+  }
+  isDragging.value = false
 }
 </script>

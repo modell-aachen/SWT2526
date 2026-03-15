@@ -72,6 +72,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { useElementsStore } from '@/stores/elements/elements'
+import { useDragStore } from '@/stores/drag/dragGhost'
 import { defaultOutlineColor } from '@/types/DefaultColors'
 import type { ICON_CATEGORIES } from '@/components/Icons'
 
@@ -81,9 +82,11 @@ defineProps<{
 }>()
 
 const elementsStore = useElementsStore()
+const dragStore = useDragStore()
 
 const handleIconClick = (iconName: string) => {
-  elementsStore.addIcon(iconName)
+  const center = dragStore.viewportCenter
+  elementsStore.addIcon(iconName, center.x, center.y)
 }
 </script>
 

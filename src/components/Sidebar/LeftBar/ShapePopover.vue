@@ -48,9 +48,10 @@
           v-for="shape in shapes"
           :key="shape"
           variant="ghost"
-          class="h-10 w-10 p-0 hover:bg-toolbar-btn-bg-hover transition-colors rounded-lg flex items-center justify-center cursor-grab"
+          class="h-10 w-10 p-0 hover:bg-toolbar-btn-bg-hover transition-colors rounded-lg flex items-center justify-center cursor-pointer"
           :title="shape"
-          @mousedown="handleShapeMouseDown(shape, $event)"
+          @mousedown="(e) => handleShapeMouseDown(shape, e)"
+          @click="() => handleShapeClick(shape)"
         >
           <GenericShape
             :width="24"
@@ -68,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Component } from 'vue'
+import { ref, type Component } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
   Popover,
@@ -77,6 +78,7 @@ import {
 } from '@/components/ui/popover'
 import GenericShape from '@/components/Shapes/GenericShape.vue'
 import { useDragStore } from '@/stores/drag/dragGhost'
+import { useElementsStore } from '@/stores/elements/elements'
 import { defaultFillColor, defaultOutlineColor } from '@/types/DefaultColors'
 import type { ShapeType } from '@/types/ShapeType'
 
@@ -88,8 +90,44 @@ defineProps<{
 }>()
 
 const dragStore = useDragStore()
+const elementsStore = useElementsStore()
+
+const mouseDownPos = ref<{ x: number; y: number } | null>(null)
+const isDragging = ref(false)
 
 const handleShapeMouseDown = (shapeType: ShapeType, event: MouseEvent) => {
-  dragStore.startDrag(shapeType, event)
+  mouseDownPos.value = { x: event.clientX, y: event.clientY }
+  isDragging.value = false
+
+  const onMouseMove = (e: MouseEvent) => {
+    if (!mouseDownPos.value) return
+
+    const deltaX = Math.abs(e.clientX - mouseDownPos.value.x)
+    const deltaY = Math.abs(e.clientY - mouseDownPos.value.y)
+
+    if (deltaX > 5 || deltaY > 5) {
+      isDragging.value = true
+      dragStore.startDrag(shapeType, event)
+      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('mouseup', onMouseUp)
+    }
+  }
+
+  const onMouseUp = () => {
+    document.removeEventListener('mousemove', onMouseMove)
+    document.removeEventListener('mouseup', onMouseUp)
+    mouseDownPos.value = null
+  }
+
+  document.addEventListener('mousemove', onMouseMove)
+  document.addEventListener('mouseup', onMouseUp)
+}
+
+const handleShapeClick = (shapeType: ShapeType) => {
+  if (!isDragging.value) {
+    const center = dragStore.viewportCenter
+    elementsStore.addShape(shapeType, center.x, center.y)
+  }
+  isDragging.value = false
 }
 </script>

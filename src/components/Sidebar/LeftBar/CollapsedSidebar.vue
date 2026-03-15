@@ -34,7 +34,7 @@
           variant="ghost"
           class="w-10 h-10 p-0 justify-center ml-1"
           title="Add Text"
-          @click="elementsStore.addText()"
+          @click="addTextAtCenter"
         >
           <Type
             :style="{ color: defaultOutlineColor }"
@@ -85,6 +85,7 @@ import SidebarActions from './SidebarActions.vue'
 import CustomShapeDialog from './CustomShapeDialog.vue'
 import TemplateButton from './TemplateButton.vue'
 import { useElementsStore } from '@/stores/elements/elements'
+import { useDragStore } from '@/stores/drag/dragGhost'
 import { ICON_CATEGORIES } from '@/components/Icons'
 import type { ShapeType } from '@/types/ShapeType'
 import { defaultOutlineColor } from '@/types/DefaultColors'
@@ -96,6 +97,12 @@ defineEmits<{
 
 const isCustomShapeDialogOpen = ref(false)
 const elementsStore = useElementsStore()
+const dragStore = useDragStore()
+
+const addTextAtCenter = () => {
+  const center = dragStore.viewportCenter
+  elementsStore.addText(center.x, center.y)
+}
 
 const primaryShapes: ShapeType[] = ['rectangle', 'chevron', 'ellipse', 'arrow']
 

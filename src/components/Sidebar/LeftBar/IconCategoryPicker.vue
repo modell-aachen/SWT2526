@@ -50,13 +50,14 @@
           v-for="(iconComponent, iconName) in category.icons"
           :key="iconName"
           variant="ghost"
-          class="h-9 w-9 p-0 hover:bg-toolbar-btn-bg-hover transition-colors rounded-lg flex items-center justify-center group"
+          class="h-9 w-9 p-0 hover:bg-toolbar-btn-bg-hover transition-colors rounded-lg flex items-center justify-center"
           :title="iconName"
           @click="handleIconClick(iconName as string)"
         >
           <component
             :is="iconComponent"
-            class="w-5 h-5 text-ma-text-02 group-hover:text-ma-text-01 transition-colors"
+            :style="{ color: defaultOutlineColor }"
+            class="w-5 h-5"
           />
         </Button>
       </div>

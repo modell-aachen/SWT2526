@@ -10,7 +10,10 @@
     :data-testid="`template-button-${name}`"
     @click="handleClick"
   >
-    <LayoutTemplate class="w-4 h-4 text-ma-text-01 shrink-0" />
+    <FileStack
+      :style="{ color: defaultOutlineColor }"
+      class="w-4 h-4 shrink-0"
+    />
     <span v-if="!collapsed" class="text-sm text-ma-text-01 truncate">{{
       name
     }}</span>
@@ -18,9 +21,10 @@
 </template>
 
 <script setup lang="ts">
-import { LayoutTemplate } from 'lucide-vue-next'
+import { FileStack } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useElementsStore } from '@/stores/elements/elements'
+import { defaultOutlineColor } from '@/types/DefaultColors'
 import type { Template } from '@/templates'
 
 const props = defineProps<{

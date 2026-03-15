@@ -15,7 +15,7 @@ yarn add whiteboard-v2
 This library requires the following peer dependencies:
 
 ```bash
-npm install vue@^3.5 pinia@^3.0 vue-router@^4.6
+npm install vue@^3.5 pinia@^3.0
 ```
 
 ## Quick Start

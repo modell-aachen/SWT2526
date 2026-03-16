@@ -34,6 +34,7 @@ import {
   Clock,
   Calendar,
   Target,
+  Shapes,
 } from 'lucide-vue-next'
 
 export const ICONS = {
@@ -74,4 +75,61 @@ export const ICONS = {
   target: Target,
 }
 
+export const ICON_CATEGORIES = {
+  general: {
+    label: 'General',
+    icon: Shapes,
+    icons: {
+      arrowUp: ArrowUp,
+      arrowDown: ArrowDown,
+      arrowLeft: ArrowLeft,
+      arrowRight: ArrowRight,
+      checkCircle: CheckCircle,
+      alertTriangle: AlertTriangle,
+      info: Info,
+      settings: Settings,
+      target: Target,
+    },
+  },
+  business: {
+    label: 'Business',
+    icon: Briefcase,
+    icons: {
+      user: User,
+      users: Users,
+      building: Building,
+      factory: Factory,
+      briefcase: Briefcase,
+      fileText: FileText,
+      folder: Folder,
+      database: Database,
+      clipboardList: ClipboardList,
+      activity: Activity,
+      barChart: BarChart,
+      pieChart: PieChart,
+      trendingUp: TrendingUp,
+      dollarSign: DollarSign,
+      creditCard: CreditCard,
+    },
+  },
+  techLogistics: {
+    label: 'Tech & Logistics',
+    icon: Server,
+    icons: {
+      server: Server,
+      monitor: Monitor,
+      smartphone: Smartphone,
+      mail: Mail,
+      messageSquare: MessageSquare,
+      phone: Phone,
+      truck: Truck,
+      package: Package,
+      mapPin: MapPin,
+      clock: Clock,
+      calendar: Calendar,
+    },
+  },
+}
+
 export type IconType = keyof typeof ICONS
+export type IconCategory = keyof typeof ICON_CATEGORIES

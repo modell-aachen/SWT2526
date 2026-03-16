@@ -12,25 +12,47 @@
     <div class="flex-1 overflow-y-auto p-1">
       <div class="flex flex-col gap-1">
         <ShapeButton
-          v-for="shape in shapes"
+          v-for="shape in primaryShapes"
           :key="shape"
           :shape-type="shape"
           collapsed
         />
+        <ShapePopover
+          title="Advanced"
+          :trigger-icon="LayoutGrid"
+          :shapes="advancedShapes"
+          collapsed
+        />
+        <CustomShapePopover
+          collapsed
+          @add-custom="isCustomShapeDialogOpen = true"
+        />
+
         <div class="w-full h-px bg-ma-grey-300 my-1" />
+
         <Button
           variant="ghost"
-          class="w-full justify-start gap-2 h-10 ml-1"
-          @click="elementsStore.addText()"
+          class="w-10 h-10 p-0 justify-center ml-1"
+          title="Add Text"
+          @click="addTextAtCenter"
         >
           <Type
             :style="{ color: defaultOutlineColor }"
             class="w-4 h-4 text-ma-text-01"
           />
         </Button>
+
         <div class="w-full h-px bg-ma-grey-300 my-1" />
-        <IconPicker collapsed />
+
+        <IconCategoryPicker
+          v-for="(category, key) in ICON_CATEGORIES"
+          :key="key"
+          :category="category"
+          collapsed
+        />
+
         <div class="w-full h-px bg-ma-grey-300 my-1" />
+
         <TemplateButton
           v-for="template in templates"
           :key="template.name"
@@ -40,20 +62,31 @@
       </div>
     </div>
 
+    <CustomShapeDialog
+      :open="isCustomShapeDialogOpen"
+      @update:open="isCustomShapeDialogOpen = $event"
+    />
+
     <SaveLoadButtons collapsed />
     <SidebarActions collapsed @clear-all="$emit('clear-all')" />
   </aside>
 </template>
 
 <script setup lang="ts">
-import { Wrench, Type } from 'lucide-vue-next'
+import { ref } from 'vue'
+import { Wrench, Type, LayoutGrid } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
-import IconPicker from './IconPicker.vue'
 import ShapeButton from './ShapeButton.vue'
+import ShapePopover from './ShapePopover.vue'
+import CustomShapePopover from './CustomShapePopover.vue'
+import IconCategoryPicker from './IconCategoryPicker.vue'
 import SaveLoadButtons from './SaveLoadButtons.vue'
 import SidebarActions from './SidebarActions.vue'
+import CustomShapeDialog from './CustomShapeDialog.vue'
 import TemplateButton from './TemplateButton.vue'
 import { useElementsStore } from '@/stores/elements/elements'
+import { useDragStore } from '@/stores/drag/dragGhost'
+import { ICON_CATEGORIES } from '@/components/Icons'
 import type { ShapeType } from '@/types/ShapeType'
 import { defaultOutlineColor } from '@/types/DefaultColors'
 import { templates } from '@/templates'
@@ -62,16 +95,25 @@ defineEmits<{
   'clear-all': []
 }>()
 
-const shapes: ShapeType[] = [
-  'rectangle',
+const isCustomShapeDialogOpen = ref(false)
+const elementsStore = useElementsStore()
+const dragStore = useDragStore()
+
+const addTextAtCenter = () => {
+  const center = dragStore.viewportCenter
+  elementsStore.addText(center.x, center.y)
+}
+
+const primaryShapes: ShapeType[] = ['rectangle', 'chevron', 'ellipse', 'arrow']
+
+const advancedShapes: ShapeType[] = [
   'triangle',
   'trapezoid',
-  'chevron',
   'hexagon',
-  'ellipse',
   'diamond',
   'parallelogram',
   'pentagon',
+  'line',
+  'horizontal-line',
 ]
-const elementsStore = useElementsStore()
 </script>

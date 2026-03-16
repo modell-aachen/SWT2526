@@ -22,6 +22,31 @@ export const useDragStore = defineStore('drag', {
     canvasElement: null,
   }),
 
+  getters: {
+    viewportCenter(): { x: number; y: number } {
+      if (!this.canvasElement) {
+        return { x: 100, y: 100 }
+      }
+
+      const zoomStore = useZoomStore()
+      const canvas = this.canvasElement
+
+      // Calculate the center of the visible viewport in canvas coordinates
+      const viewportWidth = canvas.clientWidth
+      const viewportHeight = canvas.clientHeight
+      const scrollLeft = canvas.scrollLeft
+      const scrollTop = canvas.scrollTop
+
+      // Convert viewport center to canvas space (accounting for zoom)
+      const centerX =
+        (scrollLeft + viewportWidth / 2) / zoomStore.zoom - SHAPE_SIZE / 2
+      const centerY =
+        (scrollTop + viewportHeight / 2) / zoomStore.zoom - SHAPE_SIZE / 2
+
+      return { x: centerX, y: centerY }
+    },
+  },
+
   actions: {
     startDrag(type: ShapeType, event: MouseEvent, customPoints?: string) {
       this.isDragging = true

@@ -10,9 +10,9 @@
   ],
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/whiteboard-editor.js",
-      "require": "./dist/whiteboard-editor.umd.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/whiteboard-editor.umd.cjs"
     },
     "./style.css": "./dist/style.css"
   },

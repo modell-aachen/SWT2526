@@ -1,8 +1,19 @@
 <template>
-  <div class="absolute" :style="wrapperStyle" @mousedown.stop="handleMouseDown">
+  <div
+    class="absolute"
+    :style="wrapperStyle"
+    @mousedown.stop="handleMouseDown"
+    @dblclick.stop="handleDoubleClick"
+  >
     <div class="w-full h-full">
       <GenericShape v-if="shapeProps" v-bind="shapeProps" />
-      <TextElement v-else-if="textProps" v-bind="textProps" />
+      <TextElement
+        v-else-if="textProps"
+        v-bind="textProps"
+        :is-editing="isEditingText"
+        @update:content="handleTextContentUpdate"
+        @finish-editing="isEditingText = false"
+      />
       <IconElement v-else-if="iconProps" v-bind="iconProps" />
     </div>
 
@@ -13,6 +24,7 @@
 
       <div
         v-for="handle in visibleHandles"
+        v-show="!isEditingText"
         :key="handle"
         class="absolute w-2 h-2 bg-ma-primary-500 border border-white rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer"
         :style="getHandleStyle(handle)"
@@ -29,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRef } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import type { CanvasElement } from '@/types/Element'
 import type { ResizeHandle } from '@/utils/elementTransforms'
 import type { ResizeEvents } from '@/types/ResizeEvents'
@@ -44,6 +56,7 @@ import {
 import { useDraggable } from '@/composables/useDraggable'
 import { useResizable } from '@/composables/useResizable'
 import { useElementComponent } from '@/composables/useElementComponent'
+import { useElementsStore } from '@/stores/elements/elements'
 import GenericShape from '@/components/Shapes/GenericShape.vue'
 import TextElement from '@/components/TextElement/TextElement.vue'
 import IconElement from '@/components/IconElement/IconElement.vue'
@@ -54,6 +67,9 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<ElementWrapperEvents>()
+
+const elementsStore = useElementsStore()
+const isEditingText = ref(false)
 
 const { startDrag } = useDraggable(emit)
 const { startResize } = useResizable(emit as ResizeEvents)
@@ -78,8 +94,19 @@ const wrapperStyle = computed(() => ({
 }))
 
 const handleMouseDown = (e: MouseEvent) => {
+  if (isEditingText.value) return
   emit('select', e)
   startDrag(e)
+}
+
+const handleDoubleClick = () => {
+  if (props.element.type === 'text') {
+    isEditingText.value = true
+  }
+}
+
+const handleTextContentUpdate = (newContent: string) => {
+  elementsStore.updateElement(props.element.id, { content: newContent })
 }
 
 const handleResizeStart = (handle: ResizeHandle, e: MouseEvent) => {

@@ -10,8 +10,8 @@ export default defineConfig({
     vue(),
     tailwindcss(),
     dts({
-      include: ['src/**/*.ts', 'src/**/*.vue'],
-      insertTypesEntry: true,
+      tsconfigPath: './tsconfig.app.json',
+      rollupTypes: true,
     }),
   ],
   resolve: {

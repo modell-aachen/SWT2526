@@ -10,8 +10,8 @@ export default defineConfig({
     vue(),
     tailwindcss(),
     dts({
-      include: ['src/**/*.ts', 'src/**/*.vue'],
-      insertTypesEntry: true,
+      tsconfigPath: './tsconfig.app.json',
+      rollupTypes: true,
     }),
   ],
   resolve: {
@@ -29,14 +29,13 @@ export default defineConfig({
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ['vue', 'pinia', 'vue-router'],
+      external: ['vue', 'pinia'],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps
         globals: {
           vue: 'Vue',
           pinia: 'Pinia',
-          'vue-router': 'VueRouter',
         },
         exports: 'named',
       },

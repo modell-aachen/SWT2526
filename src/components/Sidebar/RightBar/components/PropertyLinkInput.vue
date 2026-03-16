@@ -1,23 +1,21 @@
 <template>
-  <div class="flex flex-col gap-2">
-    <Label :for="id" class="text-xs font-medium text-ma-text-01">
+  <div class="flex flex-col gap-1 py-1">
+    <Label :for="id" class="text-xs text-ma-text-02">
       {{ label }}
     </Label>
-    <div
-      class="flex gap-2 items-center border border-ma-grey-500 rounded-md bg-ma-grey-200 overflow-hidden h-8"
-    >
+    <div class="flex gap-1 items-center">
       <div
-        class="flex flex-1 items-center border border-ma-grey-300 rounded-md bg-[--ma-grey-200] overflow-hidden h-8"
+        class="flex flex-1 items-center h-7 border border-ma-grey-300 rounded bg-ma-grey-200 overflow-hidden"
       >
         <div
-          class="bg-ma-grey-300 px-2 flex items-center h-full text-xs text-ma-text-02 font-medium border-r border-ma-grey-300 select-none"
+          class="bg-ma-grey-300 px-1.5 flex items-center h-full text-[10px] text-ma-text-02 border-r border-ma-grey-300 select-none"
         >
           https://
         </div>
         <input
           :id="id"
           :value="internalValue"
-          class="flex-1 h-full px-2 text-xs outline-none min-w-0 bg-transparent text-ma-text-01 placeholder:text-muted-foreground"
+          class="flex-1 h-full px-2 text-xs outline-none min-w-0 bg-transparent text-ma-text-01"
           placeholder="example.com"
           @input="
             updateInternalValue(($event.target as HTMLInputElement).value)
@@ -25,42 +23,34 @@
           @keyup.enter="saveLink"
         />
       </div>
-    </div>
-    <div class="flex flex-row gap-1 mt-2">
       <Button
         size="icon-sm"
-        class="h-8 w-8 shrink-0 bg-ma-grey-700 hover:bg-ma-grey-500"
+        class="h-7 w-7 shrink-0 bg-ma-grey-700 hover:bg-ma-grey-500"
         title="Save link"
         @click="saveLink"
       >
-        <Check class="w-4 h-4 text-ma-white-01" />
+        <Check class="w-3 h-3 text-ma-white-01" />
       </Button>
-
       <Button
         size="icon-sm"
-        class="h-8 w-8 shrink-0 bg-ma-grey-700 hover:bg-ma-grey-500"
+        class="h-7 w-7 shrink-0 bg-ma-grey-700 hover:bg-ma-grey-500"
         title="Remove link"
         @click="removeLink"
       >
-        <X class="w-4 h-4 text-ma-white-01" />
+        <X class="w-3 h-3 text-ma-white-01" />
       </Button>
     </div>
-
     <p
       v-if="feedbackMessage === 'Link saved!'"
-      class="text-[10px] text-green-600 font-medium"
+      class="text-[10px] text-green-600"
     >
       {{ feedbackMessage }}
     </p>
     <p
       v-else-if="feedbackMessage === 'Link removed!'"
-      class="text-[10px] text-red-600 font-medium"
+      class="text-[10px] text-red-600"
     >
       {{ feedbackMessage }}
-    </p>
-    <p v-else class="text-[10px] text-ma-text-02">
-      Enter a URL and click the check to save. Click the X to remove the link
-      from element.
     </p>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <template>
   <div :class="containerClass">
-    <div class="w-full h-px bg-ma-grey-300 my-1" v-if="collapsed" />
+    <div v-if="collapsed" class="w-full h-px bg-ma-grey-300 my-1" />
     <Button
       variant="ghost"
       :class="buttonClass"

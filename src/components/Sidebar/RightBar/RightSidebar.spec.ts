@@ -35,7 +35,7 @@ describe('RightSidebar', () => {
     const wrapper = mount(RightSidebar)
     await wrapper.vm.$nextTick()
 
-    const input = wrapper.find('#shape-link')
+    const input = wrapper.find('#element-link')
     expect((input.element as HTMLInputElement).value).toBe('test.com')
   })
 
@@ -45,7 +45,7 @@ describe('RightSidebar', () => {
     store.selectElement(store.elements[0]!.id)
 
     const wrapper = mount(RightSidebar)
-    const input = wrapper.find('#shape-link')
+    const input = wrapper.find('#element-link')
     // Find button by title since we added title="Save link"
     const button = wrapper.find('button[title="Save link"]')
 
@@ -72,16 +72,16 @@ describe('RightSidebar', () => {
     await wrapper.vm.$nextTick()
 
     // Ensure input exists before checking
-    expect(wrapper.find('#shape-link').exists()).toBe(true)
+    expect(wrapper.find('#element-link').exists()).toBe(true)
     expect(
-      (wrapper.find('#shape-link').element as HTMLInputElement).value
+      (wrapper.find('#element-link').element as HTMLInputElement).value
     ).toBe('link1.com')
 
     store.selectElement(id2)
     await wrapper.vm.$nextTick()
 
     expect(
-      (wrapper.find('#shape-link').element as HTMLInputElement).value
+      (wrapper.find('#element-link').element as HTMLInputElement).value
     ).toBe('link2.com')
   })
 
@@ -106,7 +106,7 @@ describe('RightSidebar', () => {
     store.selectElement(store.elements[0]!.id)
 
     const wrapper = mount(RightSidebar)
-    const input = wrapper.find('#shape-link')
+    const input = wrapper.find('#element-link')
     const button = wrapper.find('button[title="Save link"]')
 
     // User types full URL including https://
@@ -168,7 +168,7 @@ describe('RightSidebar', () => {
     store.selectElement(store.elements[0]!.id)
 
     const wrapper = mount(RightSidebar)
-    const input = wrapper.find('#shape-text-content')
+    const input = wrapper.find('#text-content')
 
     await input.setValue('test')
     await input.trigger('input')
@@ -176,7 +176,7 @@ describe('RightSidebar', () => {
 
     expect((store.elements[0] as ShapeElement).content).toBe('test')
 
-    const fontSizeInput = wrapper.find('#shape-font-size')
+    const fontSizeInput = wrapper.find('#font-size')
 
     await fontSizeInput.setValue('16')
     await fontSizeInput.trigger('input')
@@ -184,7 +184,7 @@ describe('RightSidebar', () => {
 
     expect((store.elements[0] as ShapeElement).fontSize).toBe(16)
 
-    const textColorInput = wrapper.find('#shape-text-color')
+    const textColorInput = wrapper.find('#text-color')
 
     await textColorInput.setValue('#ff0000')
     await textColorInput.trigger('input')

@@ -1,6 +1,6 @@
 <template>
   <div :class="containerClass">
-    <div class="w-full h-px bg-ma-grey-300 my-1" v-if="collapsed" />
+    <div v-if="collapsed" class="w-full h-px bg-ma-grey-300 my-1" />
     <Button
       variant="ghost"
       :class="buttonClass"
@@ -19,15 +19,6 @@
     >
       <Upload class="w-4 h-4 text-ma-text-01" />
     </Button>
-    <Button
-      variant="ghost"
-      :class="buttonClass"
-      data-testid="view-button"
-      title="View Mode"
-      @click="handleViewClick"
-    >
-      <Eye class="w-4 h-4 text-ma-text-01" />
-    </Button>
     <input
       ref="fileInputRef"
       type="file"
@@ -40,8 +31,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { Save, Upload, Eye } from 'lucide-vue-next'
+import { Save, Upload } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useCanvasIO } from '@/composables/useCanvasIO'
 import { useElementsStore } from '@/stores/elements/elements'
@@ -50,13 +40,8 @@ const props = defineProps<{
   collapsed?: boolean
 }>()
 
-const router = useRouter()
 const elementsStore = useElementsStore()
 const { saveToFile, loadFromFile } = useCanvasIO()
-
-const handleViewClick = () => {
-  router.push('/view')
-}
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
 

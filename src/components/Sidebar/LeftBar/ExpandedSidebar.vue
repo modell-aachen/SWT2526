@@ -8,55 +8,31 @@
     </div>
 
     <div class="flex-1 overflow-y-auto p-2">
-      <SidebarGroup title="Basic Shapes" :sidebar-collapsed="false">
+      <SidebarGroup title="Shapes" :sidebar-collapsed="false">
         <ShapeButton
           v-for="shape in primaryShapes"
           :key="shape"
           :shape-type="shape"
           :collapsed="false"
         />
-      </SidebarGroup>
-      <SidebarGroup
-        title="Advanced Shapes"
-        :sidebar-collapsed="false"
-        :default-open="false"
-      >
-        <ShapeButton
-          v-for="shape in secondaryShapes"
-          :key="shape"
-          :shape-type="shape"
+        <ShapePopover
+          title="Advanced"
+          :trigger-icon="LayoutGrid"
+          :shapes="advancedShapes"
           :collapsed="false"
         />
-      </SidebarGroup>
-      <SidebarGroup
-        title="Custom Shapes"
-        :sidebar-collapsed="false"
-        :default-open="false"
-      >
-        <ShapeButton
-          v-for="shape in elementsStore.customShapes"
-          :key="shape.name"
-          shape-type="custom"
-          :custom-points="shape.points"
-          :label="shape.name"
+        <CustomShapePopover
           :collapsed="false"
+          @add-custom="isCustomShapeDialogOpen = true"
         />
-        <Button
-          variant="ghost"
-          class="w-full justify-start gap-2 h-9 px-2 text-ma-text-01"
-          title="Add Custom Shape"
-          @click="isCustomShapeDialogOpen = true"
-        >
-          <Plus class="w-6 h-6" />
-          <span class="text-xs">Add</span>
-        </Button>
       </SidebarGroup>
+
       <SidebarGroup title="Text" :sidebar-collapsed="false">
         <Button
           variant="ghost"
           class="w-full justify-start gap-2 h-9 px-2 text-ma-text-01"
           title="Add Text"
-          @click="elementsStore.addText()"
+          @click="addTextAtCenter"
         >
           <Type
             :style="{ color: defaultOutlineColor }"
@@ -65,8 +41,14 @@
           <span class="text-sm text-ma-text-01">Text</span>
         </Button>
       </SidebarGroup>
+
       <SidebarGroup title="Icons" :sidebar-collapsed="false">
-        <IconPicker :collapsed="false" class="w-full" />
+        <IconCategoryPicker
+          v-for="(category, key) in ICON_CATEGORIES"
+          :key="key"
+          :category="category"
+          :collapsed="false"
+        />
       </SidebarGroup>
 
       <SidebarGroup title="Templates" :sidebar-collapsed="false">
@@ -91,16 +73,20 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Type, Plus } from 'lucide-vue-next'
+import { Type, LayoutGrid } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import SidebarGroup from '@/components/Sidebar/SidebarGroup.vue'
-import IconPicker from './IconPicker.vue'
 import ShapeButton from './ShapeButton.vue'
+import ShapePopover from './ShapePopover.vue'
+import CustomShapePopover from './CustomShapePopover.vue'
+import IconCategoryPicker from './IconCategoryPicker.vue'
 import SaveLoadButtons from './SaveLoadButtons.vue'
 import SidebarActions from './SidebarActions.vue'
 import CustomShapeDialog from './CustomShapeDialog.vue'
 import TemplateButton from './TemplateButton.vue'
 import { useElementsStore } from '@/stores/elements/elements'
+import { useDragStore } from '@/stores/drag/dragGhost'
+import { ICON_CATEGORIES } from '@/components/Icons'
 import type { ShapeType } from '@/types/ShapeType'
 import { defaultOutlineColor } from '@/types/DefaultColors'
 import { templates } from '@/templates'
@@ -111,9 +97,16 @@ defineEmits<{
 
 const isCustomShapeDialogOpen = ref(false)
 const elementsStore = useElementsStore()
+const dragStore = useDragStore()
+
+const addTextAtCenter = () => {
+  const center = dragStore.viewportCenter
+  elementsStore.addText(center.x, center.y)
+}
+
 const primaryShapes: ShapeType[] = ['rectangle', 'chevron', 'ellipse', 'arrow']
 
-const secondaryShapes: ShapeType[] = [
+const advancedShapes: ShapeType[] = [
   'triangle',
   'trapezoid',
   'hexagon',

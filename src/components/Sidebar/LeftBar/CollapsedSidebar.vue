@@ -113,7 +113,12 @@ const addTextAtCenter = () => {
 
 const primaryShapes: ShapeType[] = ['rectangle', 'chevron', 'ellipse']
 
-const linesAndArrowsShapes: ShapeType[] = ['line', 'horizontal-line', 'arrow']
+const linesAndArrowsShapes: ShapeType[] = [
+  'line',
+  'diagonal-line',
+  'arrow',
+  'thick-arrow',
+]
 
 const advancedShapes: ShapeType[] = [
   'triangle',

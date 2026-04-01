@@ -67,13 +67,59 @@ describe('GenericShape', () => {
       props: {
         width: 100,
         height: 100,
-        shapeType: 'horizontal-line',
+        shapeType: 'line',
       },
     })
 
     const polygon = wrapper.find('polygon')
     expect(polygon.exists()).toBe(true)
     expect(polygon.attributes('points')).toBe('0,50 100,50')
+  })
+
+  it('renders diagonal line correctly', () => {
+    const wrapper = mount(GenericShape, {
+      props: {
+        width: 100,
+        height: 100,
+        shapeType: 'diagonal-line',
+      },
+    })
+
+    const polygon = wrapper.find('polygon')
+    expect(polygon.exists()).toBe(true)
+    expect(polygon.attributes('points')).toBe('0,100 100,0')
+  })
+
+  it('renders thin arrow correctly', () => {
+    const wrapper = mount(GenericShape, {
+      props: {
+        width: 100,
+        height: 100,
+        shapeType: 'arrow',
+      },
+    })
+
+    const polygon = wrapper.find('polygon')
+    expect(polygon.exists()).toBe(true)
+    expect(polygon.attributes('points')).toBe(
+      '0,50 100,50 80,85 100,50 80,15 100,50'
+    )
+  })
+
+  it('renders thick arrow correctly', () => {
+    const wrapper = mount(GenericShape, {
+      props: {
+        width: 100,
+        height: 100,
+        shapeType: 'thick-arrow',
+      },
+    })
+
+    const polygon = wrapper.find('polygon')
+    expect(polygon.exists()).toBe(true)
+    expect(polygon.attributes('points')).toBe(
+      '0,30 60,30 60,0 100,50 60,100 60,70 0,70'
+    )
   })
 
   it('renders custom shape correctly', () => {

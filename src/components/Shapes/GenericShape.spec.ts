@@ -106,6 +106,22 @@ describe('GenericShape', () => {
     )
   })
 
+  it('renders double thin arrow correctly', () => {
+    const wrapper = mount(GenericShape, {
+      props: {
+        width: 100,
+        height: 100,
+        shapeType: 'double-arrow',
+      },
+    })
+
+    const polygon = wrapper.find('polygon')
+    expect(polygon.exists()).toBe(true)
+    expect(polygon.attributes('points')).toBe(
+      '0,50 20,85 0,50 20,15 0,50 100,50 80,85 100,50 80,15 100,50'
+    )
+  })
+
   it('renders thick arrow correctly', () => {
     const wrapper = mount(GenericShape, {
       props: {
@@ -119,6 +135,22 @@ describe('GenericShape', () => {
     expect(polygon.exists()).toBe(true)
     expect(polygon.attributes('points')).toBe(
       '0,30 60,30 60,0 100,50 60,100 60,70 0,70'
+    )
+  })
+
+  it('renders double thick arrow correctly', () => {
+    const wrapper = mount(GenericShape, {
+      props: {
+        width: 100,
+        height: 100,
+        shapeType: 'double-thick-arrow',
+      },
+    })
+
+    const polygon = wrapper.find('polygon')
+    expect(polygon.exists()).toBe(true)
+    expect(polygon.attributes('points')).toBe(
+      '0,50 30,0 30,30 70,30 70,0 100,50 70,100 70,70 30,70 30,100'
     )
   })
 

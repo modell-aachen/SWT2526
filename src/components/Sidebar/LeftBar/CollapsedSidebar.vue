@@ -117,7 +117,9 @@ const linesAndArrowsShapes: ShapeType[] = [
   'line',
   'diagonal-line',
   'arrow',
+  'double-arrow',
   'thick-arrow',
+  'double-thick-arrow',
 ]
 
 const advancedShapes: ShapeType[] = [

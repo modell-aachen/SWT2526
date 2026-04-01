@@ -154,6 +154,50 @@ describe('GenericShape', () => {
     )
   })
 
+  it('renders right-angle correctly', () => {
+    const wrapper = mount(GenericShape, {
+      props: {
+        width: 100,
+        height: 100,
+        shapeType: 'right-angle',
+      },
+    })
+
+    const polygon = wrapper.find('polygon')
+    expect(polygon.exists()).toBe(true)
+    expect(polygon.attributes('points')).toBe('0,0 0,100 100,100 0,100')
+  })
+
+  it('renders snake correctly', () => {
+    const wrapper = mount(GenericShape, {
+      props: {
+        width: 100,
+        height: 100,
+        shapeType: 'snake',
+      },
+    })
+
+    const polygon = wrapper.find('polygon')
+    expect(polygon.exists()).toBe(true)
+    expect(polygon.attributes('points')).toBe(
+      '0,0 50,0 50,100 100,100 50,100 50,0'
+    )
+  })
+
+  it('renders spike correctly', () => {
+    const wrapper = mount(GenericShape, {
+      props: {
+        width: 100,
+        height: 100,
+        shapeType: 'spike',
+      },
+    })
+
+    const polygon = wrapper.find('polygon')
+    expect(polygon.exists()).toBe(true)
+    expect(polygon.attributes('points')).toBe('50,0 100,100 50,0 0,100')
+  })
+
   it('renders custom shape correctly', () => {
     const wrapper = mount(GenericShape, {
       props: {

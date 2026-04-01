@@ -129,5 +129,8 @@ const advancedShapes: ShapeType[] = [
   'diamond',
   'parallelogram',
   'pentagon',
+  'right-angle',
+  'snake',
+  'spike',
 ]
 </script>

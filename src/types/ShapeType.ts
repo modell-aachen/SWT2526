@@ -14,4 +14,7 @@ export type ShapeType =
   | 'double-arrow'
   | 'diagonal-line'
   | 'line'
+  | 'right-angle'
+  | 'snake'
+  | 'spike'
   | 'custom'

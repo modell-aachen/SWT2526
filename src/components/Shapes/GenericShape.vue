@@ -78,6 +78,12 @@ const points = computed(() => {
       return '0,30 60,30 60,0 100,50 60,100 60,70 0,70'
     case 'double-thick-arrow':
       return '0,50 30,0 30,30 70,30 70,0 100,50 70,100 70,70 30,70 30,100'
+    case 'right-angle':
+      return '0,0 0,100 100,100 0,100'
+    case 'snake':
+      return '0,0 50,0 50,100 100,100 50,100 50,0'
+    case 'spike':
+      return '50,0 100,100 50,0 0,100'
     default:
       return ''
   }

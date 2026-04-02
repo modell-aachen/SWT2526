@@ -16,8 +16,7 @@
       @keydown="handleKeyDown"
       @mousedown.stop
       @input="handleInput"
-      >{{ editValue }}</span
-    >
+    ></span>
     <span v-else>{{ content }}</span>
   </div>
 </template>
@@ -55,6 +54,11 @@ watch(
       editValue.value = props.content
       await nextTick()
       if (editableRef.value) {
+        // initialize editable element content directly to avoid Vue
+        // re-rendering the inner text on each keystroke (which resets
+        // the caret to the start). Manage the DOM textContent manually
+        // while editing.
+        editableRef.value.textContent = editValue.value
         editableRef.value.focus()
         // Select all text
         const range = document.createRange()

@@ -66,12 +66,24 @@ const points = computed(() => {
       return '20,0 100,0 80,100 0,100'
     case 'pentagon':
       return '50,0 100,38 82,100 18,100 0,38'
-    case 'line':
+    case 'diagonal-line':
       return '0,100 100,0'
-    case 'horizontal-line':
+    case 'line':
       return '0,50 100,50'
     case 'arrow':
+      return '0,50 100,50 80,85 100,50 80,15 100,50'
+    case 'double-arrow':
+      return '0,50 20,85 0,50 20,15 0,50 100,50 80,85 100,50 80,15 100,50'
+    case 'thick-arrow':
       return '0,30 60,30 60,0 100,50 60,100 60,70 0,70'
+    case 'double-thick-arrow':
+      return '0,50 30,0 30,30 70,30 70,0 100,50 70,100 70,70 30,70 30,100'
+    case 'right-angle':
+      return '0,0 0,100 100,100 0,100'
+    case 'snake':
+      return '0,0 50,0 50,100 100,100 50,100 50,0'
+    case 'spike':
+      return '50,0 100,100 50,0 0,100'
     default:
       return ''
   }

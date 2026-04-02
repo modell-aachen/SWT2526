@@ -15,6 +15,12 @@
           :shape-type="shape"
           :collapsed="false"
         />
+        <LinesArrowsPopover
+          title="Lines & Arrows"
+          :trigger-icon="ArrowLeftRight"
+          :shapes="linesAndArrowsShapes"
+          :collapsed="false"
+        />
         <ShapePopover
           title="Advanced"
           :trigger-icon="LayoutGrid"
@@ -73,10 +79,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Type, LayoutGrid } from 'lucide-vue-next'
+import { Type, LayoutGrid, ArrowLeftRight } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import SidebarGroup from '@/components/Sidebar/SidebarGroup.vue'
 import ShapeButton from './ShapeButton.vue'
+import LinesArrowsPopover from './LinesArrowsPopover.vue'
 import ShapePopover from './ShapePopover.vue'
 import CustomShapePopover from './CustomShapePopover.vue'
 import IconCategoryPicker from './IconCategoryPicker.vue'
@@ -104,7 +111,16 @@ const addTextAtCenter = () => {
   elementsStore.addText(center.x, center.y)
 }
 
-const primaryShapes: ShapeType[] = ['rectangle', 'chevron', 'ellipse', 'arrow']
+const primaryShapes: ShapeType[] = ['rectangle', 'chevron', 'ellipse']
+
+const linesAndArrowsShapes: ShapeType[] = [
+  'line',
+  'diagonal-line',
+  'arrow',
+  'double-arrow',
+  'thick-arrow',
+  'double-thick-arrow',
+]
 
 const advancedShapes: ShapeType[] = [
   'triangle',
@@ -113,7 +129,8 @@ const advancedShapes: ShapeType[] = [
   'diamond',
   'parallelogram',
   'pentagon',
-  'line',
-  'horizontal-line',
+  'right-angle',
+  'snake',
+  'spike',
 ]
 </script>
